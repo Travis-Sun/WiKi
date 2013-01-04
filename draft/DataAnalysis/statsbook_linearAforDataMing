@@ -1,0 +1,118 @@
+#title Linear Algebra Methods for Data Mining 讲义
+
+<p>
+
+
+* 1 ppt
+
+** linear algebra function
+
+1. data compression
+2. retrieval enhancement
+
+
+** content
+
+- vectors
+- norms and distances
+- eigenvalues, eigenvectors
+- linearly independent vectors, basis
+- orthogonal bases
+- matrices, orthogonal matrices
+- orthogonal matrix decompositions: SVD
+
+** notes
+
+Modern computing devices are able to exploit the fact that a vector
+operation is a very regular sequence of scalar operations
+
+** linear combination线性组合
+
+<latex>$ y = \mathbf{A}x = ( \mathbf{a}_1 \mathbf{a}_2 \mathbf{\ldots} \mathbf{a}_n ) \left( \begin{array}{c}  x_1 \cr x_2 \cr \vdots \cr x_n \end{array} \right) = \sum_{j=1}^{n} x_j \mathbf{a}_j $</latex>
+
+** vector distance
+
+1. norm : <latex>$$ \|X-Y\| _1 = |X-Y| $$</latex>
+2. Euclidean : <latex>$ \|X-Y\| _2 X^T Y $</latex>
+3. Angle : <latex>$ \frac{X^TY}{\|X\| _2 \|Y\| _2} $</latex>
+
+在书中说出用Eucliden距离计算两个doc的距离，这里有一个避免出现的问题，就是首先将数据标准化。
+那么这个计算过程其实就和Angle的方法是一样的。
+
+** Eigenvalues and Eigenvectors
+
+<latex>$ \mathbf{Av} = \lambda \mathbf{v} $</latex>
+
+** notes
+
+linearly independent
+
+<latex>$ \sum_{j=1}^{n} a_j \mathbf{v}_j = 0 only a_j=0 for all j= 1, \ldots, n.  $</latex>
+
+rank 译成中文应该是矩阵的秩
+
+A set of m linearly independent vectors of R
+m
+is called a basis in R
+m
+:
+any vector in R
+m
+can be expressed as a linear combination of the basis
+vectors
+
+basis 译成主成分吧，有rank个主成分。
+
+Q 为正交矩阵(orthogonal matrices) 则
+1. <latex>$ Q^TQ=I=QQ^T $</latex>
+2. <latex>$ Q^{-1}=Q^T $</latex>
+3. <latex>$ QX^2=(Qx)^T(Qx)=X^TX=\|X\|^2 $</latex>
+
+* 2
+vectors x and y are orthogonal, if <latex>$ X^TY=0 $</latex>
+
+对称矩阵(<latex>$ A^T=A$ </latex>)的特征向量是正交的，特征值是实数。
+
+对称矩阵特征值分解 
+<latex>$ A = U {\Lambda} U^T $</latex>
+
+U 就是A的特征矩阵 <latex>$ \Lambda $</latex>就是有特征值构成的对角线矩阵。而且U还是正交矩阵。
+
+在这其中的应用是关于病毒的传播性。
+
+几个概念：
+
+1. Susceptible-Infected-Susceptible (SIS) model
+2. virus birth rate <latex>$ \sigma $</latex>: probability that an infected neighbor attacks
+3. virus death rate <latex>$ \rho $</latex>: probability that an infected node heals
+4. the virus strength <latex>$ s= {\sigma}/{\rho} $</latex>
+
+该模型只依赖与graph。
+有论文表明如果 <latex>$ {\sigma}/{\rho}<\tau={1}/{\lambda_A} $</latex>，就能够防止病毒的传播。
+
+<latex>$ \lambda_A $</latex>指的是graphA中最大的特征值。
+所以特征值和graph的拓扑有着很强的关系。
+
+不同的问题同样的接近方法：
+1. 谁是最好的广告投放客户(who is the best customer to advertise to?)
+2. 谁是谣言的源头(who originated a raging rumor?)
+3. 一个节点在网络中有多重要(in general: how important is a node in a network?)
+
+上面说的是对称矩阵，如果矩阵不是对称的情况下，应该怎么做
+奇异值分解singular value decomposition (SVD):
+
+<latex>$ A = U \Sigma V^T   \Sigma $</latex>是对角阵， U和V是正交阵 
+
+P21
+
+
+
+
+
+
+
+
+</p>
+
+[[statsbook.html][UP]]
+

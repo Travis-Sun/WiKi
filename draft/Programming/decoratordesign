@@ -1,0 +1,57 @@
+#title Decorator Design Pattern
+
+
+<p>
+* Decorator
+
+** problem
+
+- 一群小类（不是鄙视小类啊），系统设计的要求是组合可能的小类来实现其基本的功能。
+- 例如书中给出的例子，一个coffe店，有各种品种的coffe，而coffe又有很多的调味剂，那这种情况下，
+设计出客户想要的口味的，不同品种的coffe的价格。这种情况就是能够随时组装成各种用户需求的咖啡，
+并算出其价格。
+-java.io的package的设计也是采用了decorate的设计模式，这对输入可以设计出各种情况的数据读到内存中。
+ 
+** implement
+
+实现的方式就是采用decorate的方式，可以将数据按照自己想要的方式进行包装。
+
+- 采用的inheritance的机制来保持结构的一致性。
+- 采用composition的机制来保证其灵活性，和扩展性，
+- 其实就是从一个abstract的父类，或者接口继承下来，然后有一个父类的成员变量，记录其包装(wrap)的对象，
+通过这种层层的attach的方式来实现功能的雪球式增长。
+
+<example>
+Design Principle:
+1. Classes should be open for extension, but closed for modification
+2. 
+
+Decorator Pattern attaches additional responsibilities to an object dynamically.
+Decorators provide a flexible alternative to subclassing for extending functionality.
+</example>
+
+根据UML图来进行细解：
+
+[[decorator_1.gif][Common UML]]
+
+可以看到Decorator本身就包括父类Componet，这种自包装的方式来实现其功能的增加，或者数据的增加。
+实现的效果就是实现了一个复杂的Object，其功能包括concretedecoratorA, concretedecoratorB ....的功能的不同集合，
+这些都是在运行时实现的。
+
+[[decorator_2.gif][Coffee UML]]
+
+这个图则是详细的实现了coffee店的业务情况。实现了cost和decriptor的功能的组合。
+
+此外可以看到下图是java.io的package实现的部分UML图。
+
+[[decorator_3.gif][Java.IO]]
+
+比如书上的一个例子，通过继承了<nop>FilterInputStream,实现输入字符串lower case的设计。
+
+C#实现的code 在HOME/cs/designpattern/decorator.cs.
+
+ 
+</p>
+
+
+[[designpattern.html][UP]]

@@ -1,0 +1,133 @@
+#title 北京商品房价格分布情况
+
+<p>
+
+* 从链家的网站上抓取数据
+
+其code和抓取北七家的数据是一样的，就是把区域的参数设置成空字符串。
+
+
+* 用ggmap显示北京地图
+
+<example>
+library(ggmap)
+ggmap function
+get_map function
+getgooglemap function
+geocode(matrix) get the lon and lat of the name,
+</example>
+**** 1. 首先读取抓取下来的数据到mem中
+**** 2. 然后获得所有小区的经纬度信息
+**** 3. 展示北京地图，然后将各个小区标注到地图上，然后根据房价的大小来进行设置point的大小。
+**** 4. 通过density2d的方式绘出其价格等高线
+
+the code:
+<example>
+FILENAME <- 'D:\\work\\pyoutput\\lihourse.summary.2012-08-22.csv'
+library(ggmap)
+#library(ggplot2)
+library(stringr)
+
+#read data in mem
+readdata <- function() {
+  lihourse <- read.csv(file=FILENAME,
+                       sep=',',
+                       header=FALSE,
+                       stringsAsFactors=FALSE)
+  lidata <- data.frame(lihourse)
+  names(lidata) <- c('detailurl','totalprice','name','area','V1','buildyear', 'float','direct',
+                     'downdate','V2','connector','V5','connectorphone','V6', 'address',
+                     'title','unitprice','structure'
+                     )
+  lidata$downdate <- as.Date(lidata$downdate, format="%Y.%m.%d")
+  lidata$unitprice <- as.numeric(lidata$unitprice)
+  lidata$totalprice <- as.numeric(lidata$totalprice)
+  lidata$area <- as.numeric(lidata$area)
+  lidata$buildyear <- as.numeric(lidata$buildyear)
+  #head(lidata)
+  return(lidata)
+}
+
+lidata <- readdata()
+
+
+# get the accodiate data
+getdistrict <- function(lidata) {
+  districtname <- unique(lidata$name)
+  distname <- paste(districtname, ' Beijing china', sep='')
+  distname <- str_trim(distname)
+  distlocal <- geocode(distname)
+  distlocal <- cbind(distlocal,districtname)
+  distlocal$districtname = as.character(distlocal$districtname)
+  distlocal <- transform(distlocal, unitprice=0)    
+  distlocal <- distlocal[-is.na(distlocal$lon),]
+  #distlocal[is.na(distlocal$lon),]
+  #nrow(distlocal); length(distname)
+  #head(distlocal)
+  return(distlocal)
+}
+
+distlocal <- getdistrict(lidata)
+head(distlocal)
+
+for (i in 1:nrow(distlocal)) {
+  distlocal[i,4] = median(lidata[which(lidata$name==distlocal[i,3]),17])
+}
+
+
+#plot
+p2 <- 
+ggmap(get_googlemap(center="Beijing China", zoom=11),
+      #maptype='satellite',
+      maptype='d',
+      #zoom=10,
+      source='normal',
+      #scale=1,
+      extent='panel',
+      fullpage=TRUE
+      )
+
+p2p <- p2 + geom_point(data=distlocal, aes(x=lon,y=lat,size=unitprice), color="red", alpha=0.5)
+p2pt <- p2p+geom_text(data=distlocal, aes(label=districtname), alpha=0.75, size=3, jitter=TRUE) 
+print(p2p)
+
+p2c <- p2 + stat_density2d(data=distlocal, aes(x=lon,y=lat, fill=unitprice,alpha=unitprice),
+                           bins=100, colour="red") + scale_fill_gradient()
+
+print(p2c)
+
+ggsave(plot=p2c,
+       filename=file.path("d:","bjhourse2.pdf"))
+
+bjlocal <- geocode("Beijing China")
+bjlocal
+
+p <- 
+ggmap(get_map(location=c(lon=116.4074, lat=39.90421),
+              maptype='terrain',
+              zoom=11,
+              source='google',
+              scale=4,
+              extent='panel',
+              fullpage=TRUE
+              )) +
+  geom_point(data=distlocal, aes(x=lon,y=lat,size=unitprice), alpha=0.5)+
+  geom_text(data=distlocal, aes(label=districtname, alpha=0.75), size=4)
+
+print(p)
+
+ggsave(plot=p, 
+       filename=file.path("d:","bjhourse.pdf"), #可以name设置成pdf,pnd等等保存的格式。
+       )
+
+</example>
+
+the pic:
+
+[[bjhourse.pdf][pic1]]
+
+[[bjhourse2.pdf][pic2]]
+
+</p>
+
+[[statsexercise.html][UP]]

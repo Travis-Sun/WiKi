@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Linear Algebra Methods for Data Mining 讲义</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../DataAnalysis/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Linear Algebra Methods for Data Mining 讲义</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<p>
+
+</p>
+
+<h2>1 ppt</h2>
+
+<h3>linear algebra function</h3>
+
+<ol>
+<li>data compression
+</li>
+<li>retrieval enhancement
+</li>
+</ol>
+
+<h3>content</h3>
+
+<ul>
+<li>vectors
+</li>
+<li>norms and distances
+</li>
+<li>eigenvalues, eigenvectors
+</li>
+<li>linearly independent vectors, basis
+</li>
+<li>orthogonal bases
+</li>
+<li>matrices, orthogonal matrices
+</li>
+<li>orthogonal matrix decompositions: SVD
+</li>
+</ul>
+
+<h3>notes</h3>
+
+<p>
+Modern computing devices are able to exploit the fact that a vector
+operation is a very regular sequence of scalar operations
+
+</p>
+
+<h3>linear combination线性组合</h3>
+
+<p>
+<a href="./latex/_473185620.png"><img src="./latex/_473185620.png" alt="" /></a>
+<!-- end of latex2png with input: $ y = \mathbf{A}x = ( \mathbf{a}_1 \mathbf{a}_2 \mathbf{\ldots} \mathbf{a}_n ) \left( \begin{array}{c}  x_1 \cr x_2 \cr \vdots \cr x_n \end{array} \right) = \sum_{j=1}^{n} x_j \mathbf{a}_j $-->
+
+</p>
+
+<h3>vector distance</h3>
+
+<ol>
+<li>norm : <a href="./latex/_401748363.png"><img src="./latex/_401748363.png" alt="" /></a>
+[FIXME: invalid characters]
+</li>
+<li>Euclidean : <a href="./latex/_287975266.png"><img src="./latex/_287975266.png" alt="" /></a>
+[FIXME: invalid characters]
+</li>
+<li>Angle : <a href="./latex/_504167918.png"><img src="./latex/_504167918.png" alt="" /></a>
+[FIXME: invalid characters]
+</li>
+</ol>
+
+<p>
+在书中说出用Eucliden距离计算两个doc的距离，这里有一个避免出现的问题，就是首先将数据标准化。
+那么这个计算过程其实就和Angle的方法是一样的。
+
+</p>
+
+<h3>Eigenvalues and Eigenvectors</h3>
+
+<p>
+<a href="./latex/_232463031.png"><img src="./latex/_232463031.png" alt="" /></a>
+<!-- end of latex2png with input: $ \mathbf{Av} = \lambda \mathbf{v} $-->
+
+</p>
+
+<h3>notes</h3>
+
+<p>
+linearly independent
+
+</p>
+
+<p>
+<a href="./latex/_332469159.png"><img src="./latex/_332469159.png" alt="" /></a>
+<!-- end of latex2png with input: $ \sum_{j=1}^{n} a_j \mathbf{v}_j = 0 only a_j=0 for all j= 1, \ldots, n.  $-->
+
+</p>
+
+<p>
+rank 译成中文应该是矩阵的秩
+
+</p>
+
+<p>
+A set of m linearly independent vectors of R
+m
+is called a basis in R
+m
+:
+any vector in R
+m
+can be expressed as a linear combination of the basis
+vectors
+
+</p>
+
+<p>
+basis 译成主成分吧，有rank个主成分。
+
+</p>
+
+<p>
+Q 为正交矩阵(orthogonal matrices) 则
+
+</p>
+
+<ol>
+<li><a href="./latex/_121737355.png"><img src="./latex/_121737355.png" alt="" /></a>
+<!-- end of latex2png with input: $ Q^TQ=I=QQ^T $-->
+</li>
+<li><a href="./latex/_343103100.png"><img src="./latex/_343103100.png" alt="" /></a>
+<!-- end of latex2png with input: $ Q^{-1}=Q^T $-->
+</li>
+<li><a href="./latex/_111201352.png"><img src="./latex/_111201352.png" alt="" /></a>
+[FIXME: invalid characters]
+</li>
+</ol>
+
+<h2>2</h2>
+vectors x and y are orthogonal, if <a href="./latex/_476248951.png"><img src="./latex/_476248951.png" alt="" /></a>
+<!-- end of latex2png with input: $ X^TY=0 $-->
+
+</p>
+
+<p>
+对称矩阵(<a href="./latex/_121115526.png"><img src="./latex/_121115526.png" alt="" /></a>
+<!-- end of latex2png with input: $ A^T=A$ -->)的特征向量是正交的，特征值是实数。
+
+</p>
+
+<p>
+对称矩阵特征值分解 
+<a href="./latex/_424784293.png"><img src="./latex/_424784293.png" alt="" /></a>
+<!-- end of latex2png with input: $ A = U {\Lambda} U^T $-->
+
+</p>
+
+<p>
+U 就是A的特征矩阵 <a href="./latex/_41016956.png"><img src="./latex/_41016956.png" alt="" /></a>
+<!-- end of latex2png with input: $ \Lambda $-->就是有特征值构成的对角线矩阵。而且U还是正交矩阵。
+
+</p>
+
+<p>
+在这其中的应用是关于病毒的传播性。
+
+</p>
+
+<p>
+几个概念：
+
+</p>
+
+<ol>
+<li>Susceptible-Infected-Susceptible (SIS) model
+</li>
+<li>virus birth rate <a href="./latex/_257133962.png"><img src="./latex/_257133962.png" alt="" /></a>
+<!-- end of latex2png with input: $ \sigma $-->: probability that an infected neighbor attacks
+</li>
+<li>virus death rate <a href="./latex/_435271386.png"><img src="./latex/_435271386.png" alt="" /></a>
+<!-- end of latex2png with input: $ \rho $-->: probability that an infected node heals
+</li>
+<li>the virus strength <a href="./latex/_493009663.png"><img src="./latex/_493009663.png" alt="" /></a>
+<!-- end of latex2png with input: $ s= {\sigma}/{\rho} $-->
+</li>
+</ol>
+
+<p>
+该模型只依赖与graph。
+有论文表明如果 <a href="./latex/_400141397.png"><img src="./latex/_400141397.png" alt="" /></a>
+<!-- end of latex2png with input: $ {\sigma}/{\rho}<\tau={1}/{\lambda_A} $-->，就能够防止病毒的传播。
+
+</p>
+
+<p>
+<a href="./latex/_237343649.png"><img src="./latex/_237343649.png" alt="" /></a>
+<!-- end of latex2png with input: $ \lambda_A $-->指的是graphA中最大的特征值。
+所以特征值和graph的拓扑有着很强的关系。
+
+</p>
+
+<p>
+不同的问题同样的接近方法：
+
+</p>
+
+<ol>
+<li>谁是最好的广告投放客户(who is the best customer to advertise to?)
+</li>
+<li>谁是谣言的源头(who originated a raging rumor?)
+</li>
+<li>一个节点在网络中有多重要(in general: how important is a node in a network?)
+</li>
+</ol>
+
+<p>
+上面说的是对称矩阵，如果矩阵不是对称的情况下，应该怎么做
+奇异值分解singular value decomposition (SVD):
+
+</p>
+
+<p>
+<a href="./latex/_459364926.png"><img src="./latex/_459364926.png" alt="" /></a>
+<!-- end of latex2png with input: $ A = U \Sigma V^T   \Sigma $-->是对角阵， U和V是正交阵 
+
+</p>
+
+<p>
+P21
+
+</p>
+
+<p>
+</p>
+
+</p>
+
+<p>
+<a href="statsbook.html">UP</a>
+
+</p>
+
+
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2013-01-03</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

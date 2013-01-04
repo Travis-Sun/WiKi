@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Factory Design</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Programming/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Factory Design</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<h2>Problem</h2>
+
+<ol>
+<li>一个问题有多种实现的类，那我们在使用这些类的时候，总是new，new这样造成的后果是
+代码的维护性会很差。
+</li>
+<li>当实现类有变化的时候，我们需要修改我们的客户端的code
+</li>
+<li>当实现类有扩展的时候，我们的客户端也要进行大量的code的修改
+</li>
+<li>所以现在的目标是不用new的方式来创建类。
+</li>
+<li>例如书中所用到的例子：一个pizza店提供各种pizza，而每种pizza的实现process是一样，
+但是具体的细节的操作是不同的。
+</li>
+<li>还有就是书中的不同地方的调料的不同搭配问题，这种问题面临的是多族product，那从每一族的product
+中挑出不同的口味的调料来实现不同口味的pizza的调料的搭配。
+</li>
+</ol>
+
+<h2>Implement</h2>
+
+<ol>
+<li>针对问题，首先第一，我们采用一个abtract方法来实现各种pizza的create操作。
+</li>
+<li>这对低端的pizza发生变化，调用他的客户端code也会发生变化的情况，解决其思路，就是将类的new下沉到子类中来实现，
+就是通过子类来实现abstract的方法来实现具体对象的生成。
+</li>
+<li>而abstract factory是将product分族，然后将每族中的product挑出组成一种style的pizza，这样就组成不同的
+style的pizza生产的工厂。
+</li>
+<li>而abstract factory的模式和factory method模式的实现很像，共性都是延迟object的实例化到子类中，而client
+端基本上不变。abstract factory是一个组的product实现；factory method则是倾向用方法的来实现product的
+实例化。从UML图中也可以看到，abstract factory是针对很多的product的create操作，而factory method则是针对
+某一个特定的product的create。
+</li>
+</ol>
+
+<pre class="example">Design Principle:
+1. Depend upon abstractions. Do not depend upon concrete classes
+2. No variable should hold a reference to a concrete class
+3. No class should derive from a concrete class
+4. No method should override an implemented method of any of its base classes.
+
+Factory Method Pattern defines an interface for creating an object,
+but lets subclasses decide which class to instantiate. 
+Factory Method lets a class defer instantiation so subclasses.
+
+Abstract Factory Pattern provides an interface for creating families of related
+or dependent objects without specifying their concrete classes.
+</pre>
+
+<h2>UML</h2>
+
+<p>
+Factory Method UML:
+
+</p>
+
+<p>
+<a href="factorymethod.gif"><img src="factorymethod.gif" alt="Factory&#32;Method&#32;UML" /></a>
+
+</p>
+
+<p>
+那从上面的UML图中可以看到：直接的联系是在subclass里面来实现，而client是通过接口或者abstract class。
+
+</p>
+
+<p>
+Abstract Factory UML：
+
+</p>
+
+<p>
+<a href="abstractfactory.gif"><img src="abstractfactory.gif" alt="Abstract&#32;Factory&#32;UML" /></a>
+
+</p>
+
+<p>
+可以看到：abstract factory pattern 是针对一族product而设置。
+
+</p>
+
+<h2>Code</h2>
+
+<p>
+code: home/cs/designpattern/factory.cs
+
+</p>
+
+<h2>Summary</h2>
+
+<p>
+工厂方法和抽象工厂两种设计模式都是创建性的模式，减少客户端对实际类的依赖，所以呢，通过接口或者抽象类来进行隔离。
+这样通过子类来进行选择实体类的创建。这样呢可以看到把整体的设计结构不断的细分，放到最后，你所修改的就只是其细小分支
+下的class的内容，其他的部分都不会改变；而且扩展的话也就是在其接口或者abstract class分下来一个新的支流来实现控制。
+充分的满足其可扩展不可修改性；此外可以看到设计原则中提到了，subclass不要修改其父类的行为，这样流程的控制在父类中进行。
+
+</p>
+
+<p>
+此外关于工厂方法和抽象工厂的区别上面也多次体现出来。工厂方法依赖于继承，他是继承其父类的abstract create方法，来进行具体
+的创建工作，直接拿到product。而抽象工厂则工厂有点组成厂的特定，他是将所有的product的零件组装到一起，然后呢交付给客户端一个
+相对完整的成品，所以其中一般都用到了工厂方法。
+
+</p>
+
+<p>
+最后就是客户端怎么使用这些模式呢，看到了几个设计模式，可以看到很喜欢将一个复杂的class作为参数传入到一个统一的框架中进行使用。
+不如这次，那我在使用抽象工厂的时候，首次我首先生成一个工厂，然后把工厂对象传入到具体的流程中来完成随后产品进行的操作。学习！！！
+
+</p>
+
+<h3>补充</h3>
+
+<p>
+这几天改了performance的那个程序有些感触：
+
+</p>
+
+<ol>
+<li>将某些实习延迟到子类中实习就用abstract关键字，然后子类中override一下就可以了。
+</li>
+<li>如果父类要实现方法，子类也要将该方法不同的实现，那这个时候就用到virsual的关键字，这样用子类的时候就调用子类的方法，
+用父类的时候就是用父类的方法，详细可以看我的Windows.Ime.ResultAnalysis的项目，父类CommonPerformanceParser和
+子类HKBPerformanceParser</nop>中的getSummary采用的这个设计。
+</li>
+</ol>
+
+<p>
+</p>
+<a href="designpattern.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

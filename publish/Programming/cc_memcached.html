@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>memcached</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Programming/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">memcached</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+memcached code anlysis.
+
+</p>
+
+<p>
+<p>
+ref: <a href="memcached.pdf">doc1</a>;<a href="Memcached_1.pdf">doc2</a>
+ref: consistant hash alg:
+ref: crc32 alg:
+
+</p>
+
+<p>
+读取code加上结合上面的两个文档来进行的。
+
+</p>
+
+<h2>slab </h2>
+
+<p>
+相关的src文件：slab.c/h
+
+</p>
+
+<p>
+memcached是利用slab来进行管理内存的，也就是memcached首先会生成一个比较大的内存空间，
+然后系统用到key-value值就存放在这个空间里。其不用系统来进行空间的管理（会有空间碎片），
+采用内部的内存管理方式。
+
+</p>
+
+<p>
+memcached分配空间的方法是用slab class来进行分配的，每个slab class存放的是相同大小的
+多个chunks，然后不同的slab class中的chunk是不同的，他是通过一个grow factor来增加其chunk的大小，
+以满足输入大小的要求。
+
+</p>
+
+<ol>
+<li>slab class contains many slab
+</li>
+<li>slab contains many chunks
+</li>
+<li>slab means to be allocated many same chunks
+</li>
+<li>each chunks in a slab has same space
+</li>
+<li>item saves in chunks.
+</li>
+<li>memcached will find save the less chunck that can save input value.
+</li>
+</ol>
+
+<p>
+每个slab class有几个重要的指针，空余chunk链指针，使用的chunk list指针，free size。
+
+</p>
+
+<h2>hash</h2>
+
+<p>
+相关的src文件：assoc.c/h hash.c/h
+
+</p>
+
+<p>
+采用的是分离链接法来处理的hash冲突。在系统中分为oldbucket和primary_hashtable两个hash表。
+
+</p>
+
+<p>
+如果oldbucket满了，就可散列成原来的2倍大小的空间进行expend。将原来的primary_hashtable赋给oldbucket
+
+</p>
+
+<p>
+assoc_init function: 初始化一个hash表
+
+</p>
+
+<p>
+assoc_find function: hash表查找，首先查找的是oldbucket，如果没有在查找primary_hashtable
+
+</p>
+
+<p>
+assoc_expand function: hash表的可散列
+
+</p>
+
+<p>
+assoc_start_expand function: 启动可散列操作，在填入系数大于1.5的情况下就启动。
+
+</p>
+
+<p>
+assoc_insert function: 首先看新的hashtable准备好了没有（所谓的准备好了，就是将所有的oldbunket里的hash表copy过去）
+准备好了，就insert到新的bucket，没有还是放在oldbucket里面。 
+
+</p>
+
+<p>
+assoc_delete function: 从hashtable中将item删除
+
+</p>
+
+<p>
+assoc_maintenance_thread: 从old copy to new hashtable
+
+</p>
+
+<p>
+嗯，可以根据这个开源的code设置自己的hashtable库。
+memcached的hash算法
+
+</p>
+
+<p>
+<b>经典Hash算法</b>
+
+</p>
+
+<p>
+将不定长的key 用hash算法给出定长的hash值。
+
+</p>
+
+<h3>Times33算法</h3>
+
+<p>
+据说是比较经典的算法，不过没有能够看到经典的背后。就依葫芦画瓢吧
+
+</p>
+
+<p>
+nHash = nHash*33 + *key++
+
+</p>
+
+<p>
+C的实现
+<pre class="example">static unsigned long int zend_inline_hash_func(const char *arKey, unsigned int nKeyLength)
+{
+        register unsigned long int hash = 5381;
+ 
+        /* variant with the hash unrolled eight times */
+        for (; nKeyLength &gt;= 8; nKeyLength -= 8) {
+                hash = ((hash &lt;&lt; 5) + hash) + *arKey++;
+                hash = ((hash &lt;&lt; 5) + hash) + *arKey++;
+                hash = ((hash &lt;&lt; 5) + hash) + *arKey++;
+                hash = ((hash &lt;&lt; 5) + hash) + *arKey++;
+                hash = ((hash &lt;&lt; 5) + hash) + *arKey++;
+                hash = ((hash &lt;&lt; 5) + hash) + *arKey++;
+                hash = ((hash &lt;&lt; 5) + hash) + *arKey++;
+                hash = ((hash &lt;&lt; 5) + hash) + *arKey++;
+        }
+        switch (nKeyLength) {
+                case 7: hash = ((hash &lt;&lt; 5) + hash) + *arKey++; /* fallthrough... */
+                case 6: hash = ((hash &lt;&lt; 5) + hash) + *arKey++; /* fallthrough... */
+                case 5: hash = ((hash &lt;&lt; 5) + hash) + *arKey++; /* fallthrough... */
+                case 4: hash = ((hash &lt;&lt; 5) + hash) + *arKey++; /* fallthrough... */
+                case 3: hash = ((hash &lt;&lt; 5) + hash) + *arKey++; /* fallthrough... */
+                case 2: hash = ((hash &lt;&lt; 5) + hash) + *arKey++; /* fallthrough... */
+                case 1: hash = ((hash &lt;&lt; 5) + hash) + *arKey++; break;
+                case 0: break;
+        }
+        return hash;
+}
+</pre>
+
+<p>
+times33据说是比较经典，速度快，散列的结果也比较平均，对中文和英文的字符串处理速度都是可以的。
+然后hash的初始值5381是一个质数。
+
+</p>
+
+<h3>Newhash算法</h3>
+
+<p>
+ref: <a href="http://burtleburtle.net/bob/hash/doobs.html">http://burtleburtle.net/bob/hash/doobs.html</a>
+
+</p>
+
+<p>
+就是memcached中所使用的算法，简单的看了一下，也没有看懂为啥这种方式操作。
+
+</p>
+
+<p>
+但是据作者介绍，速度很快。
+
+</p>
+
+<p>
+他定义了两个宏，mix and final。这两个相当于函数，接受三个参数，mix对这三个参数进行移位+-等操作，
+据说能够reversible(可逆操作)。
+
+</p>
+
+<p>
+通过对每一个32bit来进行mix操作，然后在将这三个数final得到一个最终的hash值。
+
+</p>
+
+<p>
+具体的code可以看memcached中的hash.c的实现。
+
+</p>
+
+<h3>Consistant Hash</h3>
+
+<p>
+这个也是在memcached中的应用。
+
+</p>
+
+<p>
+这个主要是在memcached的客户端应用。他的最主要的好处就是，
+当memcached server有变换的时候（比如说增加机器或者是有机器出现的问题的时候），
+能够最小限度的影响到cached的命中率问题。我们知道通常的情况下采用的hash(ip)%machineNUM，
+来索引想要的机器，当证据或者减少cached server的时候，模的数值就变了，就会造成cached前期大量不命中的问题。
+
+</p>
+
+<p>
+采用consistant hash之后，只影响就近的一个server上的cached中key-value对。
+
+</p>
+
+<p>
+通过下图可以看出这一点。
+
+</p>
+
+<p>
+<a href="consistant_hash.jpg"><img src="consistant_hash.jpg" alt="" /></a>
+
+</p>
+
+<p>
+采用的虚节点来实现consistant hash
+
+</p>
+
+<p>
+<a href="consistant_hash2.jpg"><img src="consistant_hash2.jpg" alt="" /></a>
+
+</p>
+
+<p>
+将输入用<a href="http://www.cnblogs.com/esestt/archive/2007/08/09/848856.html">crc32</a>获得一个32bits的int型数据，然后在设置虚节点到相依的server上去。
+
+</p>
+
+<p>
+也可以用上面提到的两种hash算法还获得32bits的值。
+
+</p>
+
+<p>
+因为这个算法是不需要处理什么hash碰撞的冲突，
+只是能够表现出所有的输入的值在里面就可以了。另外散列的效果要好。
+
+</p>
+
+<p>
+</p>
+
+</p>
+
+<p>
+<a href="cc.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-12-27</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

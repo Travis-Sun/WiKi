@@ -1,0 +1,37 @@
+#title Design Patterns
+
+Summary them after reading <b>Head First Design Patterns</b>.
+
+
+<p>
+* [[strategydesign.html][Strategy]]
+
+将原来设计中的子类中可变部分提前出来用其他的接口来实现，然后原父类组合改接口。实现其扩展性。
+
+* [[observerdesign.html][Observer]]
+
+实现多类的主、被动联动机制。
+
+* [[decoratordesign.html][Decorator]]
+
+通过不断的包装来实现复杂的类。
+
+* [[factorydesign.html][Factory]]
+
+其中包括工厂方法和抽象工厂两个设计模式。展现出create一个object的松散结构策略。
+
+* [[singletondesign.html][Singleton]]
+
+单体的设计模式，主要是针对多线程下的单体设计情况。
+
+* [[commanddesign.html][Command]]
+
+命令模式是一个比较简单的模式，与其他的比如适配器等模式类似，但也是有区别的。最主要的区别就是针对的目的不同。
+
+* [[adapter_facadedesign.html][Adapter and Facade]]
+
+
+ 
+</p>
+
+[[WelcomePage][UP]]

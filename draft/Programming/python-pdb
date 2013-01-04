@@ -1,0 +1,98 @@
+#title PDB
+
+
+* Start PDB
+<p>
+在emacs中启动python，进不了python的输入提示符的环境。其原因是因为在windows环境下，没有启动python -i的参数.
+所以在emacs的shell中可以利用python -i来启动python。
+在启动pdb的情况下要进行一些修改：
+
+首先
+<example>M+x pdb RET</example>
+
+之后修改其默认的命令为
+<example>python -i -m pdb **.py</example>
+
+OK! Try it.
+</p>
+
+* PDB CMD
+<p>
+官方的help html：http://docs.python.org/library/pdb.html
+
+也可以通过python的help来查看pdb，得到pdb的文档。
+<example>
+h(elp)[cmd]	print the cmd description. And h pdb will print full pdb document.
+
+w(here)		print the stack.
+
+d(own)		move the current frame one level down in the stack(to newer frame)
+
+u(p)		move the current frame one level up in the stack(to older frame)
+
+b(reak) [[filename:]lineno | function[, condition]] 
+		set a break in the file.
+
+tbreak [[filename:]lineno | function[, condition]] 
+		temporary set a break in the file. the breakpoint will delete automatically when it is first hit.
+
+cl(ear) [bpnumber [bpnumber ...]] 
+		clear the breakpoint.
+
+disable [bpnumber [bpnumber ...]] 
+		disable the breakpoint.
+
+enable [bpnumber [bpnumber ...]] 
+		enable the breakpoint.
+
+ignore bpnumber [count] 
+		Sets the ignore count for the given breakpoint number. If count is omitted, the ignore count is set to 0. A breakpoint becomes active when the ignore count is zero.
+
+condition bpnumber [condition] 
+		Condition is an expression which must evaluate to true before the breakpoint is honored.
+
+commands [bpnumber] 
+		Specify a list of commands for breakpoint number bpnumber. The commands themselves appear on the following lines. Type a line containing just ‘end’ to terminate the commands. An example:
+		(Pdb) commands 1
+		(com) print some_variable
+		(com) end
+		(Pdb)To remove all commands from a breakpoint, type commands and follow it immediately with end; that is, give no commands.
+		With no bpnumber argument, commands refers to the last breakpoint set.
+
+s(tep) 		step debug
+
+n(ext) 		run to next line.
+
+unt(il) 	Continue execution until the line with the line number greater than the current one is reached or when returning from current frame.
+
+r(eturn) 	Continue execution until the current function returns. 
+
+c(ont(inue)) 	Continue execution, only stop when a breakpoint is encountered. 
+
+j(ump) lineno 	Set the next line that will be executed. Only available in the bottom-most frame. This lets you jump back and execute code again, or jump forward to skip code that you don’t want to run.
+
+l(ist) [first[, last]] 
+		List source code for the current file.
+
+a(rgs) 		Print the argument list of the current function. 
+
+p expression 	Evaluate the expression in the current context and print its value.
+
+pp expression 	pretty-print the expression.
+
+alias [name [command]] 
+		Creates an alias called name that executes command. 
+
+unalias name	Deletes the specified alias. 
+
+[!]statement 	Execute the (one-line) statement in the context of the current stack frame. The exclamation point can be omitted unless the first word of the statement resembles a debugger command. 
+
+run [args ...] 	Restart the debugged Python program. 
+
+q(uit) 		Quit from the debugger.
+
+</example>
+</p>
+
+
+[[python.html][UP]]

@@ -1,0 +1,36 @@
+#title Text Ming: Predictvie methods for analyzing Unstructured Information
+
+<p>
+* Overview Text Ming
+**** 1. transfer unstructured data to structure data
+行表示一个document；列表示属性通常是词。
+
+**** 2. Text Ming能干什么？
+1. Document classification:
+书中说出了几个例子：文档的分类，属于经济、文学等等；垃圾邮件的分类；通过读取经济类的文章来进行预测股市的走向。
+2. Infomation Retrieval:
+信息索引，其实作用跟search engine类似，就是在你不断的充实的document的基础上，当我用关键词search我想要的
+那个document，系统能够根据一系列属性的相似度算法（kNN）作为索引获得我最需要的document的。
+3. Clustering and Organizing Documents: 
+聚类，就是无监视系统，这样的系统在处理某些特定的任务的时候不一定很好用，但是他在获得一定信息的时候很有洞察力。
+比如一个公司将他的客户投诉反馈回来的信息进行聚类分析，可以很好的发现公司产品的缺陷在那里。
+4. Information extraction
+信息提取是Text Ming比较高级的应用，他是从document中提取想要的一些信息，比如sale， price等一些信息。
+5. Prediction and Evaluation
+所有的这些方法的终极目标是进行预测，在各种data ming赛事上，都会拿出一些比较实时的经济方面或者体育方面的数据
+对你的model进行验证，当然是不允许提前用这些数据进行训练的。等到predict的结果之后和expect的结果比较，
+来验证你的model的准确性，以及误差是多少？
+
+* From textual Information to Numerical Vectors
+**** 1. collection document
+从那能找查找一些data source(corpus,语音库)：政府网站、Yahoo、Google、Reuters and so on.
+**** 2. document standardization
+将所有的document转化成一种形式，比如说xml格式，这样text ming tool就不会疲命于处理各种form的document。
+
+
+<b>太难了，关涉到很多的词性问题，也是Textming的核心，从document中提取信息</b>
+
+</p>
+
+
+[[statsbook.html][UP]]

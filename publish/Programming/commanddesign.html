@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Command Pattern</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Programming/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Command Pattern</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<h2>Question</h2>
+
+<ol>
+<li>解耦请求者和接受者之间的紧关联关系
+</li>
+<li>在接受者和请求者之间增加了一层，命令层，使得请求者和命令层通信。降低接受者的复杂性和变化性。
+</li>
+<li>这个pattern有些和Observer的结构类似，但是是目的的不同。
+</li>
+<li>书中给的列子是通过remote controller来控制家电。remote controller上针对每个家电都有两个按钮：on 和 off。
+但是厂商提供的开和关并不一定适合controller的命令，这个适合，就要进行转换，一种直接在receiver的code中
+来实现，但是呢，这种情况下，当添加一个家电，或者替换不同品牌的家电的适合，就要不断的调整code，带来很多的不确定性。
+</li>
+</ol>
+
+<h2>Implement</h2>
+
+<pre class="example">The Command Pattern encapsulates a request as an object, thereby letting you
+parameterize other objects with different requests, queue or log requests, 
+and support undoable oprations.
+</pre>
+
+<ol>
+<li>那实现就是receiver统一我能够执行的动作为命令对象，这个命令对象之一一个方法execute。这样我就把厂商的on操作和
+off操作来实现其command接口的实现。同时用这个具体的command的对象封装了厂商的操作。这样就把receiver奋力出来。
+</li>
+<li>command的模式用处还是比较多的：
+<ul>
+<li>设置线程池，线程队列，继承统一接口的线程执行方法，主线程从线程队列中取一个对象，启动一个子线程去执行统一接口不同实现的操作。</li>
+<li>事务的实现，将每一步操作封装成command对象，然后持久化放在disk上，当system crash的时候，能够从disk中读出command的对象
+来实现recovert。</li>
+<li>此外还可以实现集合操作，就是将多个command操作同时执行</li>
+</ul>
+</li>
+<li>此外可以从该pattern种看到，将关系或者对象封装成command的操作了，这样中间的相互对象的create的操作不相关，
+这部分实现就放在request端了， 这就简化了其他的部分。
+</li>
+<li>request端提出请求，controller只管执行命令，而vendor只管提供命令，中间的匹配关系由command来关联起来。
+</li>
+<li>此外进一步的强调了参数是复杂对象的复合关系。
+</li>
+</ol>
+
+<h2>UML</h2>
+
+<p>
+针对书中的例子给出的UML<a href="commandpattern2.gif"><img src="commandpattern2.gif" alt="书中的例子" /></a>
+
+</p>
+
+<p>
+<a href="commandpattern.gif"><img src="commandpattern.gif" alt="common&#32;command&#32;pattern" /></a>
+
+</p>
+
+<h2>Code</h2>
+
+<p>
+todo
+
+</p>
+
+<p>
+</p>
+
+</p>
+
+<p>
+<a href="designpattern.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

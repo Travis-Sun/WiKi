@@ -1,0 +1,41 @@
+#title py2exe
+
+* python程序转成EXE
+
+<p>
+为了减少部署的麻烦，就将python转成exe，这样相对来说比较容易copy到其他的机器上进行工作。下面介绍一下其转换的步骤：
+
+<ul>
+1. 建立*.py文件
+<example>
+#hello.py
+print 'hello world'
+</example>
+2. 现在对于python版本的py2exe程序。参考http://sourceforge.net/projects/py2exe/files/
+3. 建立编译文件setup.py
+<example>
+from distutils.core import setup
+import py2exe
+setup(console=['jinxia.py'])
+</example>
+4. 利用命令行进行编译
+<example>
+python setup.py py2exe
+</example>
+</ul>
+
+</p>
+* Q/A
+<p>
+<ul>
+1. 首先下载的py2exe程序版本应该和python的版本对应上。
+2. 再执行第4步时，如果会出现一下module没有加载。解决方法：
+<ul>
+<li> 查找是否机器上装有多个版本的python，如果是的话可以通过从环境变量中拿掉其不用的版本的python PATH设置。</li>
+<li> 如果不是第一个问题，应该还是环境变量的问题，在python中查找sys.path，把这些路径也加到环境变量中去，OK。</li>
+</ul>
+3. 其他的一些信息可以参考http://wiki.woodpecker.org.cn/moin/PyExe
+</ul>
+</p>
+
+[[python.html][UP]]

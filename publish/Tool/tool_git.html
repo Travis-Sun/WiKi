@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>GIT</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Tool/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">GIT</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<h2>basic usage</h2>
+
+<h3>主题一 基本使用</h3>
+
+<p>
+1：下载 ：git clone ***
+
+</p>
+
+<p>
+2：本地与服务器端同步 ：git pull
+
+</p>
+
+<p>
+3：本地的状态查询：git status
+
+</p>
+
+<p>
+4：本地修改同步至服务器端 ：git commit -a -m "log_message" (-a是提交所有改动，-m是加入log信息)
+
+</p>
+
+<p>
+5：本地修改上传至服务器端 ：git push
+
+</p>
+
+<h3>主题二 分支</h3>
+
+<p>
+1：git branch                                            查看所有分支
+
+</p>
+
+<p>
+2：git branch branch_0.1 master                  从主分支master创建branch_0.1分支
+
+</p>
+
+<p>
+3：git branch -m branch_0.1 branch_1.0       将branch_0.1重命名为branch_1.0
+
+</p>
+
+<p>
+4：git checkout branch_1.0/master              切换到branch_1.0/master分支
+
+</p>
+
+<p>
+小窍门：3与4的一步实现方式为:git checkout -b branch_1.0 master
+
+</p>
+
+<p>
+5：git rebase branch_1.0(前提假设已git checkout master)
+
+</p>
+
+<p>
+在branch_1.0与master分叉处后master的变更append至branch_1.0(较难理解)
+
+</p>
+
+<p>
+6：git branch -d branch_1.0   删除branch_1.0
+
+</p>
+
+<h3>主题三 更补</h3>
+
+<p>
+1：git commit -C HEAD --amend
+
+</p>
+
+<p>
+使用最近commit增补提交，不产生新的commit log
+
+</p>
+
+<p>
+2：git reset --hard HEAD~1
+
+</p>
+
+<p>
+将版本库回复到HEAD之前的版本
+
+</p>
+
+<h2>分布式管理策略</h2>
+
+<p>
+<a href="http://www.ruanyifeng.com/blog/2012/07/git.html">阮一峰的GIT分布式管理策略</a>比较感觉比较不错。
+
+</p>
+
+<p>
+GIT的一些书就说明了一下操作。但是怎么去维护一个代码库。
+书中给出了比较好的建议，我实际中的项目是也是根据这个来进行管理的。
+
+</p>
+
+<h4>分主分支master和develop分支</h4>
+
+<h5>1 从master分支创建develop分支的命令：</h5>
+
+<pre class="example">git checkout -b develop master
+</pre>
+
+<h5>2 然后经过一段时间的修改，要把develop中的变化合并到master上的命令：</h5>
+
+<pre class="example"># switch to master branch
+git checkout master
+
+# merge
+git merge --no-ff develop
+# no-ff make the develop merge to new node in master branch. 
+# can check in up link.
+
+# set a tag for new node in master branch
+git tag -a 1.2
+</pre>
+
+<h5>3 对合并的新节点做一个标签</h5>
+
+<p>
+命令如上
+
+</p>
+
+<h5>4 继续develop分支</h5>
+
+<h4>临时分支</h4>
+
+<p>
+除了 master、develop分支之外可以有其他的一些分支：
+
+</p>
+
+<p>
+功能分支 feature
+
+</p>
+
+<p>
+预发布分支 release
+
+</p>
+
+<p>
+修改bug分支 fixbug。
+
+</p>
+
+<p>
+其创建的步骤和上面相同:
+先 create一个branch，进行开发，然后合并到相应的branch上，
+
+</p>
+
+<p>
+可以讲一个branch的结果同时合并得到不同branch上，然后打一个标签，然后删除其临时的branch。
+
+</p>
+
+<pre class="example">git branch -d fixbug_xxx
+</pre>
+
+<p>
+<a href="WelcomePage.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-11-30</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

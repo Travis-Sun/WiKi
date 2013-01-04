@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Emacs Wiki Markup</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Tool/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Emacs Wiki Markup</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<a id="top"></a>From <a href="http://www.bookshelf.jp/texi/emacs-wiki/emacs-wiki_7.html">http://www.bookshelf.jp/texi/emacs-wiki/emacs-wiki_7.html</a>
+
+</p>
+
+<p>
+From <a href="http://caobeixingqiu.is-programmer.com/posts/6705.html">http://caobeixingqiu.is-programmer.com/posts/6705.html</a>
+
+</p>
+
+<p>
+C-c C-l 切换源码
+
+</p>
+
+<h2>Basic wikimarkups</h2>
+
+<p>
+<h3>Heading</h3>
+
+<pre class="example">* 	First Level
+** 	Second Level
+***	Third Level
+</pre>
+
+<h3>Horizonal Line</h3>
+
+<pre class="example">----
+</pre>
+
+<h3>Emphasis</h3>
+
+<pre class="example">*emphasis*
+**Strong emphasis**
+***very strong emphasis***
+_underline test_
+=verbatim=
+&lt;verbatim&gt;This is used to a large block test&lt;/verbatim&gt;
+</pre>
+
+<h3>Footnotes</h3>
+
+<pre class="example">a reference[1],which is just a number in square brackets, constitutes a footnote reference. 
+Footnotes:
+[1] Footnotes are defined by the same number in brackets
+    occurring at the beginning of a line.  Use footnote-mode's C-c
+    ! a command, to very easily insert footnotes while typing.  Use
+    C-x C-x to return to the point of insertion.
+
+</pre>
+
+<h3>Paragraphs</h3>
+<pre class="example">One or more blank lines separates paragraphs. 
+</pre>
+
+<h3>Centered paragraphs and quotations</h3>
+<pre class="example">A line that begins with six or more columns of whitespace (made up of tabs or spaces) indicates a centered paragraph. 
+I assume this because it's expected you will use M-s to center the line, which usually adds a lot of whitespace before it.
+
+If a line begins with some whitespace, but less than six columns, it indicates a quoted paragraph. 
+</pre>
+
+<p>
+<span style="text-decoration: underline;">This dosen't work in my wiki. I will check it.</span>
+<h3>Poetic verse</h3>
+
+<pre class="example"> 
+Poetry requires that whitespace be preserved, without resorting to the monospace typical of &lt;pre&gt;. 
+It likes that it will be printed like input.
+
+You can also use the &lt;verse&gt; tag, if you prefer:
+
+&lt;verse&gt;
+       A line of Emacs verse;
+       forgive its being so terse.
+       
+&lt;/verse&gt;
+</pre>
+
+<h3>Literal paragraphs</h3>
+<pre class="example">Use the HTML tags &lt;pre&gt;&lt;/pre&gt; to insert a paragraph and preserve whitespace. 
+If you're inserting a block of code, you will almost always want to use 
+&lt;verbatim&gt;&lt;/verbatim&gt; *within* the &lt;pre&gt; tags. The shorcut for doing this is to use the example&gt; tag:
+
+       &lt;example&gt;
+       Some literal text or code here.
+       &lt;/example &gt;
+
+</pre>
+
+<h3>Table</h3>
+
+<pre class="example">       Double bars || Separate header fields
+       Single bars | Separate body fields
+       Here are more | body fields
+       Triple bars ||| Separate footer fields
+
+Other paragraph markup applies to both styles, 
+meaning that if six or more columns of whitespace precedes the first line of the table, 
+it will be centered, and if any whitespace at all precedes first line, 
+it will occur in a blockquote. 
+</pre>
+
+<h3>Anchors and tagged links</h3>
+
+<p>
+<a href="emacs-wikimarkup.html#top">Top</a>
+
+</p>
+
+<pre class="example">#example If you begin a line with &quot;#anchor&quot; 
+-- where anchor can be any word that doesn't contain whitespace 
+-- it defines an anchor at that point into the document. This anchor text is not displayed.
+
+You can reference an anchored point in another page (or even in the current page) 
+using [[WikiName#anchor][LinkName]]. The #anchor will never be displayed in HTML, 
+whether at the point of definition or reference, 
+but it will cause browsers to jump to that point in the document. 
+
+[[WikiName#anchor][LinkName]]
+WikiName means which page includes anchor.
+anchor means anchor defined name.
+LinkName means alias which show in reference page.
+</pre>
+
+<h3>Redirecting to another page or URL</h3>
+<pre class="example">Sometimes you may wish to redirect someone to another page. To do this, put:
+
+       &lt;redirect url=\&quot;http://somewhereelse.com\&quot;/&gt;
+
+at the top of the page. If the &lt;redirect&gt; tag specifies content, 
+this will be used as the redirection message, rather than the default.
+
+The numbers of seconds to delay is defined by `emacs-wiki-redirect-delay', 
+which defaults to 2 seconds. The page shown will also contain a link to click on, 
+for browsing which do not support automatic refreshing. 
+</pre>
+
+<h3>URLs</h3>
+<pre class="example">A regular URL is given as a link. If it's an image URL, it will be inlined using an IMG tag. 
+</pre>
+
+<h3>Special handling of WikiNames</h3>
+<pre class="example">If you need to add a plural at the end of a WikiName, 
+separate it with four single quotes (WikiName&quot;&quot;s) or make it an explicit link ([[WikiName]]s).
+
+To prevent a link name (of any type) from being treated as such, 
+surround it with =equals= (to display it in monotype), 
+or prefix it with the tag &lt;nop&gt; to escape it from WikiName markup. 
+</pre>
+
+<h3>Special Wiki links</h3>
+<pre class="example">Besides the normal WikiName type links, emacs-wiki also supports extended links:
+
+       [[link text][optional link description]]
+
+An extended link is always a link, no matter how it looks. 
+This means you can use any file in your `emacs-wiki-directories' as a Wiki file. 
+If you provide an optional description, that's what will be shown instead of the link text. 
+This is very useful for providing textual description of URLs.
+
+See the documentation to emacs-wiki-image-regexp for how to inline files and images. 
+
+Example:
+[[emacs.html][Return]]
+</pre>
+
+<h3>InterWiki names</h3>
+
+<pre class="example">There are times when you will want to constantly reference pages on another website. 
+Rather than repeating the URL ad nauseum, you can define an InterWiki name. 
+This is a set of WikiNames to URL correlations, 
+that support textual substitution using #anchor names (which are appended to the URL). 
+For example, MeatballWiki is defined in the variable `emacs-wiki-interwiki-names'. 
+It means you can reference the page \&quot;MeatBall\&quot; on MeatballWiki using this syntax:
+
+       MeatballWiki#MeatBall
+
+In the resulting HTML, the link is simply shown as
+
+       MeatballWiki:MeatBall
+
+</pre>
+
+<h3>Changing Title or Stylesheet </h3>
+
+<pre class="example">For convenience, if you want to change the visible title or the stylesheet 
+used by a certain Wiki page during HTML publishing, just put: 
+\#title Hello there(del \)
+\#style hello.css(del \)
+at the top of the page. 
+</pre>
+
+<h3>Lists</h3>
+
+<pre class="example">Whitespace is required after bullets and numbers thot are part of a list.
+Here is an example:
+
+- This
+- Is
+- A
+- List
+
+1. This
+2. too
+
+But this is not,
+--even if it starts with dashes
+0.1] or numbers, as in the original test case.
+
+</pre>
+
+<h4>Sub-lists?</h4>
+<pre class="example"> - Hello
+   &lt;ul&gt;
+   &lt;li&gt;There
+   &lt;li&gt;My friend
+   &lt;/ul&gt;
+</pre>
+
+<h3>Images </h3>
+<pre class="example">You can include links of the form `[[some/link][some/image]]'. 
+If you want to include alt text, use `[[some/link][some/image alt text]]'.
+
+You may need to have auto-image-file-mode set to `t' for this to work. 
+</pre>
+
+<p>
+</p>
+
+</p>
+
+<p>
+<a href="emacs.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

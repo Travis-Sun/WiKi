@@ -1,0 +1,70 @@
+#title 经典书籍
+
+<p>
+
+我的stats的学习路程：
+
+- Head first Data Analysis. 这本书把我带入到数据分析的学习中来，然后就一直前行。
+- 统计模型与R语言. 母校老师写的书，觉的还是不错
+- Mind on stats。 这本书好像这对stats sense比较好，决定看了。
+- Software for Data Analysis--Programming with R. 是一本关于R编程的一本书。没看懂中心这本书还是推后一下吧。
+- 统计学，David Freedman等著，魏宗舒，施锡铨等译 中国统计出版社。准备研读一下，进一步补充我的统计思维
+- Regression Analysis by example. 作为我的回归分析的主攻的书籍。
+数据：http://www.ilr.cornell.edu/~hadi/RABE4/
+- 《应用多元分析（第二版）》 王学民 上海财经大学出版社，多元的就准备看看这个了。
+- 《商务和经济预测中的时间序列模型》 弗朗西斯著 时间序列方面的方向。
+
+* [[statsbook_intuitiveapproach.html][Statistics: An Intuitive Approach(数理统计初步教程)]]
+
+据传说中可以培养stats的直觉的书。try一下。
+
+* [[statsbook_statsmodelandR.html][统计模型与R软件]]
+
+我入门的数据，有实际针对我理解的stat进行一些总结吧。
+
+* [[statsbook_softwarefordataanlysis.html][Software for Data Analysis--Programming with R]]
+
+* [[statsbook_mindonstats.html][Mind on Stats]]
+
+* [[statsbook_MLforHack.html][Machine Learning for Harker]]
+
+机器学习的初级，用R来实现其他的一些算法，主要注重的是案例，通过案例来进行讲解机器学习能做什么，
+用什么方法去做，入门教程。
+
+* [[statsbook_textming.html][Text Ming]]
+
+text ming. It's too hard to understand, maybe it will cost me long long time.
+
+* [[statsbook_vedio_machinelearningfromStandford.html][Machine Learning Video from Stanford Univeristy]]
+
+1. practice listening
+2. know about machine learning.
+
+* [[statsbook_linearAforDataMing.html][Linear Algebra Methods for Data Mining 讲义]]
+
+ppt:[[Linear Algebra Methods for Data Mining/lecture1.pdf][1]] [[Linear Algebra Methods for Data Mining/lecture2.pdf][2]] [[Linear Algebra Methods for Data Mining/lecture3.pdf][3]] [[Linear Algebra Methods for Data Mining/lecture4.pdf][4]] [[Linear Algebra Methods for Data Mining/lecture5.pdf][5]] [[Linear Algebra Methods for Data Mining/lecture6.pdf][6]] [[Linear Algebra Methods for Data Mining/lecture7.pdf][7]] [[Linear Algebra Methods for Data Mining/lecture8.pdf][8]] [[Linear Algebra Methods for Data Mining/lecture9.pdf][9]] [[Linear Algebra Methods for Data Mining/lecture10.pdf][10]] [[Linear Algebra Methods for Data Mining/lecture11.pdf][11]] [[Linear Algebra Methods for Data Mining/lecture12.pdf][12]]
+
+
+* [[statsbook_linerA.html][线性代数]]
+
+在不断的扩充自己的统计知识的时候，越来越感觉到线性代数的重要性。
+但是大多数的线性代数的数据都讲的云梦雾里的。
+
+看到[[http://www.mysanco.com/wenda/index.php?class=discuss&action=question_item&questionid=1693][线性代数的本质]]这篇文章，该文章从不同的视角来讲解线性代数，需要的就是这种感觉。
+
+不然看一遍这方面的书籍，就忘一遍，没有长进啊。
+
+1. 线性空间就是多维的空间
+2. 基就是这个线性空间的坐标系，可以有多个坐标系，同时可以有一个单位坐标系I
+3. 矩阵就表示线性的变换，这个变换存在两层的意思：a. 在同一坐标系的一点到另一点的变换；b. 同一点的不同坐标系的变换。
+4. 奇异变换A=P^(-1)BP，表示的同一线性变换的不同的表示A和B。在不同的坐标系下的相对位置的变换是相同的，怎么表示这个。如果
+两个变换矩阵AB满足这个要求就可以说A和B是同一个变换。
+
+
+跟我之前理解的很像，但是还有很多的知识还没有理解透，如特征值、特征向量等概念。
+
+ 
+</p>
+
+
+[[WelcomePage.html][UP]]

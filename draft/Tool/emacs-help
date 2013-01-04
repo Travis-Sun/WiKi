@@ -1,0 +1,40 @@
+#title Emacs Help
+
+ 
+* How to See the Document
+<example>
+C-h v (describe-variable)	查看变量的值和文档
+C-h f (describe-function)	查看函数的文档
+M-x describe-face 		查看face的文档
+C-h m (describe-mode)		查看某个mode的文档
+C-h k (describe-key) 		查看某个快捷键对应的命令
+C-h w (where-is) 		查看某个命令对应的快捷键
+C-h b (describe-bindings)	查看当前buffer所有的快捷键列表
+<待查看的快捷键序列> C-h		查看当前buffer中以某个快捷键序列开头的快捷键列表
+find-function			查看函数的代码
+find-variable			查看变量的代码
+find-face-definition		查看face的代码
+</example>
+
+* Simple Config
+- 执行Elisp code
+<p>
+<ul>
+1. 在某个语句后面按C-x C-e (eval-last-sexp)来执行这条语句
+2. M-x eval-buffer 可以执行当前buffer中的elisp code
+3. 选择一个region, M-x eval-region来执行这个Region中的code.
+</ul>
+</p>
+- 安装plug-in
+<p>
+<ul>
+1. download *.el file to a path.
+2. then add some code in .emacs. like follow.
+</ul>
+<example>
+(add-to-list 'load-path "~/emacs/lisps")
+(require 'pluginname)
+</example>
+</p>
+
+[[emacs.html][UP]]

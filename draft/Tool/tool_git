@@ -1,0 +1,103 @@
+#title GIT
+
+
+* basic usage
+
+** 主题一 基本使用
+ 
+1：下载 ：git clone ***
+ 
+2：本地与服务器端同步 ：git pull
+ 
+3：本地的状态查询：git status
+ 
+4：本地修改同步至服务器端 ：git commit -a -m "log_message" (-a是提交所有改动，-m是加入log信息)
+ 
+5：本地修改上传至服务器端 ：git push
+
+** 主题二 分支
+ 
+1：git branch                                            查看所有分支
+ 
+2：git branch branch_0.1 master                  从主分支master创建branch_0.1分支
+ 
+3：git branch -m branch_0.1 branch_1.0       将branch_0.1重命名为branch_1.0
+ 
+4：git checkout branch_1.0/master              切换到branch_1.0/master分支
+ 
+小窍门：3与4的一步实现方式为:git checkout -b branch_1.0 master
+ 
+5：git rebase branch_1.0(前提假设已git checkout master)
+ 
+在branch_1.0与master分叉处后master的变更append至branch_1.0(较难理解)
+ 
+6：git branch -d branch_1.0   删除branch_1.0
+ 
+** 主题三 更补
+ 
+1：git commit -C HEAD --amend
+ 
+使用最近commit增补提交，不产生新的commit log
+ 
+2：git reset --hard HEAD~1
+ 
+将版本库回复到HEAD之前的版本
+
+
+* 分布式管理策略
+
+[[http://www.ruanyifeng.com/blog/2012/07/git.html][阮一峰的GIT分布式管理策略]]比较感觉比较不错。
+
+GIT的一些书就说明了一下操作。但是怎么去维护一个代码库。
+书中给出了比较好的建议，我实际中的项目是也是根据这个来进行管理的。
+
+
+*** 分主分支master和develop分支
+
+**** 1 从master分支创建develop分支的命令：
+
+<example>
+git checkout -b develop master
+</example>
+
+**** 2 然后经过一段时间的修改，要把develop中的变化合并到master上的命令：
+
+<example>
+# switch to master branch
+git checkout master
+
+# merge
+git merge --no-ff develop
+# no-ff make the develop merge to new node in master branch. 
+# can check in up link.
+
+# set a tag for new node in master branch
+git tag -a 1.2
+</example>
+
+**** 3 对合并的新节点做一个标签
+
+命令如上
+
+**** 4 继续develop分支
+
+*** 临时分支
+
+除了 master、develop分支之外可以有其他的一些分支：
+
+功能分支 feature
+
+预发布分支 release
+
+修改bug分支 fixbug。
+
+其创建的步骤和上面相同:
+先 create一个branch，进行开发，然后合并到相应的branch上，
+
+可以讲一个branch的结果同时合并得到不同branch上，然后打一个标签，然后删除其临时的branch。
+
+<example>
+git branch -d fixbug_xxx
+</example>
+
+[[WelcomePage.html][UP]]

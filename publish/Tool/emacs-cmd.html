@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Emacs CMD</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Tool/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Emacs CMD</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<h2>My Key Set</h2>
+<pre class="example">F2	org agenda
+F5	emacs wiki find file
+F6	show bookmark list
+F7	set bookmark
+F12	start bash shell
+</pre>
+
+<h2>Register </h2>
+<pre class="example">C-x r SPC r		Save position of point in register r (point-to-register). 
+C-x r j r		Jump to the position saved in register r (jump-to-register).
+M-x view-register    	查看某一个register
+M-x list-registers   	查看所有的register
+</pre>
+
+<h2>Bookmark CMD</h2>
+<pre class="example">d		 mark bookmark for deletion
+r		 rename bookmark
+s 	 	 save all listed bookmarks
+f 	 	 show bookmark the cursor is over
+m	 	 mark bookmarks to be shown in multiple window
+v 	 	 show marked bookmarks(or the one the cursor is over)
+t 	 	 toggle listing of the corresponding paths
+w	 	 shwo the path to this file
+x 	 	 delete marked bookmarks
+q 	 	 quite bookmark list
+C-x r l 	 list bookmark
+C-x r m 	 set a bookmark at current cursor position
+C-x r b 	 jump to bookmark
+M-x bookmark-rename 	 rename bookmark
+M-x bookmark-delete 	 del bookmark
+M-x bookmark-save 	 save bookmark
+M-x bookmark-set	 set a bookmark
+</pre>
+
+<h2>Cursor Move</h2>
+<pre class="example">C-f     光标前进一个字符
+C-b     光标后退一个字符
+C-p     上移一行
+C-n     下移一行
+M-f     前进一个单词
+M-b     后退一个单词
+C-a     行首
+C-e     行尾
+M-a     句首
+M-e     句尾
+M-{     上一个段落
+M-}     下一个段落
+C-v     屏幕上卷一个屏
+M-v     屏幕下卷一个屏
+C-M-v   另一个窗口下卷一个屏幕
+C-M-V   另一个窗口上卷一个屏幕
+M-&lt;     文件头
+M-&gt;     文件尾
+C-u n 或 M-n   重复执行n次后继命令
+</pre>
+
+<h2>Delete</h2>
+<pre class="example">C-d     删除光标上的字符
+DEL     删除光标前的字符
+M-d     删除光标后的单词
+M-DEL   删除光标前的单词
+C-k     从光标位置删除到行尾
+C-S-Backspace  删除当前行
+C-y     恢复删除最近的一个
+M-y     循环恢复删除上一个
+</pre>
+<h2>Tag</h2>
+<pre class="example">C-@     标记文本块的开始
+C-x C-x 互换插入点和文本标记的位置
+M-h     标记整个段落
+C-x C-p 标记整个页面
+C-x h   标记整个缓冲区
+</pre>
+
+<h2>Find and Replace</h2>
+<pre class="example">C-s     向前递增查找
+C-r     反向递增查找
+C-s C-w 向前递增查找，把光标所在的单词作为查找对象
+C-r C-w 反向递增查找，把光标所在的单词作为查找对象
+replace-string  查找替换光标后所有的内容
+M-%     查询替换操作
+</pre>
+<p>
+M-% parameter
+</p>
+<pre class="example">SPACE或y    用新字符串替换原来的，并进入下一个位置
+DEL或n      不替换，进入下一个位置
+.          在当前位置做替换后退出查询－替换操作
+,          替换，并显示替换情况（再按空格或y进入下一个位置）
+!          对后面的内容全部进行替换，不再提问
+^          返回上一个替换了的位置
+RETURN或q   退出查询替换操作
+C-r        进入递归编辑状态
+C-w        删除此处内容并进入递归编辑状态（好进行其他修改）
+M-C-c      退出递归编辑状态，继续完成查询－替换操作
+C-]        退出递归编辑状态和查询替换操作
+</pre>
+
+<h2>Find and Replace with Regular</h2>
+<pre class="example">C-M-s Return      向前查找正则表达式
+C-M-r Return      反向查找正则表达式
+C-M-s       向前递归查找正则表达式
+C-M-r       反向递归查找正则表达式
+query-replace-regexp  查询-替换正则表达式
+replace-regexp    无条件替换正则表达式（慎用）
+</pre>
+<p> Regular Char</p>
+<pre class="example">^          匹配行首
+$          匹配行尾
+.          匹配任意单个字符
+.*         匹配任意个字符
+\&lt;         匹配单词的开头
+\&gt;         匹配单词的结尾
+[]         匹配[]中的任何一个字符，如[a-z]匹配任何一个小写字母
+</pre>
+
+<h2>Todo</h2>
+<pre class="example">i    加入一个条目
+e    编辑条目
+k    删除条目
++/-  在不同category之间切换
+j    跳转到不同的category
+f    对已完成的事情进行归档，并可以进行评论。
+</pre>
+
+<h2>Font Size Setting</h2>
+<pre class="example">C-x C--		缩小字体
+C-x C-+/=	增大字体
+C-x C-0		重置字体
+</pre>
+<h2>Other</h2>
+<pre class="example">M-x eval-current-buffer	change the .emacs file and make it work immeditaly.
+为了营造utf-8的环境：在文件开始加上（如果是代码要加注释符号）
+-*- coding: utf-8; -*- 
+
+在和vs结合的时候，如果是中英混合的情况，这个时候这个编码要设置成gb2312，或者是gb18030。
+因为vs不支持utf-8 without BOM。所以要设置成gb2312，这样他的编码在windowns中就是ANSI的格式。
+
+在写python code时，也出现过类似的情况，这个时候也可以设置成gb2312.这样在处理web page的时候，
+中文就没有问题。
+</pre>
+
+<p>
+<a href="emacs.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-07-04</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

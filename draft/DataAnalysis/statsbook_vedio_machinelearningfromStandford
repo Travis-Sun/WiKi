@@ -1,0 +1,26 @@
+#title Vedio from Stanford
+
+https://class.coursera.org/ml-2012-002/lecture/3
+
+<p>
+
+* 1.  supervised learning and unsupervised learning
+
+*** Supervised learning
+**** 1. Regression and classification
+区别，Regression主要是针对的continuous value; Classification主要是针对discrete valued ouput.
+
+* 2. gradient descent 梯度下降法
+
+通过梯度下降法获得最小的cost function(应该是最小平方残差RMSE)，但是梯度下降法趋近速度比较忙，而且是局部最优解。
+
+接近局部最优解的方法，之前在ML for hacker中提到的退火方法，设置一个随机数来进行判读是否向梯度的方向下降，这样就
+可能跳出局部最小解。
+
+所以在处理最小解的时候都是用的matrix来进行处理。
+
+
+
+</p>
+
+[[statsbook.html][UP]]

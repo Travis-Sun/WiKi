@@ -1,0 +1,85 @@
+#title Emacs Regular Expression
+
+
+* Some Emacs Commands that Use Regular Expressions
+<example>
+ C-M-s                   incremental forward search matching regexp
+ C-M-r                   incremental backward search matching regexp 
+ replace-regexp          replace string matching regexp
+ query-replace-regexp    same, but query before each replacement
+ align-regexp            align, using strings matching regexp as delimiters
+ highlight-regexp        highlight strings matching regexp
+ occur                   show lines containing a match
+ multi-occur             show lines in all buffers containing a match
+ how-many                count the number of strings matching regexp
+ keep-lines              delete all lines except those containing matches
+ flush-lines             delete lines containing matches
+ grep                    call unix grep command and put result in a buffer
+ lgrep                   user-friendly interface to the grep command
+ rgrep                   recursive grep
+ dired-do-copy-regexp    copy files with names matching regexp
+ dired-do-rename-regexp  rename files matching regexp 
+ find-grep-dired         display files containing matches for regexp with Dired
+</example>
+
+* Regular Expression syntax
+<example>
+  .        any character (but newline)
+  *        previous character or group, repeated 0 or more time
+  +        previous character or group, repeated 1 or more time
+  ?        previous character or group, repeated 0 or 1 time  
+  ^        start of line
+  $        end of line
+  [...]    any character between brackets
+  [^..]    any character not in the brackets
+  [a-z]    any character between a and z
+  \        prevents interpretation of following special char
+  \|       or
+  \w       word constituent
+  \b       word boundary
+  \sc      character with c syntax (e.g. \s- for whitespace char)
+  \( \)    start\end of group
+  \< \>    start\end of word
+  \` \'    start\end of buffer
+  \1       string matched by the first group
+  \n       string matched by the nth group
+  \{3\}    previous character or group, repeated 3 times
+  \{3,\}   previous character or group, repeated 3 or more times
+  \{3,6\}  previous character or group, repeated 3 to 6 times
+</example>
+
+*  [syntax_classes]
+<example>
+  [:digit:]  a digit, same as [0-9]
+  [:upper:]  a letter in uppercase
+  [:space:]  a whitespace character, as defined by the syntax table
+  [:xdigit:] an hexadecimal digit
+  [:cntrl:]  a control character
+  [:ascii:]  an ascii character
+  \s-   whitespace character        \s/   character quote character
+  \sw   word constituent            \s$   paired delimiter         
+  \s_   symbol constituent          \s'   expression prefix        
+  \s.   punctuation character       \s<   comment starter          
+  \s(   open delimiter character    \s>   comment ender            
+  \s)   close delimiter character   \s!   generic comment delimiter
+  \s"   string quote character      \s|   generic string delimiter 
+  \s\   escape character            
+</example>
+
+* Some example
+<example>
+ [-+[:digit:]]                     digit or + or - sign
+ \(\+\|-\)?[0-9]+\(\.[0-9]+\)?     decimal number (-2 or 1.5 but not .2 or 1.)
+ \(\w+\) +\1\>                     two consecutive, identical words
+ \<[[:upper:]]\w*                  word starting with an uppercase letter
+  +$                               trailing whitespaces (note the starting SPC)
+ \w\{20,\}                         word with 20 letters or more
+ \w+phony\>                        word ending by phony
+ \(19\|20\)[0-9]\{2\}              year 1900-2099
+ ^.\{6,\}                          at least 6 symbols
+ ^[a-zA-Z0-9_]\{3,16\}$            decent string for a user name
+ <tag[^> C-q C-j ]*>\(.*?\)</tag>  html tag
+</example>
+
+
+[[emacs.html][UP]]

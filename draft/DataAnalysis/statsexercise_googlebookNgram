@@ -1,0 +1,25 @@
+#title Ngram googlebook 分析
+
+refer: http://xccds1977.blogspot.com/search/label/google;
+http://books.google.com/ngrams
+data: http://books.google.com/ngrams/datasets
+
+<p>
+
+恩，这个难度相对以前的来的都比较大。
+
+1. 用python抓取数据从data link中，这里的数据都很大。所以想通过多线程的方式榨取这个站点，
+其中一组线程池从网上榨取，然后把数据放在一个Queue中，然后另一组线程池从这个Queue中提取数据并解压。
+
+2. 是否将数据进行汇总，还是将数据放入到数据库中，现在还没有想好。
+
+3. 可以看到这个数据量是很大，看R能挑战的极限，有可能用上R的并行计算。
+
+4. 分析的目的是实现Ngram Viewer中所展示的一样，同时很想看看很红的字在现在的发展趋势。
+
+
+*** 1. 抓取数据
+
+</p>
+
+[[statsexercise.html][UP]]

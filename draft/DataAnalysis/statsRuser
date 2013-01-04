@@ -1,0 +1,251 @@
+#title R的累积
+
+<p>
+
+* Other note about R
+
+http://zoonek2.free.fr/UNIX/48_R/02.html#17
+
+* R 环境
+在emacs + ESS + R的搭配中，中文显示不论是在图片上还是在ESS中都是存在的问题，
+下面是我的处理的方法：
+
+*** 1. 在*.r文件中， 文件开头设置如下，这样保证了在emacs + ESS可以正常的显示中文。
+
+<example>
+#coding=utf-8，or #-*- coding: utf-8 -*-
+</example>
+
+*** 2. 然后在rtem.exe的环境中运行如下命令，设置在R processor中显示的方式。
+
+<example>
+> Sys.setlocale(category = "LC_ALL", locale = "Chinese_People's Republic of China.936")
+</example>
+
+
+这种方法是个参考，一旦我的文件环境是utf-8，在Emacs+ESS环境下就不能正常的显示，又折腾死我了。下面是我最想的步骤
+
+*** 1. 在Emacs中设置UTF-8作为默认的code-system
+
+<example>
+(prefer-coding-system 'chinese-iso-8bit)
+(prefer-coding-system 'chinese-gbk)
+(prefer-coding-system 'utf-8)
+
+</example>
+
+*** 2. 确保所有的输入都是UTF-8类型
+
+*** 3. 在R cmd(Rtem.exe)中设置setlocale
+
+<example>
+Sys.setlocale(locale = 'C')
+</example>
+
+这种情况下可以try一下。
+
+有时候处理完之后，读出来的数据还会是乱码，可以下面的方法try一下：
+<example>
+iconv(data,from='UTF-8',to='UTF-8')
+iconv(data,from='UTF-8',to='')
+</example>
+
+* R and MySQL
+
+*** 1. install mysql and odbc
+一般情况下安装mysql都会安装上odbc connector。
+*** 2. install RODBC package in R
+*** 3. config dns in odbc
+设置dataSource名字，这个名字是外部（R）来连接数据源用的。
+然后设置IP，和用户名密码，用户名字mysql默认的账号是root。
+<example>
+install.packages("RODBC")
+library(RODBC)
+conn<-odbcConnect("RDatabase", uid="root", pwd="sc369963/123456")
+std <- sqlQuery(conn, "select * from std")
+std
+close(conn)
+</example>
+
+* 地图绘制
+
+*** 1. maps， mapdata library 方法
+
+<example>
+install.packages("maps", "mapdata")
+library(maps)
+library(mapdata)
+map("china", col = "darkgray", ylim = c(18, 54), panel.first = grid())
+</example>
+
+这种方法有一个缺点，就是重庆还没有从四川分离出来，也就是数据比较老。
+
+*** 2. 根据GIS数据自绘地图多边形
+
+可以参考这篇文章： http://cos.name/2009/07/drawing-china-map-using-r/
+
+<example>
+library(maptools)
+x=readShapePoly('bou2_4p.shp')
+plot(x)
+</example>
+
+*** 3. color in R
+
+<example>
+#可以查看所有的color值。
+colors()
+</example>
+
+* Help
+
+*** 1. R package中的一些介绍
+<example>
+vignette(all = TRUE)
+也就是各个包下面的介绍性文章（有的没有）
+不同包用在不同的领域中，可以了解其中的一些知识。
+</example>
+
+* ESS
+
+一些常用的命令：
+
+<example>
+run line: C c C j;
+run line and open interaction window: C c A j
+insert <-: S -
+insert _: S - -
+</example>
+
+* Debug
+
+<example>
+1、browser(): 在脚本文件适当的位置插入browser()，重新载入模块，运行，程序会在该行中断。
+命令：n: step; c: continue; where: print the call back; Q: quit; enter: last command；
+
+2、traceback(): 打印上一次的出错信息；
+
+3、定义一个全局变量捕捉中间数据信息，比如一个全局变量a，可以在函数内a<<-***来给全局变量赋值；
+
+4、设定options(warn=1)，即时提示warning信息，不设置则警告信息会在程序执行完毕之后才会输出；
+
+5、try() 和tryCatch()是两个很好的处理error的函数；
+
+6、warning()输出一个警告信息，stop()函数终止程序运行并退出，geterrmessage()得到最后一次出错信息。
+</example>
+
+* Machine Learing for Hacker
+
+[[statsbook_MLforHack.html][this]]
+
+* 从网上抓起数据
+http://cos.name/cn/topic/107477
+
+<example>
+require(RCurl)
+require(XML)
+
+k = postForm("http://www.zhepb.gov.cn/htdocs/apinew/api_view_l.asp",
+             T1 = "2012-6-1", B1 = "%B2%E9%D1%AF",
+             style = 'post', .encoding = "utf-8")
+
+k = iconv(k, 'gbk', 'utf-8')
+
+k = htmlParse(k, asText = TRUE, encoding = 'utf-8')
+
+k = sapply(getNodeSet(doc = k, path = "//font[@color='#0000FF' and @size='2']"),
+           xmlValue)[1:24]
+
+matrix(k, ncol = 4, byrow = TRUE)
+
+# [,1]   [,2]       [,3]       [,4]
+# [1,] "地区" "污染指数" "空气质量" "首要污染物"
+# [2,] "香洲" "35"       "优      " "无"
+# [3,] "吉大" "33"       "优      " "无"
+# [4,] "前山" "38"       "优      " "无"
+# [5,] "唐家" "35"       "优      " "无"
+# [6,] "全市" "35"       "优      " "无"
+</example>
+</p>
+
+* Parallel in R
+
+
+在R中使用Parallel package实现并行计算。
+
+在parallele中也是将数据进行分割、计算和整合操作。与lapply函数的实现差不多，
+但是呢，parallel是将计算分布到不同的cpu上了。
+
+parallel整合了snow和multicore两个package来实现的，其中snow package的是可以应该到windows
+系统中，但是multicore主要是POXIT的机器上实现的。
+
+下面讨论parallel在单机多核的机器上实现，是学习别人写的parallel日记来的：
+
+<example>
+clusterObj = makeCluster(n)  # set up n cluster to run
+coreNum = detectCores()   # return the cores number in the machine.
+results = parLapply(clusterObj, paramValue, func) # lapply parallel run.
+do.call(results, rbind) # 整合结果
+registerDoParallel(clusterObj) #
+stopCluster(clusterObj) # close cluster object
+</example>
+
+
+* Text Mining and apply usage in R
+
+<example>
+score.sentiment<-function(sentences, pos.words, neg.words, .progress='none')
+{
+    require(plyr)
+    require(stringr)
+    #this line was added to remove foreign characters from the text
+    sentences=iconv(sentences, "latin1", "ASCII", sub="")
+    # we got a vector of sentences. plyr will handle a list or a vector as an "l" for us
+    # we want a simple array of scores back, so we use "l" + "a" + "ply" = laply:
+    scores  =  laply(sentences, function(sentence, pos.words, neg.words) { # laply advanted usage
+        # clean up sentences with R's regex-driven global substitute, gsub():
+        sentence  =  gsub('[[:punct:]]', '', sentence)
+        sentence  =  gsub('[[:cntrl:]]', '', sentence)
+        sentence  =  gsub('\\d+', '', sentence)
+        # and convert to lower case:
+        senctences=tolower(sentence)
+        # split into words. str_split is in the stringr package
+        word.list  =  str_split(sentence, '\\s+')
+        # sometimes a list() is one level of hierarchy too much
+        words  =  unlist(word.list) # good function to deal with list
+        # compare our words to the dictionaries of positive & negative terms
+        pos.matches  =  match(words,  pos.words)
+        neg.matches  =  match(words,  neg.words)
+        # match() returns the position of the matched term or NA
+        # we just want a TRUE/FALSE:
+        pos.matches  = !is.na(pos.matches)
+        neg.matches  = !is.na(neg.matches)
+        # and conveniently enough, TRUE/FALSE will be treated as 1/0 by sum():
+        score  =  sum(pos.matches) - sum(neg.matches)
+        return(score)
+    },  pos.words,  neg.words,  .progress=.progress  )
+    scores.df  =  data.frame(score=scores,  text=sentences)
+    return(scores.df)
+}
+</example>
+
+* 实际中碰到的问题的积累
+
+<example>
+merge()   : 实现两个data.frame的join操作，就像SQL的join操作
+merge(df1,df2, by.x='sku', by.y='skucode')
+
+reshape package中
+cast()/melt()  : 是行转列 和 列转行的操作
+reshape() function 也可以实现这样的操作，具体看help
+
+ggplot2 package
+aex(): 设置x,y color, shape等等
+scale_x_log10() 设置x,y轴的比例关系
+fecet_grid(.~fator) 更加factor将多个图分开
+geom_point() 画点
+geom_line() 画线
+
+</example>
+
+[[WelcomePage][UP]]

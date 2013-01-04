@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Emacs Font Setting</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Tool/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Emacs Font Setting</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<h2>Some Setting from Net</h2>
+<pre class="example">;; chinese font setting
+(setq w32-charset-info-alist
+    (cons '(&quot;gbk&quot; w32-charset-gb2312 . 936) w32-charset-info-alist))
+
+(setq default-frame-alist
+      (append
+       '((font . &quot;fontset-gbk&quot;)) default-frame-alist))
+
+(create-fontset-from-fontset-spec
+  &quot;-outline-Courier New-normal-r-normal-normal-13-97-96-96-c-*-fontset-gbk&quot;)
+(set-fontset-font
+ &quot;fontset-default&quot; nil
+ &quot;-outline-新宋体-normal-r-normal-*-14-*-96-96-c-*-iso10646-1&quot; nil 'prepend)
+(set-fontset-font
+ &quot;fontset-gbk&quot; 'kana
+ &quot;-outline-新宋体-normal-r-normal-*-14-*-96-96-c-*-iso10646-1&quot; nil 'prepend)
+(set-fontset-font
+ &quot;fontset-gbk&quot; 'han
+ &quot;-outline-新宋体-normal-r-normal-*-14-*-96-96-c-*-iso10646-1&quot; nil 'prepend)
+(set-fontset-font
+ &quot;fontset-gbk&quot; 'cjk-misc
+ &quot;-outline-新宋体-normal-r-normal-*-14-*-96-96-c-*-iso10646-1&quot; nil 'prepend)
+(set-fontset-font
+ &quot;fontset-gbk&quot; 'symbol
+ &quot;-outline-新宋体-normal-r-normal-*-14-*-96-96-c-*-iso10646-1&quot; nil 'prepend)
+(set-default-font &quot;fontset-gbk&quot;)
+</pre>
+<h2>Current Setting</h2>
+<pre class="example">(defun qiang-font-existsp (font)
+  (if (null (x-list-fonts font))
+      nil t))
+(defun qiang-make-font-string (font-name font-size)
+  (if (and (stringp font-size) 
+           (equal &quot;:&quot; (string (elt font-size 0))))
+      (format &quot;%s%s&quot; font-name font-size)
+    (format &quot;%s %s&quot; font-name font-size)))
+(defun qiang-set-font (english-fonts
+                       english-font-size
+                       chinese-fonts
+                       &amp;optional chinese-font-size)
+  &quot;english-font-size could be set to \&quot;:pixelsize=18\&quot; or a integer.
+If set/leave chinese-font-size to nil, it will follow english-font-size&quot;
+  (require 'cl)                         ; for find if
+  (let ((en-font (qiang-make-font-string
+                  (find-if #'qiang-font-existsp english-fonts)
+                  english-font-size))
+        (zh-font (font-spec :family (find-if #'qiang-font-existsp chinese-fonts)
+                            :size chinese-font-size)))
+ 
+    ;; Set the default English font
+    ;; 
+    ;; The following 2 method cannot make the font settig work in new frames.
+    ;; (set-default-font &quot;Consolas:pixelsize=18&quot;)
+    ;; (add-to-list 'default-frame-alist '(font . &quot;Consolas:pixelsize=18&quot;))
+    ;; We have to use set-face-attribute
+    (message &quot;Set English Font to %s&quot; en-font)
+    (set-face-attribute
+     'default nil :font en-font)
+ 
+    ;; Set Chinese font 
+    ;; Do not use 'unicode charset, it will cause the english font setting invalid
+    (message &quot;Set Chinese Font to %s&quot; zh-font)
+    (dolist (charset '(kana han symbol cjk-misc bopomofo))
+      (set-fontset-font (frame-parameter nil 'font)
+                        charset
+                        zh-font))))
+(qiang-set-font
+ '(&quot;Consolas&quot; &quot;Monaco&quot; &quot;DejaVu Sans Mono&quot; &quot;Monospace&quot; &quot;Courier New&quot;) &quot;:pixelsize=18&quot;
+ '(&quot;Microsoft Yahei&quot; &quot;文泉驿等宽微米黑&quot; &quot;黑体&quot; &quot;新宋体&quot; &quot;宋体&quot;))
+</pre>
+
+<p>
+<a href="emacs.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

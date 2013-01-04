@@ -1,0 +1,895 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>统计的一下知识点</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../DataAnalysis/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">统计的一下知识点</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<h2>ROC图</h2>
+
+<p>
+ref: <a href="http://wqfnet.blog.163.com/blog/static/6191680720107287041776/">http://wqfnet.blog.163.com/blog/static/6191680720107287041776/</a>
+
+</p>
+
+<p>
+我们在进行分类的时候，尤其是在只有两种类型，比如说是非问题。其实就是逻辑分析的问题。
+存在这样的情况，将实验样本分为正类和负类。在二分类的过程中就会出现的情况，
+通过算法正类分成正类(ture positive)，负类分为正类(false positive)，
+负类分为负类(false negative)，正类分为负类(true negative).
+
+</p>
+
+<p>
+真正类率(true positive rate ,TPR), 计算公式为TPR=TP / (TP + FN)，
+刻画的是分类器所识别出的正实例占所有正实例的比例
+
+</p>
+
+<p>
+另外一个是负正类率(false positive rate, FPR),计算公式为FPR= FP / (FP + TN)，
+计算的是分类器错认为正类的负实例占所有负实例的比例。
+还有一个真负类率（True Negative Rate，TNR），也称为specificity,计算公式为TNR=TN / (FP + TN)
+
+</p>
+
+<p>
+在一个二分类模型中，对于所得到的连续结果，假设已确定一个阀值，比如说0.6，
+大于这个值的实例划归为正类，小于这个值则划到负类中。
+如果减小阀值，减到0.5，固然能识别出更多的正类，也就是提高了识别出的正例占所有正例的比类，即TPR,
+但同时也将更多的负实例当作了正实例，即提高了FPR。为了形象化这一变化，在此引入ROC。
+
+</p>
+
+<p>
+Receiver Operating Characteristic(ROC),翻译为"接受者操作特性曲线"。
+曲线是由两个变量的组合，1-specificity和Sensitivity. 
+由于1-specificity=FPR，即负正类率。Sensitivity即是真正类率，True positive rate,反映了正类覆盖程度。
+这个组合以1-specificity对sensitivity,即是以代价(costs)对收益(benefits)。
+
+</p>
+
+<p>
+<a href="roc.png"><img src="roc.png" alt="ROC" /></a>
+
+</p>
+
+<p>
+对角线反映的是随机选择的结果，此对角线作为对照线。
+到底该怎样选择阀值呢，这涉及到了AUC(Area Under the ROC Curve，ROC曲线下的面积)。
+
+</p>
+
+<pre class="example">life = data.frame(
+   X1=c(2.5, 173, 119, 10, 502, 4, 14.4, 2, 40, 6.6,21.4, 2.8, 2.5, 6, 
+        3.5, 62.2, 10.8, 21.6, 2, 3.4,5.1, 2.4, 1.7, 1.1, 12.8, 1.2, 3.5, 
+        39.7, 62.4, 2.4,34.7, 28.4, 0.9, 30.6, 5.8, 6.1, 2.7, 4.7, 128, 
+        35,2, 8.5, 2, 2, 4.3, 244.8, 4, 5.1, 32, 1.4),
+   X2=rep(c(0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2,0, 2, 0, 2, 0, 2, 0),
+          c(1, 4, 2, 2, 1, 1, 8, 1, 5, 1, 5, 1, 1, 1, 2, 1,1, 1, 3, 1, 2, 1, 4)),
+   X3=rep(c(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1),
+          c(6, 1, 3, 1, 3, 1, 1, 5, 1, 3, 7, 1, 1, 3, 1, 1, 2, 9)),
+   Y=rep(c(0,  1,   0,  1), c(15, 10, 15, 10))
+)
+
+glm.sol&lt;-glm(Y~X1+X2+X3, family=binomial, data=life)
+summary(glm.sol)
+
+pre&lt;-predict(glm.sol, data.frame(X1=5,X2=2,X3=1))
+p&lt;-exp(pre)/(1+exp(pre))
+p
+pre=predict(glm.sol,type='response')
+pre
+
+library(ROCR)
+m=prediction(pre,life$Y)
+plot(performance(m,'tpr','fpr'))
+abline(0,1, lty = 8, col = &quot;grey&quot;)
+auc &lt;- performance(m, &quot;auc&quot;); auc
+</pre>
+
+<p>
+通过分析可以看到，曲线越往左上角，你的收益代价比越高。
+</p>
+
+</p>
+
+<h2>ggplot</h2>
+
+<p>
+快速入门ref:<a href="http://xccds1977.blogspot.jp/2011/12/qplot.html">http://xccds1977.blogspot.jp/2011/12/qplot.html</a>
+
+</p>
+
+<p>
+ref: <a href="http://xccds1977.blogspot.jp/2012/01/ggplot2.html">http://xccds1977.blogspot.jp/2012/01/ggplot2.html</a>
+
+</p>
+
+<p>
+ref: <a href="http://xccds1977.blogspot.jp/2012/01/ggplot2_15.html">http://xccds1977.blogspot.jp/2012/01/ggplot2_15.html</a>
+
+</p>
+
+<p>
+ref: <a href="http://xccds1977.blogspot.jp/2012/01/ggplot2_19.html">http://xccds1977.blogspot.jp/2012/01/ggplot2_19.html</a>
+
+</p>
+
+<p>
+ref: <a href="http://xccds1977.blogspot.jp/2012/01/ggplot2_27.html">http://xccds1977.blogspot.jp/2012/01/ggplot2_27.html</a>
+
+</p>
+
+<p>
+ref: <a href="http://xccds1977.blogspot.jp/2012/01/ggplot2_29.html">http://xccds1977.blogspot.jp/2012/01/ggplot2_29.html</a>
+
+</p>
+
+<p>
+ref: <a href="http://xccds1977.blogspot.jp/2012/02/ggplot2.html">http://xccds1977.blogspot.jp/2012/02/ggplot2.html</a>
+
+</p>
+
+<h3>gplot</h3>
+
+<h4>color, size, geom(geometry)</h4>
+<pre class="example">gplot(displ, hwy, data = mpg, color=class) ## 根据class的分类将不同类别的点染成不同颜色
+gplot(displ, hwy, data = mpg, size=cyl)  ## 根据cyl的值将点绘成不同的大小
+gplot(reorder(displ,hwy), hwy, data = mpg, .....) ## 根据y的值来调整x的顺序
+gplot(reorder(displ,hwy), hwy, data = mpg, geom=c(&quot;boxplot&quot;,&quot;jitter&quot;), ....) ##geom = geometry几何
+</pre>
+<h4>facet(subset of data show, to mutidimension)</h4>
+<pre class="example">当然还可以再这个绘完的基础上加上其他的信息：
+## 在原二纬的基础上再加上第三的纬度。分割成不同小的窗口，便于纵向横向比较。
+gplot(reorder(displ,hwy), hwy, data = mpg) + facet_grid(. ~ cyl) 
+gplot(reorder(displ,hwy), hwy, data = mpg) + facet_grid(drv ~ .) 
+facet_grid(): 2d grid, rows ~ cols, . for no split
+facet_wrap(): 1d ribbon wrapped into 2d
+</pre>
+
+<h2>基本概念</h2>
+
+<h5>1. 图层（Layer）</h5>
+如果你用过photoshop，那么对于图层一定不会陌生。
+一个图层好比是一张玻璃纸，包含有各种图形元素，你可以分别建立图层然后叠放在一起，
+组合成图形的最终效果。图层可以允许用户一步步的构建图形，
+方便单独对图层进行修改、增加统计量、甚至改动数据。
+<h5>2. 标度（Scale）</h5>
+标度是一种函数，它控制了数学空间到图形元素空间的映射。
+一组连续数据可以映射到X轴坐标，也可以映射到一组连续的渐变色彩。
+一组分类数据可以映射成为不同的形状，也可以映射成为不同的大小。
+<h5>3. 坐标系统（Coordinate）</h5>
+坐标系统控制了图形的坐标轴并影响所有图形元素，最常用的是直角坐标轴，
+坐标轴可以进行变换以满足不同的需要，如对数坐标。
+其它可选的还有极坐标轴。
+<h5>4. 位面（Facet）</h5>
+很多时候需要将数据按某种方法分组，分别进行绘图。
+位面就是控制分组绘图的方法和排列形式。
+
+</p>
+
+<pre class="example">library(ggplot2)
+p &lt;- ggplot(data=mpg,aes(x=displ,y=hwy,colour=factor(cyl)))
+p + geom_point() + geom_smooth()
+#aes是数据与图形之间的映射，这里是x轴对应displ,y轴对应hwy,然后color用cyl来。aes是Aesthetic的缩写。
+p &lt;- ggplot(mpg,aes(x=displ,y=hwy))
+p + geom_point(aes(colour=factor(cyl))) + geom_smooth()
+#这种把color不是放在第一层的情况下smooth就不受color的影响，可以对比一下两个图形的差别。
+</pre>
+
+<h3>控制图层</h3>
+
+<p>
+从下面的例子中可以看到，数据和aes设置第一图层，然后用+添加histogram图层。
+
+</p>
+
+<pre class="example">library(ggplot2)
+p &lt;- ggplot(data = mpg,aes(x = hwy))
+p &lt;- p + geom_histogram()
+summary(p)
+print(p)
+
+#更为复杂的histogram
+p &lt;- ggplot(mpg,aes(hwy))
+p + geom_histogram(position = 'identity', alpha=0.5,
+                   aes(y = ..density.., fill = factor(year)))
+  + stat_density(geom = 'line', position = 'identity', aes(colour = factor(year)))
+
+#散点图,对色彩形状的控制
+p &lt;- ggplot(mpg, aes(cty, hwy))
+p1 &lt;- p + geom_point(aes(colour = factor(year),shape = factor(year), size = displ),
+                     alpha = 0.6, position = 'jitter')
+print(p1)
+
+#对坐标的控制
+cty.mean=with(mpg,mean(cty))
+cty.sd=with(mpg,sd(cty))
+p1 + scale_x_continuous(trans='log',breaks=c(cty.mean-cty.sd,cty.mean,cty.mean+cty.sd),
+                        labels=c(&quot;high&quot;, &quot;mean&quot;, &quot;low&quot;)) + scale_y_continuous(trans='log')
+
+#添加注释文字
+p &lt;- ggplot(mtcars, aes(x=wt, y=mpg,colour=factor(cyl),label=rownames(mtcars))) 
+p + geom_text(hjust=0,vjust=-1,alpha=0.8)+ geom_point(size=3,aes(shape=factor(cyl)))
+
+#矩阵散列图
+
+plotmatrix(USArrests)+geom_smooth()
+
+#还有时序图，这里没有用到就贴上了
+</pre>
+
+<h2>方差性</h2>
+
+<p>
+等方差检验又称方差齐性。
+
+</p>
+
+<h2>线性回归分析</h2>
+
+<h3>回归模型推断</h3>
+
+<h4>1. 首先从plot的图形上来分析各个自变量对应变量的影响情况</h4>
+check其是一次影响还是有交叉影响，而是二次的等等。不断下面的命令进行改进。
+<pre class="example">update(lmmodel, .~.+-X1*X2+-I(X2^2)
+step(lmmode) ##根据AIC值来自动进行调整模型。可以作为调整的一个参考
+</pre>
+
+<h4>2. 然后从显著性水平上来查看模型是否适合。</h4>
+
+<p>
+各个参数的t检验、F检验、残差情况和相关系数。
+
+</p>
+
+<ol>
+<li>t检验是针对回归系数beta的检验情况
+</li>
+<li>F检验是针对回归模型的检验情况。
+</li>
+<li>而残差和相关检验，是在前两个检验通过的情形对模型进行改进时的评判标准。
+</li>
+</ol>
+
+<h4>3. 可以用模型进行预测</h4>
+
+<pre class="example">##预测时自变量必须设置成data.frame数据类型
+predict(lmmodel, var.data.frame, interval=&quot;prediction&quot;, level=0.95)
+</pre>
+
+<h4>4. 回归诊断</h4>
+
+<h5>1. 误差项是非独立、等方差、正态性</h5>
+可以通过查看残差图，来查看残差的一下信息
+<pre class="example">residuals(lmmodel) # 普通残差
+resid(lmmodel)
+rstandard(lmmodel) #标准化残差
+shapiro.test(res) # check残差是非服从正态分布
+rstudent(lmmodel) #外学生残差
+plot(res)         #查看残差图
+plot(res.y~data.y)#从y的角度来查看残差情况，残差看是非与y的值相关
+plot(res, 2)     #QQ残差图
+plot(res.y~x)    #从应变量的角度来查看残差的情况
+</pre>
+
+<p>
+现在比如说看到了res.y~data.y的图呈喇叭状，说明残差的大小与y的大小波动有关，
+此时应针对中的模型中的y进行修改，不然sqrt(y),来压低模型的残差大小随y的波动。
+<h5>2. 查看异常样本</h5>
+
+<p>
+异常样本对模型的影响会很大，尤其对残差的影响，所以我们要探知到异常点，
+将其从样本中删除，重新进行回归分析。
+
+</p>
+
+<p>
+用三种方法进行探测异常点：帽子矩阵(hatvalues/hat)、DFFITS准则(diffits)、
+Cook统计量和COVARTIO原则。那在R中提供了下面的一个函数来探测
+<pre class="example">influence.meatures(lmmodel)
+</pre>
+
+<h5>3. 多重共线性</h5>
+
+<p>
+就是应变量很多，他们之间线性相关，如果探知到自变量存在共线性的话，
+就可以在回归模型中剔除其中的部分自变量。
+
+</p>
+
+<p>
+是通过计算矩阵t(X)*X的条件数来衡量，
+<pre class="example">kappa(z, exact=TRUE)
+# z是矩阵，在书本中是采用的cor相关矩阵来计算的
+kappa(lmmodel, exact=TRUE)
+# 这个是计算t(X,Y)*(X,Y)的条件数的。
+eigen(cor(X))
+#通过查看特征值和特征向量，来查看矩阵的秩是多少，来决定踢掉那些自变量。
+step(lmmodel)
+#或者通过step来进行对自变量的删除
+</pre>
+
+<p>
+通常情况下，kappa的值小于100，认为共线的程度比较小，
+大于100，小于1000表示存在一定程度的，或者是较强的共线情况；
+大于1000则表示存在严重的共线情况。
+
+</p>
+
+<h2>广义线性回归模型</h2>
+
+<p>
+广义线性回归，其实实际意义上并非是响应变量和自变量时线性的，而是通过一定的公式进行转换了
+例如：
+<pre class="example">y = f(a + bx1 + bx2 + ....)
+</pre>
+
+<p>
+那这这种情况的回归很多，我们称之为广义的线性回归模型。这中情况下在R中的函数是：
+<pre class="example">glm(formal, family=&amp;familiy(link=&amp;link), data=&amp;data)
+p &lt;- f(predict)
+</pre>
+
+<p>
+这样的广义线性回归有正态分布、泊松分布、二项分布、Gamma分布。详细可以参考数据上。
+<b>注意一点</b>就是在求预测值的时候，predict出来的是a+bx+...的值，其概率应该进一步套用
+函数f(predict)来求。
+
+</p>
+
+<h2>多项式回归</h2>
+
+<p>
+其实之前已经接触过多项式回归了，例如模型Y~1+X1+X1*X2+I(X1^2)+....
+
+</p>
+
+<p>
+这里特别说一下正交多项式，多项式当阶数多的情况下，各项很容易共线，所有应用了正交多项式
+Y~1+poly(X, n); n为X的阶数。
+
+</p>
+
+<h2>非线性回归</h2>
+
+<p>
+非线性回归，就是在给出数据和公式的情形下，得到参数的估计。
+也是通过最小二乘法和最大似然估计来获得参数的估计值。
+
+</p>
+
+<p>
+在R中提供了
+<pre class="example">nls(f, data, start)
+nlm(fn, ....)
+nlm和nls有所不同，nls中的f就是要拟合的函数，而nlm中的fn则是求目标最小的函数，所有要根据拟合函数进行调整
+才能代入到nlm中进行求解。
+</pre>
+
+<h2>单因素方差分析</h2>
+
+<h3>方差分析</h3>
+
+<p>
+什么时候用方差呢，当多种方法测试同一个结果的时候，在测试不同方法之间是否有差异，这个时候用到了方差。
+因为环境很相似，所有这里的方差检验都是在组间等方差的前提的情况下。
+
+</p>
+
+<pre class="example">aov(fomula, data)
+</pre>
+
+<h3>多重检验</h3>
+
+<p>
+这样就可以看到因素中的不同水平之间是否有差异，但是呢，这里有一个缺点，就是不获得那个水平有差异，
+这时候可以t检验测试两两间的差异，但这样同时存在一个问题，就是这样多次使用t检验会提高第一类错误的概率。
+
+</p>
+
+<pre class="example">第一类 P={否认H0|H0为真实}
+第二类 P={接受H0|H0为假}
+</pre>
+
+<p>
+所以就要进行P的修改，所以我们用
+<pre class="example">pairwise.t.test(X,F,p.adjust.method=$method)
+# $method is one of &quot;holm&quot;, &quot;hochberg&quot;, &quot;hommel&quot;, &quot;bonferroni&quot;, &quot;BH&quot;, &quot;BY&quot;, &quot;fdr&quot;, &quot;none&quot;
+</pre>
+这样就可以得到多重均值检验的结果。
+
+</p>
+
+<p>
+同时我们也可以通过boxplot直观的看到不同水平的均值的差异。
+
+</p>
+
+<h3>方差的齐次校验</h3>
+
+<ol>
+<li>组内实验误差服从正态分布，并且相互独立
+</li>
+<li>方差齐次，不同处理组间的方差相同
+</li>
+</ol>
+
+<pre class="example">shapiro.test()
+bartlett.test(Fomula,data)
+</pre>
+
+<h3>秩和校验</h3>
+
+<p>
+可以看到aov的测试方法很到程度一样方差齐次，误差正态。当这些条件不满足的时，我们应该提供其他的方式进行检验。
+
+</p>
+
+<p>
+秩和是很好的检验方式，他不依赖样本的分布情况。
+
+</p>
+
+<h4>Kruskal-Wallis rank sum test</h4>
+
+<p>
+用秩的运算作为统计量K，测试K是否在一个范围内，如果在那说明没有问题，各个水平组的秩是比较平均、分散的，
+如果不在的话说明秩存在着偏差，说明水平之间有显著水平差异。
+
+</p>
+
+<pre class="example">kruskal.test(X,F,...) 
+kruskal.test(fomulate, data, ....)
+</pre>
+
+<h4>Firedman rank sum test</h4>
+
+<p>
+主要应用在配伍组中，多样本的比较。
+
+</p>
+
+<p>
+配伍组的概念是，将样本分为不同的组，在每一个组中进行各个水平的测试，所有说组内做了随机化，
+但是组间是没有进行随机化。举个例子：要验证一种兔子药物的药效，现在更加兔子的生活的不同的窝，
+分成不同的配伍组，然后在一窝中随机的选取不同的兔子进行不同药物的验证和对比验证。
+
+</p>
+
+<pre class="example">friedman.test(y,..)
+friedman.test(y, group, blocks,...)
+#group mean 水平, blocks mean 配伍组
+friedman.test(fomulate, data, subset,...)
+#fomulate for example: x~g|b
+</pre>
+
+<h2>双因素方差分析</h2>
+
+<h3>不考虑交互作用</h3>
+
+<pre class="example">#still use aov
+aov(fomulate, data,...)
+#fomulate for example: X~A+B
+</pre>
+
+<h3>考虑交换作用</h3>
+除了考虑双因素的影响，同时要考虑到AXB交换的影响。相对有多一个考虑因素。
+
+</p>
+
+<pre class="example">aov(X~A+B+A:B, data)
+</pre>
+
+<h3>条件</h3>
+在做双因素分析的前提条件和单因素是一样的，即要验证其数据满足正态性和方差齐次性。
+也是用的W验证和Bartlett验证
+<pre class="example">shapiro.test(X)
+bartlett.test(X~A)
+bartlett.test(X~B)
+</pre>
+
+<h3>正交测试</h3>
+在做多因素分析的过程中，如果将所有的因素匹配的可能都测试到，有时候是不现实的或者是浪费资源的，
+所以在这里就采用正交测试的方法，这样既能有效的覆盖所有的可能，有能减少测试次数。
+通过查找正交测试表来进行实验。
+
+</p>
+
+<p>
+其核心是正交表的设计：
+
+</p>
+
+<p>
+其中有一些基本的概念：因素，水平，强度，记录数。因素和水平就不说了，强度是构成正交表的一个重要的指标，
+他是人为的定义的针对试验的一个强度指标。记录数就是要进行试验的次数。
+<pre class="example">L_r(l^f * l^f * ....)
+r 代表记录数； l代表水平数，f代表因素数.
+</pre>
+
+<p>
+正交表的设计应该具备下面的几点：
+
+</p>
+
+<ul>
+<li>正交表中的后s个（s代表的强度）个因素的水平值碰撞一次且只有一次。
+</li>
+<li>在正交表中不存在多条记录是具备相同的S列
+</li>
+<li>试验的次数r等于最后S列的水平数的乘积。
+</li>
+</ul>
+
+<p>
+通过正交表达到试验的均匀性和正交性。
+
+</p>
+
+<h2>多元分析</h2>
+
+<h3>判别分析</h3>
+
+<p>
+有训练数据，然后根据训练出来的模型进行分类。
+
+</p>
+
+<h4>距离判定</h4>
+
+<p>
+首先，欧式距离不能够满足要求了（不能仅仅靠离中心的的距离来判定距离，还应考虑到方差的因素），
+替换采用马氏距离(Mahalanobis)
+
+</p>
+
+<pre class="example">d(x,y) = sqrt(t(X-Y)* S^-1 * (X-Y))
+
+#in R
+mahalanobis(x, center, cov, ....)
+</pre>
+
+<p>
+通过查看X离那个center比较近，就属于那个类。
+
+</p>
+
+<h3>Bayes判别</h3>
+
+<h4>思路</h4>
+从错判的角度来考虑分析，比如现在有两类，出现错误的情况是应该是第一个类的情况结果判成了第二类，
+或者完全相反的情况，Bayes判别的方法就是控制这种误判的情况而产生的。
+
+</p>
+
+<pre class="example">ECM(R1,R2) = L(2|1)P(2|1)p1 + L(1|2)P(1|2)p2
+其中p1,p2为先验概率，L是定义损失系数的。
+</pre>
+
+<p>
+多类Bayes判别：为了使得损失最小，就是让相应的概率达到最大。
+
+</p>
+
+<h3>Fisher判别</h3>
+
+<h4>思路</h4>
+
+<p>
+Fisher查找一个判别函数u(x)， 通过u的转换，使得类内部的偏差平方和最小，
+类间的偏差平方和最大
+
+</p>
+
+<pre class="example">min: W0 = s1^2 + s^2
+max: B0 = (u1-u)^2 + (u2-u)^2; u=(u1+u2)/2;
+max: I = B0 / W0
+</pre>
+
+<p>
+其实就是通过一定的线性转换，让I最大。其数学表示变成了在一定条件下求极值的问题。
+
+</p>
+
+<h3>聚类分析</h3>
+
+<p>
+聚类分析分为层次聚类分析和快速聚类分析，层次聚类分析又分为Q聚类分析和R聚类分析。
+
+</p>
+
+<p>
+Q聚类分析与R聚类分析的注意区别在于是对样本聚类分析和对变量聚类分析的区别。
+
+</p>
+
+<ul>
+<li>样本聚类分析，就是针对每一个记录，或者说每一个事件进行聚类的分析。
+</li>
+<li>变量聚类分析，可能这个变量有多个记录，但是分析的结果是以变量基本来实现分类。
+</li>
+</ul>
+
+<p>
+举个例子吧：比如说360，亚马逊啊这些卖书的电子商务网站，要针对不同的客户进行分类，
+以进行有效的图书推荐功能，这样客户在amazon上不只买了一本书，所有每条记录都是样本，
+但是客户在这里是变量，针对客户进行聚类就是针对变量进行聚类，在<a href="statsexercise_itemCF.html">协同推荐系统</a>
+就是用的余弦夹角的方法来实现的。
+如果现在对图书进行聚类分析，他的向量组成是领域的一些关键词，每一个样本都包括所有的关键词，
+包含为1，不包含为0，那此时的聚类分析就是样本聚类分析。
+
+</p>
+
+<p>
+这两个之间的区别有时不那么的明显，同时R聚类分析也可以对样本进行分析。
+
+</p>
+
+<h3>Q聚类分析</h3>
+
+<h4>1. 计算距离</h4>
+
+<p>
+变量分为定量和定性，在计算距离的时候这两种变量的计算方法是不同。
+
+</p>
+
+<h5>定量计算</h5>
+
+<p>
+Xik表示第i个样本的第k个指标，Dij表示的是第i个和第j个样本之间的距离。
+
+</p>
+
+<ol>
+<li>绝度值距离 Dij = sum(abs(Xik-Xjk))  k从1到p，共p个指标
+</li>
+<li>Euclid(欧式距离） Dij = sqrt(sum(Xik-Xjk)^2)
+</li>
+<li>Minkowski(闵可夫斯基)距离 Dij = (sum(Xik-Xjk)^q)^1/q
+</li>
+<li>Chebyshev(切比雪夫)距离 Dij = max(abs(Xik-Xjk)) 1<=k<=q
+</li>
+<li>Mahalanobis(马哈拉诺比斯)距离 Dij(M) = sqrt(t(Xi-Xj) * S^-1 * (Xi-Xj)); S难以确定。
+</li>
+<li>Lance and Williams距离 
+</li>
+</ol>
+
+<h5>定性变量的距离</h5>
+
+<p>
+将定性的变量按照值项展开，比如性别，那就把男女其他三个项并列排开，如果样本是男性，则只有男性是1，其他和女性则为0。
+通过这中方法计算出样本的定性距离
+
+</p>
+
+<p>
+Dij = m2/(m1+m2); m0表示0-0配对的总数，m1表示1-1配对的总数，m2表示不配对的总数。
+
+</p>
+
+<pre class="example">dist(x, method=.... ,... )
+method=&quot;binary&quot;时，表示定性变量的距离。
+</pre>
+
+<h4>2. 数据处理</h4>
+
+<h5>1. 中心化变换</h5>
+
+<p>
+X*ij = Xij-mean(Xj)
+
+</p>
+
+<h5>2. 标准化变换</h5>
+
+<p>
+X*ij = (Xij-mean(Xj))/Sj
+
+</p>
+
+<pre class="example">scale(x, center=TRUE, scale=TRUE)
+</pre>
+
+<h5>3. 极差标准化变换</h5>
+
+<p>
+X*ij = (Xij-mean(Xj))/Rj; Rj = (max(Xi.nj)-min(Xi.nj))
+
+</p>
+
+<pre class="example">center &lt;- sweep(x, 2, apply(x,2,mean))
+R &lt;- apply(x,2,max)-apply(x,2,min)
+X_start &lt;- sweep(center,2,R, &quot;/&quot;)
+</pre>
+
+<h5>4. 极差正规化变换</h5>
+
+<p>
+X*ij = (Xij-min(Xkj))/ Rj; Rj = (max(Xi.nj)-min(Xi.nj))
+
+</p>
+
+<pre class="example">temp &lt;- sweep(x, 2, apply(x,2,min))
+R &lt;- apply(x,2,max)-apply(x,2,min)
+X_start &lt;- sweep(temp, 2, R, &quot;/&quot;)
+
+
+** R聚类分析
+
+*** 3. 相似系数
+
+相似系数的方法可以对样本进行分类，同样也可以对变量进行分类
+
+**** 1. 夹角余弦
+
+这个在推荐系统中用到的就是这中方法。
+
+Cij = sum(Xki*Xkj)/(sqrt(sum(Xki^2))*sqrt(sum(Xkj^2)))
+
+&lt;example&gt;
+Xi &lt;- scale(X, center=FALSE, scale=TRUE)/sqrt(nrow(X)-1)
+Cij &lt;- t(Xi) %*% Xi
+</pre>
+
+<h5>2. 相关系数</h5>
+
+<p>
+相关系数相当于对数据做标准化之后的夹角余弦。
+
+</p>
+
+<p>
+Cij = sum((Xki-mean(Xi)*(Xkj-mean(Xj)))/(sqrt(sum((Xki-mean(Xki))^2))*sqrt(sum((Xkj-mean(Xkj))^2)))
+
+</p>
+
+<pre class="example">Xi &lt;- scale(X, center=T, scale=T)
+Cij &lt;- t(Xi) %*% Xi
+
+或者更简单一点的是：
+C &lt;- cor(x)
+
+dij &lt;- 1 - Cij
+</pre>
+
+<h3>层次聚类分析（系统聚类法）</h3>
+
+<p>
+就是将每一个样本各自为一类，然后通过距离的方式不断的进行合并类，形成一个新类，最终合成一个大类的过程。
+
+</p>
+
+<h5>1. 最短距离</h5>
+
+<p>
+定义两个类之间的距离为两个类最近样本的距离。
+
+</p>
+
+<h5>2. 最远距离</h5>
+
+<p>
+定义两个类之间的距离为两个类最长的样本间的距离。
+
+</p>
+
+<h5>3. 中间距离</h5>
+
+<h5>4. 类平均距离</h5>
+
+<h5>5. 重心法</h5>
+
+<h5>6. 离差平方和法（Ward）</h5>
+
+<pre class="example">hclust(d, method=&quot;..&quot;, ....)
+plot()
+rect.hclust(tree, k=num,...)
+plclust()
+</pre>
+
+<h3>动态聚类法</h3>
+
+<p>
+又称为逐步聚类法。
+
+</p>
+
+<p>
+k-means的方法是从n个样本随机找K个中心，然后根据类距离的均值不断的调整，收敛之后就结束。
+
+</p>
+
+<pre class="example">kmeans(x, centers, algorithm=...)
+</pre>
+
+<h2>统计之道</h2>
+
+<p>
+我从<a href="http://www.swarmagents.cn/">集智俱乐部</a>上看到一篇关于统计的头脑风暴的一篇文章:<a href="统计之道--墨子见鬼谷子.pdf">统计之道--鬼谷子对话墨子</a>.
+
+</p>
+
+<p>
+很有意思，文中提到的五个基本分布：正态分布、泊松分布、指数分布、伽马分布以及帕累托分布。
+
+</p>
+
+<p>
+正态分布：这个就不用过多的解释，误差就是这种分布。
+
+</p>
+
+<p>
+泊松分布：单位时间内随机时间所发生的次数。
+
+</p>
+
+<p>
+指数分布：电子元器件的寿命是服从指数分布的。他经过t0时间工作后，然后寿命如新的产品一样，也就是之前的工作
+对后面的使用寿命不形成影响。
+
+</p>
+
+<p>
+伽马分布：随机变量时为等到第a件事发生所等待的时间。地震发生i次时间的概率密度就是伽马概率函数。
+
+</p>
+
+<p>
+帕累托分布：比较经典的一个例子就是20%人占有80%财富，而且这个比例关系在社会中不断的递归，这中分布就是pareto分布
+
+</p>
+
+<p>
+他们之间的组合是通过卷积来实现的，这一点也是给我解疑了。
+
+</p>
+
+<p>
+<a href="WelcomePage.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-05-30</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

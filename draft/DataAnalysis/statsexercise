@@ -1,0 +1,34 @@
+#tilte 自己动手的一些项目
+
+<p>
+
+
+* [[statsexercise_hourse.html][北七家商品房市场分析]]
+
+最近折腾买房，正好自己正在了解一些统计方面的知识，试着折腾一些，哎，感觉还是有差距啊。
+继续锻炼吧。todo fresh
+
+* [[statsexercise_bjhourse.html][北京商品房分析]]
+
+最近看了ggmap的package的觉得不错，然后从链家上抓了链家在售的房子信息，然后
+获得各个小区的价格信息，标示在地图上。可以宏观的看到北京的房价情况。
+
+* [[statsexercise_earthquake.html][中国近一周地震分布情况]]
+
+从晚上看到别人用R画出中国地震的分布情况，在此练一下。
+
+* [[statsexercise_googlebookNgram.html][google book中的Ngram数据分析]]
+
+今天无意中看到了google book关于统计词频的project，对数据很是感兴趣，决定抓取下来进行分析一下。
+
+* [[statsexercise_itemCF.html][协同推荐分析]]
+
+从网上看到了协同推荐系统的R实现，就看了一下这些资料。在这记录下来
+
+* [[statsexercise_spellingcorrector.html][英文的拼写纠错]]
+
+从[[http://www.ruanyifeng.com/blog/2012/10/spelling_corrector.html][阮一峰blog]]上看到了这篇文章，文中是利用python来实现的，我这里改用R。
+
+</p>
+
+[[WelcomePage.html][UP]]

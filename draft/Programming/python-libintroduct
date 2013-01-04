@@ -1,0 +1,49 @@
+#title Python lib introduction
+
+ref: http://www.vjianke.com/ZI91I.clip
+
+<p>
+*** 网络应用
+
+如果你想写网络应用，轻量级：web.py 中量级：Django,Pylon 重量级：tornado。
+
+其实很多人诟病Python的网络框架过于多，不能集中起来，我倒觉得无所谓。
+
+我用过Django， 写个小小的博客程序，1000多行，这是用java不可想象的。
+
+Youtube上有个半个小时的用Django写博客的演示：http://www.youtube.com/watch?v=srHZoj3ASmk 。 
+
+半个小时！！一边写一边讲！一个博客程序！！还带后台功能！What the F*! 是编程么！？我写个平衡树都不只半个小时啊！
+
+***  科学计算
+
+如果你想做科学计算，<nop>NumPy&SciPy可以取代90%matlab的常用功能，然后让我想一想，
+他们好像只有几十mb！！加上iPython也才700mb多！但是你没有更多的新学语法的成本，也不用付给mathwork血汗钱。
+
+*** 网络爬虫
+
+网络爬虫。Python的超强项，beautifulsoup的网页解析，scrapy等等，不一而足。Twitter， 微博等好像也有python的API。
+
+*** Machine Learning
+
+数据分析和Natural Language Processing。 请去Kaggle上看看多少参赛者是用的Python。 著名的库有Pandas。
+
+*** 写游戏
+
+Pygame。 试过几个别人写出来的游戏，非常顺畅
+
+*** 桌面应用
+
+pyqt。Dropbox貌似就是使用的pyqt写的。
+
+*** 图形库
+
+小的用过的有PIL
+
+*** 数据序列化
+
+pickle，cpickle，marshall。 而且重要的一点是Python的库是可以调入进去也可以直接运行使用的。 
+
+</p>
+
+[[python.html][UP]]

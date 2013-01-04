@@ -1,0 +1,100 @@
+#title 中科院分词工具源代码分析
+
+<p>
+* GBK知识
+GBK是大陆设置的汉字在计算机中的编码。
+码表的情况：http://ff.163.com/newflyff/gbk-list/
+。
+
+GBK采用双字节来表示汉字。总体的编码范围为8140~FEFE。首字节在81~FE之间，尾字节在40~FE之间。
+剔除xx7F一条线，共计23940个码位。
+
+ref：http://wenku.baidu.com/view/fbca474fe45c3b3567ec8bae.html
+
+ref：http://ir.hit.edu.cn/~taozi/bianma.htm
+
+fef：http://www.fmddlmyy.cn/text24.html
+
+全部的码位分为三部分：
+
+1. 汉字区
+<ul>
+<li>GBK2312收录了汉字6763个汉字</li>
+<li>GBK13000.1扩充汉字区</li>
+</ul>
+
+2. 图形符号区
+3. 用户自定义区 
+
+程序中将这个二位的空间表拉伸。
+GBK的范围是：第一字节 0xB0-0xF7；第二字节 0xA1-0xFE。
+所以即使在字典中的位置的时候用的算法是
+<example>
+#define CC_ID(c1,c2) ((unsigned char)(c1)-176)*94+((unsigned char)(c2)-161)
+</example>
+
+* 字典结构
+
+* 分词流程
+
+1. 首先是加载词库，这个是分词中比较重要的部分。
+2. 对句子进行原子切分，就是进行单个汉字的切分。
+3. 在针对上面的结果，查询数据库找到最大匹配词放到切分的结果中。
+4. 然后查找最N个短的路径。
+
+中间的一些细节还是设计的比较巧妙。
+
+比如说函数CSegment::<nop>BiGraphGenerate</nop>， 他的作用是将句子的拓扑结构进行转变，
+1 是实现行列优先的转变，2 是一维链表的二维拓扑的结果表示，3 这个拓扑符合后面的<nop>ShortPath</nop>
+的贪心算法的实现。
+
+函数<nop>CNShortPath</nop>::<nop>ShortPath</nop>函数就是实现贪心算法求出最短的N个路径，
+这个算法比较巧妙，在每个节点保存的都是最短N路径，而他的后续节点从他的前序的m*N个结果的到最短的权值，
+并把最短的N个前序节点记录在一个数组中。在从m*N个（m个前序节点）中找最短的N个权值，通过一个优先队列来实现的。
+
+* C++调试中的问题
+
+** 不能将有限定符的变量赋给没有限定符的变量。
+
+<example>
+//error
+const char *c1 = "dddd";
+char *c = c1;
+//correct
+char *c1 = "dddd";
+const char *c = c1;
+</example>
+
+** 字符串copy的问题
+
+*** 1. strcpy会将'\0'copy到目标地址中
+
+*** 2. strlen不会统计'\0'的长度
+在1，2同时使用的情况下，在分配目标的时候应该比strlen多分配一个空间。
+否则在删除空间的时候，用delete []的时候会出现heap corruption的错误。
+*** 3. delete [] / delete
+第一是删除多个空间，比如你用new出来的数组，第二则只是删除一个空间。
+
+** 操作符优先级
+
+*** 1. int *a[10] & int (*a)[10]
+
+第一表示指向int型的指针数组； 第二个表示指向int型数组的指针。
+
+*** 2. int *f(void) & int (*f)(void)
+
+第一个表示返回值是int指向型的函数f；第二个表示的是指向返回值是int型的函数指针。
+
+*** 3. const meaning
+1. const 放在 * 左边表示指向的内容是const，指针不是const；
+2. const 放在 * 右边表示指针是const，内容可以change；
+3. const 同时放在 * 左右表示内容和指针都是const
+
+<example>
+1. const int *npWeight == int const *npWeight
+2. int * const npWeight
+3. const int * const npWeight
+</example>
+</p>
+
+[[chineseanlysis.html][UP]]

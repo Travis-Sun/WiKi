@@ -1,0 +1,47 @@
+#title Adapter and Facade
+
+<p>
+* Adapter
+
+** Question
+1. adapter是一个非常简单，但非常实用的一个pattern。他可以通过转换接口来实现转换，
+书中的例子电源适配器是一个非常形象的例子。
+
+** Implementation
+
+<example>
+The Adapter Pattern: converts the interface of a class into another interface the clients expect. 
+Adapter lets classes work together that couldn't otherwise because of imcompatible interfaces.
+</example>
+
+1. adapter模式有两种实现的方式，一种是采用composite耦合形式的object实现；另一种就是采用inheritance耦合形式的class实现。
+这两种模式各有特点吧。
+
+2. java中的Enumeration和Iterator的相互转换就是采用了适配器的模式
+
+3. 他是在两个集合间搭起的一个桥，连接两个模块。
+
+** UML
+
+1. object实现UML 
+
+[[adapterpattern1.gif][Object Implementation]]
+
+2. class实现UML
+
+[[adapterpattern2.gif][Class Implementation]]
+
+
+** Code
+
+see ~/cs/designpattern/apdater.cs
+
+
+* 
+
+
+
+
+</p>
+
+[[designpattern.html][UP]]

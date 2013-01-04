@@ -1,0 +1,188 @@
+#title Python积累
+
+<p>
+
+** python dict
+
+<example>
+#这里初始化一个dict
+>>> d = {'a':1, 'b':0, 'c':1, 'd':0}
+#本意是遍历dict，发现元素的值是0的话，就删掉
+>>> for k in d:
+...   if d[k] == 0:
+...     del(d[k])
+...
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+RuntimeError: dictionary changed size during iteration
+#结果抛出异常了，两个0的元素，也只删掉一个。
+>>> d
+{'a': 1, 'c': 1, 'd': 0}
+
+>>> d = {'a':1, 'b':0, 'c':1, 'd':0}
+#d.keys() 是一个下标的数组
+>>> d.keys()
+['a', 'c', 'b', 'd']
+#这样遍历，就没问题了，因为其实其实这里遍历的是d.keys()这个list常量。
+>>> for k in d.keys():
+...   if d[k] == 0:
+...     del(d[k])
+...
+>>> d
+{'a': 1, 'c': 1}
+#结果也是对的
+>>>
+
+
+</example>
+
+其实这个问题本来很简单，就是说如果遍历一个字典，但是在遍历中改变了他，比如增删某个元素，就会导致遍历退出，
+并且抛出一个dictionary changed size during iteration的异常。有几种解决方法：
+**** 1. 遍历字典键值，以字典键值为依据遍历，这样改变了value以后不会影响遍历继续
+遍历中删除特定元素这种特例，得出“遍历dict的时候，养成使用 for k in d.keys() 的习惯”，
+我觉得有必要纠正一下。在普通的遍历中，应该使用 for k in adict。
+**** 2. 用items()来遍历
+<example>
+#!/usr/bin/env python
+# -*- coding=utf-8 -*-
+a = {'a':1, 'b':0, 'c':1, 'd':0}
+b={}
+for k,v in a.items():
+    if v != 0:
+        b.update({k:v})
+adict = b
+del b
+print a
+</example>
+**** 3. 其他途径来解决
+<example>
+>>> alist = [1,2,0,3,0,4,5]
+>>> alist = [i for i in alist if i != 0]
+>>> alist
+
+[1, 2, 3, 4, 5]
+
+>>> d = {'a':1, 'b':0, 'c':1, 'd':0}
+>>> d = dict([(k,v) for k,v in d.iteritems() if v!=0])
+>>> d
+{'a':1,'c':1'}
+
+or
+d = {k:v for k,v in d.iteritems() if v !=0 }
+</example>
+
+</p>
+
+** python encode/decode
+
+<example>
+#convert utf-8 to unicode
+aa = a.encode('utf-8')
+or
+aa = unicode(a,'utf-8')
+
+#convert unicode to utf-8
+a = aa.decode('utf-8')
+
+beside,
+In window, there are three bytes in utf-8 file. they are codecs.BOM.
+
+</example>
+
+*** object copy
+
+<example>
+>>> d = {'1': {}, '3': {}, '2': {}}
+>>> p = d
+>>> p
+{'1': {}, '3': {}, '2': {}}
+>>> p['4'] = {}
+>>> p
+{'1': {}, '3': {}, '2': {}, '4': {}}
+>>> p = p['4']
+>>> p
+{}
+>>> d
+{'1': {}, '3': {}, '2': {}, '4': {}}
+
+这个关涉到python中对象的浅copy和深copy的问题。
+浅copy只是新建一个类型和原来对象一样，其内容是原来对象元素的引用。
+通俗一点的说，就是你对对象里面的元素进行修改会影响到原对象的内容。
+但是如果你是针对对象本身进行修改就只是该对象本身修改，不影响原来的。
+不然上面对p整体进行复制(p = p['4'])，那此时只是修改p而没有影响d，
+但是你在添加或者修改p里面的元素(p['4'] = {})，d里面的相应也会变化。
+可以通过copy.deepcopy()来实现从对象到对象里面元素的深copy。
+这样和原对象就没有直接的关系，修改对象里面的元素也不会影响原对象。
+</example>
+
+*** closure
+
+<example>
+
+</example>
+
+*** yield
+
+用于实现生成器的关键字
+
+<example>
+def simpleGen():
+    yield '1'
+    yield '2'
+
+t = simpleGen()
+t.next() # >>> 1
+t.next() # >>> 2
+
+在for中实现本身就调用了next方法所以可以
+for str in simepleGen():
+    print s
+>>>
+1
+2
+</example>
+
+*** range or xrange
+
+<example>
+range 生成一个序列
+而xrange是一个生成器，所以在序列比较大的时候用xrange在空间和性能方面要好很多
+他俩的用法是一样的
+for i in range(10):
+fro i in xrange(10):
+</example>
+
+*** dict usage
+
+<example>
+dict = {}
+dict.get(k,defaultvalue) # if k in dict return dict[k], else defaultvalue
+</example>
+
+*** 将对象序列化
+
+<example>
+#1 repr() and eval() function
+repr(obj) # change the obj to string
+eval(str) # change the string to obj
+
+# for example
+>>>s = set()
+>>>s.add((1,2))
+>>>s.add((1,3))
+>>>s.add((1,4))
+>>>s.add((2,5))
+>>>repr(s)
+'set([(1, 2), (1, 5), (2, 3), (2, 4)])'
+>>>eval(repr(s))
+set([(1, 2), (1, 5), (2, 3), (2, 4)])
+
+# 2 pickle
+>>>import pickle
+>>>repr(pickle.dumps(s))
+>>>pickle.loads(eval(repr(pickle.dumps(s))))
+
+# 3 besides that, json package also can serial the object.
+</example>
+
+[[python.html][UP]]

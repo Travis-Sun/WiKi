@@ -1,0 +1,16 @@
+#title C#
+
+
+** [[regexpress.html][Regular Expression]]
+<p>
+这里集结了实际开发过程中应用到的一些正则表达式。
+</P>
+
+** [[csharp-csc.html][CSC CMD]]
+<p>
+这里描述了csc命令的一些说明，针对小的应用程序比较情况省劲。而不必在vs中又是solution又是project。
+</p>
+
+** [[csharp-getpath.html][C#中获取程序当前路径的集中方法]]
+
+[[WelcomePage][UP]]

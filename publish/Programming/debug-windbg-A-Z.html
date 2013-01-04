@@ -1,0 +1,1594 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Windbg From A to Z!</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Programming/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Windbg From A to Z!</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<h2>Behind the scence</h2>
+
+<h3>调试器直接的关系</h3>
+
+<p>
+在windbg之后有几个比较重要的dll文件：dbgeng.dll; dbghelp.dll。
+
+</p>
+
+<ul>
+<li>微软的几个调试的攻击windbg, cdb, drwtsn32.exe是基于dbgeng.dll来实现的。
+</li>
+<li>dbghelp.dll是基于dbgeng.dll来实现的。而一些其他的软件如ollydbg,processormonitor是基于dbghelp.dll来实现的
+</li>
+<li>可以说windbg就是dbgeng.dll的一个shell，你可以通过写自己的script来扩展其windbg的功能。
+</li>
+</ul>
+
+<h3>Symbol and Source</h3>
+
+<p>
+什么是Symbol文件，其实就是在编译链接生成可执行文件时，compier和linker有些关于生成symbol的选择。
+在生成可执行文件的时候就会生成一个.pdb文件(Program Database)。
+
+</p>
+
+<p>
+symbol和source直接的关系到windbg的调试效率。windbg还是一个基于symbol和source的调试的攻击。
+与VS的区别是，windbg可以得到更为详尽的调试信息。
+
+</p>
+
+<p>
+Symbol和Source可以通过设置环境变量_NT_SYMBOL_PATH和_NT_SOURCE_PATH来设置。
+
+</p>
+
+<p>
+在程序crash之前，程序和debuger都有处理这个异常的机会，其process是：
+
+</p>
+
+<ul>
+<li>throw exception, 这时候cpu会将把异常提交给debuger来进行处理。
+</li>
+<li>如果debuger没有出来这个异常，则交给程序的异常出来机制来进行出来。比如C#中的try...catch语句要获得并处理异常。
+</li>
+<li>如果程序的异常处理块中没有出来，debuger会获得2st chance去出来其异常。
+</li>
+<li>然后如果debuger还是不处理其异常，则程序crash。
+</li>
+</ul>
+
+<h2>Using windbg</h2>
+
+<h3>Remote debug</h3>
+
+<p>
+这里插一句就是可以用两个windbg进行remote debug，一个作为Server一个作为Client。试过比较爽，
+当然可以利用vs中自带的remote工具放在测试机上，然后在用vs或者是windbg remote过去。
+但是最近碰见一个问题也可能是win8的缘故，remote不过来，所以我就采用的两个windbg来进行联调。
+
+</p>
+
+<p>
+在调试的时候可以用appverifier将问题给进一步的暴露出来。
+
+</p>
+
+<pre class="example">On the machine that is actually running your process you want to debug, 
+start the process and get windbg on it somehow. At the wndbg cmd line window of that debugger, 
+enter this: 
+
+.server npipe:pipe=shawnwoo,icfenable
+
+Where the red &quot;shawnwoo&quot; can be some name you dream up. You might use suffix 0, 1, ..., n 
+if you need to remotely debug n processes.
+
+Then on another machine that you want to really run the debugger, start winbag with a cmd like:
+
+windbg -remote npipe:server=waukesha,pipe=shawnwoo
+
+The &quot;shawnwoo&quot; name has to match the pipe name you created, 
+and the &quot;Waukesha&quot; name has to be the machine name of your first machine 
+(where you are actually running the processes).
+
+
+Two things to think of:
+
+1.You may have to open a hole in your firewalls for the windbags to talk to each other. If it won't connect, try that (or talk to Li or me).
+2.You need to share the same symbols across the two machines.
+
+
+
+</pre>
+
+<h3>symbol</h3>
+
+<p>
+这里有必要在说一下symbol的内容，因为symbol在windbg调试中的地位是非常重要的，所以又重提一下:
+在用之前一定要设置好symbol path and source path.
+
+</p>
+
+<p>
+常用的一些command
+<pre class="example">!clr10\sos.help		Debugging Managed Code/通过类似这种方式来查看相应的一些扩展的命令
+.sympath		get/set path for symbol search
+.sympath +XY		XY directory to the searched symbol path
+!sym noisy		the debugger to display information about its search for symbols
+ld kernel32		load symbols for kernel32.dll
+ld *			load symbols for all modules
+.reload			reloads symbol information
+x kernel32!* 		examine and list all symbols in kernel32
+x kernel32!*LoadLibrary*	list all symbols in kernel32 which contain *LoadLibrary*
+dt ntdll!* 		display all variables in ntdll
+</pre>
+
+<h3>Process and Thread</h3>
+在Win NT运行环境中针对每个运行的Program或者是Processor都会一个PEB(Processor enviorment Block)和TEB(Thread enviorment Block).
+存储着Processor的一些info和其Thread的info。
+
+</p>
+
+<p>
+User mode的process用0000000-7FFFFFFFFF，而
+kernel mode 的process的空间是高位空间80000000-.....
+
+</p>
+
+<p>
+process cmd
+<pre class="example">!peb			displays a formatted view of the information in theprocess environment block (PEB)
+dt nt!_PEB Addr 	full PEB dump / dt nt!_peb -r @$peb
+!imgreloc 		display relocation information
+!dlls –c kernel32 	same as before for kernel32 only
+lm vm kernel32		verbose output (including image and symbol information) for kernel32
+!lmi kernel32 		similar implementation as an extension
+!dlls			display list of loaded modules with loader specific information (entry point, load count)
+!imgreloc 		display relocation information
+!dh kernel32 		display the headers for kernel32
+lm 			list loaded and unloaded modules
+</pre>
+
+<p>
+thread cmd
+<pre class="example">~			thread status for all threads
+~0			thread status for thread 0
+~.			thread status for current thread 
+~*			thread status for all thread. the detail info
+~0s			set the current thread
+~*k			call stack for all thread !uniqstack
+!gle			get the last error
+!runaway		displays information about time consumed by each thread; 
+			quick way to find out which threads are spinning out of control or consuming too much CPU time
+!teb			displays a formatted view of the information in the thread environment block (TEB)
+dt nt!_TEB Addr		full TEB dump / dt nt!_TEB -r @$teb
+</pre>
+
+<h3>Stack</h3>
+
+<p>
+每一个thread都有自己的stack space。可以通过命令来查看，而且其空间分为两部分：committed和reserted。
+默认的情况下，系统会为该thred分配1M的reserted和1 page的committed。
+<pre class="example">0:000&gt;!teb
+TEB at 7ffde000
+    ExceptionList:        0012fb44
+    StackBase:            00130000 ---------------------------base address
+    StackLimit:           0012e000 ---------------------------limit address
+    SubSystemTib:         00000000
+    FiberData:            00001e00
+    ArbitraryUserPointer: 00000000
+    Self:                 7ffde000
+    EnvironmentPointer:   00000000
+    ClientId:             00000afc . 00001b20
+    RpcHandle:            00000000
+    Tls Storage:          7ffde02c
+    PEB Address:          7ffdf000
+    LastErrorValue:       0
+    LastStatusValue:      0
+    Count Owned Locks:    0
+    HardErrorMode:        0
+
+0:000&gt; !address esp
+ ProcessParametrs 00301bf0 in range 00300000 0031c000
+ Environment 00300810 in range 00300000 0031c000
+    00030000 : 0012d000 - 00003000
+                    Type     00020000 MEM_PRIVATE
+                    Protect  00000004 PAGE_READWRITE
+                    State    00001000 MEM_COMMIT
+                    Usage    RegionUsageStack
+                    Pid.Tid  2eb4.2d24
+
+0:000&gt; dt nt!_teb DeallocationStack 7ffde000
+ntdll!_TEB
+   +0xe0c DeallocationStack : 0x00030000 
+
+0:000&gt; dt nt!_teb deallocationstack -r @$teb
+ntdll!_TEB
+   +0xe0c DeallocationStack : 0x00030000 
+
+0:000&gt; ? 00130000-0012d000
+Evaluate expression: 12288 = 00003000
+0:000&gt; ? 00130000-0x00030000 
+Evaluate expression: 1048576 = 00100000
+
+3000------&gt;12K committed
+100000----&gt;1M reserved space
+
+</pre>
+
+<p>
+doc中说一帮情况下分配1M的stack，这个没有问题，但是文档中所描述的用StackLimit-StackBase就是committed space是错误的。
+
+</p>
+
+<p>
+其stack的结构是这样的：
+
+</p>
+
+<pre class="example">-----------------
+|	~	|
+-----------------  &lt;---------------teb!StackBase
+|		|
+|  Committed	|
+|RW		|
+|		|
+-----------------  &lt;--------------teb!stacklimit
+|		|
+| committed	|
+|RW|GUARD	|
+|		|
+-----------------  &lt;---------------committed address
+|		|
+|		|
+|		|
+| Reserved	|
+~	~	~
+|		|
+|		|
+-----------------  &lt;-------------teb!deallocationstack
+</pre>
+
+<p>
+<strong>Stack Growth</strong>
+
+</p>
+
+<ol>
+<li>ESP 总是指向当前thread的stack的当前位置
+</li>
+<li>当stack用到GUARD的comiitted空间时，会触发一个exception(STATUS_GUARD_PAGE_VIOLATION (0x80000001))
+</li>
+<li>当stack增加超过了reserved space时，会触发一个TATUS_STACK_OVERFLOW exception.
+</li>
+</ol>
+
+<pre class="example">0:000&gt; !teb
+TEB at 7ffde000
+    ExceptionList:        0012f7d0
+    StackBase:            00130000
+    StackLimit:           00031000
+    SubSystemTib:         00000000
+    FiberData:            00001e00
+    ArbitraryUserPointer: 00000000
+    Self:                 7ffde000
+    EnvironmentPointer:   00000000
+    ClientId:             00001d04 . 000021c0
+    RpcHandle:            00000000
+    Tls Storage:          7ffde02c
+    PEB Address:          7ffdf000
+    LastErrorValue:       0
+    LastStatusValue:      c0000008
+    Count Owned Locks:    0
+    HardErrorMode:        0
+
+0:000&gt; ? 00130000-00031000
+Evaluate expression: 1044480 = 000ff000
+
+0:000&gt; r esp
+esp=0012f53c
+</pre>
+
+<p>
+stack用了255page的committed space之后，throw了stack overflow exception。
+
+</p>
+
+<p>
+stack可能有几种方式把其空间占满：
+
+</p>
+
+<ol>
+<li>无止境的call，不如recuid call
+</li>
+<li>N多的local varieable。超过了stack的分配空间，在create的时候反正得空间占满情况。
+</li>
+</ol>
+
+<p>
+可以通过esp来查看栈顶的情况。
+
+</p>
+
+<p>
+关于stack的一些命令：
+
+</p>
+
+<pre class="example">!uniqstack		displays call-stacks for all of the threads in the current process.
+!findstack MySymbol 2	locates all call-stacks that contain MySymbol, 2 means display depth.
+k			display call stack for current thread
+kP			P == full parameters for each function called
+kf			f == distance between adjacent frames to be displayed
+			(useful to check stack consumption of each frame)
+kv			v == display FPO information + calling convention
+kb			b == display the first three parameters passed to each function
+</pre>
+
+<h3>windbg操作memory的一些命令：</h3>
+
+<pre class="example">d, dd, da, du, ..	Display memory
+			dd == double word values
+			da == display ASCII characters
+			du == display Unicode characters
+f			fill memory
+!vprot MyAddr		Displays virtual memory protection information for MyAddr
+!address MyAddr		Display information (type, protection, usage, ..) about 
+			the memory specified by MyAddr
+!address -RegionUsageStack	Display stack regions for all threads in the process
+dds			Display Words and Symbols
+ddp			Display Referenced Memory.
+			If a match to a known symbol is found, this symbol is
+			displayed as well.
+</pre>
+
+<h3>Heap </h3>
+
+<p>
+关于heap的一些cmd：
+
+</p>
+
+<pre class="example">!heap -?		Brief help
+!heap -h		List heaps with index and range (= startAddr, endAddr)
+!heap -s 0		Summary for all heaps. = reserved and committed memory, ..
+!heap -flt s Size	Dump info for allocations matching Size
+!heap -stat		Dump HeapHandle list.
+			HeapHandle = value returned by HeapCreate or GetProcessHeap
+!heap -stat -h 0	Dump usage statistic for every AllocSize.
+			= AllocSize, #blocks, and TotalMem for each AllocSize
+!heap -p		GFlags settings, HeapHandle list
+!heap -p -all		Details of all allocations in all heaps in the process. 
+			= all HeapAlloc calls listed
+!heap -p -a UserAddr	Details of heap allocation containing UserAddr (i.e. the address
+			returned by HeapAlloc). Prints back traces when available.
+
+</pre>
+
+<p>
+下面的我也不是很懂，就照搬下来了，等到了一定的层次就可以理解：
+
+</p>
+
+<p>
+<strong>Page Heap=Disable</strong>
+<hr />
+当page heap设置成为disable之后，则系统会通过创建下面的结构来维护heap：
+(默认的情况下是将page heap设置成disable的）
+_HEAP struct 和 _HEAP_ENTRY struct.
+
+</p>
+
+<ul>
+<li>_HEAP struct
+</li>
+</p>
+
+<ol>
+<li>Defined in ntdll.dll: dt ntdll!_HEAP
+</li>
+<li>For every HeapCreate there is a unique _HEAP
+</li>
+<li>You can use "!heap -p -all" to get addresses for all _HEAP structs in your process
+</ul>
+</li>
+</ol>
+
+<ul>
+<li>_HEAP_ENTRY struct
+</li>
+</p>
+
+<ol>
+<li>Defined in ntdll.dll: dt ntdll!_HEAP_ENTRY
+</li>
+<li>For every HeapAlloc there is a unique _HEAP_ENTRY
+</li>
+<li>You can use "!heap -p -all" to get addresses for all heap entries in your process
+</ul>
+</li>
+</ol>
+
+<p>
+<strong>Page Heap=Enable</strong>
+<hr />
+Page Heap 是为了检验其动态分配内存的情况。Page Heap又分为正常页堆和完全页堆。
+
+</p>
+
+<p>
+可以通过一些Gflags、verify Application和pageheap等工具来设置其开关。
+
+</p>
+
+<p>
+如果page heap设置成enable之后，则系统则会用到另一套结构来维护heap。
+You can enable page heap with Global Flags (gflags.exe).
+_DPH_HEAP_ROOT struct 和 _DPH_HEAP_BLOCK struct
+
+</p>
+
+<ul>
+<li>_DPH_HEAP_ROOT struct
+</li>
+</p>
+
+<ol>
+<li>Defined in ntdll.dll: dt ntdll!_DPH_HEAP_ROOT
+</li>
+<li>For every HeapCreate there is a unique _DPH_HEAP_ROOT
+</li>
+<li>You can use "!heap -p -all" to get addresses for all heap roots in your process
+	Usually address of a _DPH_HEAP_ROOT = value of HeapHandle + 0x1000
+</ul>
+</li>
+</ol>
+
+<ul>
+<li>_DPH_HEAP_BLOCK struct
+</li>
+</p>
+
+<ol>
+<li>Defined in ntdll.dll: dt ntdll!_DPH_HEAP_BLOCK
+</li>
+<li>For every HeapAlloc there is a unique _DPH_HEAP_BLOCK
+</li>
+<li>You can use "!heap -p -all" to get addresses for all heap blocks in your process
+</ul>
+</li>
+</ol>
+
+<p>
+<strong>WHO CALL HEAPALLOC</strong>
+
+</p>
+
+<p>
+首先启动your application，要将applicaion用gflags命令设置成page heap=enable。
+然后重启your application，并用windbg attach到your application进行debug。
+
+</p>
+
+<p>
+cmd：
+
+</p>
+
+<pre class="example">!heap -p -a &lt;UserAddr&gt;
+	&lt;UserAddr&gt; = address of our allocation (returned by HeapAlloc, new, ..)
+	Will dump the call-stack but without source information.解释一下
+	这个命令会将追查到调用heapalloc的那个时间的call-stack。那不是用kb也可以显示出来吗？
+	错！kb命令是当前的stack的情况，而heapalloc可能已经执行结束了（应该没有那么幸运正好break到这个点上）
+	那此时我们就可以看到这个瞬间的历史时刻。下面的例子进一步进行，但是我实际的调试中这一步就可以看到谁在call
+dt ntdll!_DPH_HEAP_BLOCK StackTrace &lt;MyHeapBlockAddr&gt;
+	&lt;MyHeapBlockAddr&gt; = DPH_HEAP_BLOCK address retrieved in previous step
+	StackTrace = member of DPH_HEAP_BLOCK which stores the call stack for our HeapAlloc
+	进一步查看
+dds &lt;StackTrace&gt;
+	&lt;StackTrace&gt; = value retrieved in previous step
+	dds will dump the call-stack with source information included
+</pre>
+
+<p>
+example:
+
+</p>
+
+<pre class="example">HeapAlloc( 0x00160000, 8, dwBytes =0x00A00000 ) --&gt;&gt; 0x06011000;
+
+
+(900.1808): Break instruction exception - code 80000003 (first chance)
+eax=7ffdd000 ebx=00000000 ecx=00000000 edx=772dd23d esi=00000000 edi=00000000
+eip=77273540 esp=06b1ff5c ebp=06b1ff88 iopl=0         nv up ei pl zr na pe nc
+cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00000246
+ntdll!DbgBreakPoint:
+77273540 cc              int     3
+0:001&gt; !heap -p -a 0x06011000
+    address 06011000 found in
+    _DPH_HEAP_ROOT @ 161000
+    in busy allocation (  DPH_HEAP_BLOCK:         UserAddr         UserSize -         VirtAddr         VirtSize)
+                                 53d04e0:          6011000           a00000 -          6010000           a02000
+    63558e89 verifier!AVrfDebugPageHeapAllocate+0x00000229
+    77304ea6 ntdll!RtlDebugAllocateHeap+0x00000030
+    772c7d96 ntdll!RtlpAllocateHeap+0x000000c4
+    772934ca ntdll!RtlAllocateHeap+0x0000023a
+    004bec88 CrashMe!CCrashMeDlg::OnBnClicked_HeapAlloc+0x00000068
+    004efe12 CrashMe!_AfxDispatchCmdMsg+0x000000b2
+    004f0696 CrashMe!CCmdTarget::OnCmdMsg+0x000002e6
+    004c19a3 CrashMe!CDialog::OnCmdMsg+0x00000023
+    004e4f74 CrashMe!CWnd::OnCommand+0x00000174
+    004e36f9 CrashMe!CWnd::OnWndMsg+0x00000079
+    004e3632 CrashMe!CWnd::WindowProc+0x00000032
+    004dfd90 CrashMe!AfxCallWndProc+0x000000f0
+    004e04a6 CrashMe!AfxWndProc+0x000000a6
+    757886ef USER32!InternalCallWinProc+0x00000023
+    75788876 USER32!UserCallWinProcCheckWow+0x0000014b
+    75787631 USER32!SendMessageWorker+0x000004d0
+    75787695 USER32!SendMessageW+0x0000007c
+    74184e95 COMCTL32!Button_NotifyParent+0x0000003d
+    74184ef7 COMCTL32!Button_ReleaseCapture+0x00000113
+    74184d89 COMCTL32!Button_WndProc+0x00000a18
+    757886ef USER32!InternalCallWinProc+0x00000023
+    75788876 USER32!UserCallWinProcCheckWow+0x0000014b
+    757889b5 USER32!DispatchMessageWorker+0x0000035e
+    75788e9c USER32!DispatchMessageW+0x0000000f
+    75787033 USER32!IsDialogMessageW+0x00000588
+    004f1f43 CrashMe!CWnd::IsDialogMessageW+0x00000073
+    004ebc5e CrashMe!CWnd::PreTranslateInput+0x0000006e
+    004c192f CrashMe!CDialog::PreTranslateMessage+0x000000ef
+    004e65ad CrashMe!CWnd::WalkPreTranslateTree+0x0000008d
+    004f88df CrashMe!AfxInternalPreTranslateMessage+0x0000004f
+    004f9d65 CrashMe!CWinThread::PreTranslateMessage+0x00000025
+    004f8975 CrashMe!AfxPreTranslateMessage+0x00000025
+
+ 
+0:001&gt; kb
+ChildEBP RetAddr  Args to Child              
+06b1ff58 772dd279 494edbf5 00000000 00000000 ntdll!DbgBreakPoint
+06b1ff88 76171194 00000000 06b1ffd4 7729b3f5 ntdll!DbgUiRemoteBreakin+0x3c
+06b1ff94 7729b3f5 00000000 494edba9 00000000 kernel32!BaseThreadInitThunk+0xe
+06b1ffd4 7729b3c8 772dd23d 00000000 00000000 ntdll!__RtlUserThreadStart+0x70
+06b1ffec 00000000 772dd23d 00000000 00000000 ntdll!_RtlUserThreadStart+0x1b
+0:001&gt; kb 2000
+ChildEBP RetAddr  Args to Child              
+06b1ff58 772dd279 494edbf5 00000000 00000000 ntdll!DbgBreakPoint
+06b1ff88 76171194 00000000 06b1ffd4 7729b3f5 ntdll!DbgUiRemoteBreakin+0x3c
+06b1ff94 7729b3f5 00000000 494edba9 00000000 kernel32!BaseThreadInitThunk+0xe
+06b1ffd4 7729b3c8 772dd23d 00000000 00000000 ntdll!__RtlUserThreadStart+0x70
+06b1ffec 00000000 772dd23d 00000000 00000000 ntdll!_RtlUserThreadStart+0x1b
+0:001&gt; ~0 kb 2000
+ChildEBP RetAddr  Args to Child              
+0012fbd4 75788f8f 75788fc2 0333eec8 00000000 ntdll!KiFastSystemCallRet
+0012fbd8 75788fc2 0333eec8 00000000 00000000 USER32!NtUserGetMessage+0xc
+0012fbf4 004f8683 0333eec8 00000000 00000000 USER32!GetMessageW+0x33
+0012fc20 004fa1fe 00656cd8 0012fc38 004f87d1 CrashMe!AfxInternalPumpMessage+0x23 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\thrdcore.cpp @ 153]
+0012fc2c 004f87d1 00656cd8 0012fc60 004ebe67 CrashMe!CWinThread::PumpMessage+0xe [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\thrdcore.cpp @ 900]
+0012fc38 004ebe67 00000000 00000000 0012fdc0 CrashMe!AfxPumpMessage+0x21 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\thrdcore.cpp @ 190]
+0012fc60 004c2e53 00000004 e9d2d8d6 0012fe94 CrashMe!CWnd::RunModalLoop+0x1d7 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 4386]
+0012fccc 004c0e03 e9d2daba 00000000 00000000 CrashMe!CDialog::DoModal+0x1e3 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\dlgcore.cpp @ 584]
+0012fea0 00605c74 004b405b 00659974 00000001 CrashMe!CCrashMeApp::InitInstance+0xa3 [d:\sun\home\dbg\pcrashme\crashme\crashme.cpp @ 64]
+0012fec4 00605b6a 00400000 00000000 0016af9a CrashMe!AfxWinMain+0x84 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\winmain.cpp @ 37]
+0012fedc 00594595 00400000 00000000 0016af9a CrashMe!wWinMain+0x1a [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\appmodul.cpp @ 34]
+0012ff80 0059441f 0012ff94 76171194 7ffdf000 CrashMe!__tmainCRTStartup+0x165 [f:\dd\vctools\crt_bld\self_x86\crt\src\crt0.c @ 263]
+0012ff88 76171194 7ffdf000 0012ffd4 7729b3f5 CrashMe!wWinMainCRTStartup+0xf [f:\dd\vctools\crt_bld\self_x86\crt\src\crt0.c @ 182]
+0012ff94 7729b3f5 7ffdf000 4feddba9 00000000 kernel32!BaseThreadInitThunk+0xe
+0012ffd4 7729b3c8 004af49d 7ffdf000 00000000 ntdll!__RtlUserThreadStart+0x70
+0012ffec 00000000 004af49d 7ffdf000 00000000 ntdll!_RtlUserThreadStart+0x1b
+0:001&gt; dt ntdll!_DPH_HEAP_BLOCK stacktrace 53d04e0
+   +0x030 StackTrace : 0x006a2284 _RTL_TRACE_BLOCK
+0:001&gt; dds 0x006a2284 
+006a2284  00000000
+006a2288  0000f801
+006a228c  00200000
+006a2290  63558e89 verifier!AVrfDebugPageHeapAllocate+0x229
+006a2294  77304ea6 ntdll!RtlDebugAllocateHeap+0x30
+006a2298  772c7d96 ntdll!RtlpAllocateHeap+0xc4
+006a229c  772934ca ntdll!RtlAllocateHeap+0x23a
+006a22a0  004bec88 CrashMe!CCrashMeDlg::OnBnClicked_HeapAlloc+0x68 [d:\sun\home\dbg\pcrashme\crashme\crashmedlg.cpp @ 279]
+006a22a4  004efe12 CrashMe!_AfxDispatchCmdMsg+0xb2 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\cmdtarg.cpp @ 82]
+006a22a8  004f0696 CrashMe!CCmdTarget::OnCmdMsg+0x2e6 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\cmdtarg.cpp @ 381]
+006a22ac  004c19a3 CrashMe!CDialog::OnCmdMsg+0x23 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\dlgcore.cpp @ 85]
+006a22b0  004e4f74 CrashMe!CWnd::OnCommand+0x174 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 2364]
+006a22b4  004e36f9 CrashMe!CWnd::OnWndMsg+0x79 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 1769]
+006a22b8  004e3632 CrashMe!CWnd::WindowProc+0x32 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 1755]
+006a22bc  004dfd90 CrashMe!AfxCallWndProc+0xf0 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 240]
+006a22c0  004e04a6 CrashMe!AfxWndProc+0xa6 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 403]
+006a22c4  757886ef USER32!InternalCallWinProc+0x23
+006a22c8  75788876 USER32!UserCallWinProcCheckWow+0x14b
+006a22cc  75787631 USER32!SendMessageWorker+0x4d0
+006a22d0  75787695 USER32!SendMessageW+0x7c
+006a22d4  74184e95 COMCTL32!Button_NotifyParent+0x3d
+006a22d8  74184ef7 COMCTL32!Button_ReleaseCapture+0x113
+006a22dc  74184d89 COMCTL32!Button_WndProc+0xa18
+006a22e0  757886ef USER32!InternalCallWinProc+0x23
+006a22e4  75788876 USER32!UserCallWinProcCheckWow+0x14b
+006a22e8  757889b5 USER32!DispatchMessageWorker+0x35e
+006a22ec  75788e9c USER32!DispatchMessageW+0xf
+006a22f0  75787033 USER32!IsDialogMessageW+0x588
+006a22f4  004f1f43 CrashMe!CWnd::IsDialogMessageW+0x73 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\winocc.cpp @ 198]
+006a22f8  004ebc5e CrashMe!CWnd::PreTranslateInput+0x6e [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 4332]
+006a22fc  004c192f CrashMe!CDialog::PreTranslateMessage+0xef [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\dlgcore.cpp @ 80]
+006a2300  004e65ad CrashMe!CWnd::WalkPreTranslateTree+0x8d [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 2946]
+
+</pre>
+
+<p>
+<strong>WHO CALL HEAPCREATE</strong>
+
+</p>
+
+<p>
+启动的application的方式和上面一样。
+
+</p>
+
+<p>
+cmd:
+
+</p>
+
+<pre class="example">!heap -p –h &lt;HeapHandle&gt;
+	&lt;HeapHandle&gt; = value returned by HeapCreate
+	You can do a “!heap -stat” or “!heap -p” to get a list of heaps for you process and their handles
+	此时的意思是我不是在使用heap，我是创建了一个heap，所以通过其他的一些命令也能找到相应的heap address.
+	此时就看不到了-a命令中的call-stack内容，就接着往下分析。
+dt ntdll!_DPH_HEAP_ROOT createStackTrace &lt;myheaprootaddress&gt;
+	&lt;MyHeapRootAddr&gt; = DPH_HEAP_ROOT address retrieved in previous step
+	CreateStackTrace = member of DPH_HEAP_ROOT which stores the call stack for
+	HeapCreate call
+dds &lt;CreateStackTrace&gt;
+	&lt;CreateStackTrace&gt; = value retrieved in previous step
+	dds will dump the call-stack with source information included
+	此时才看到了庐山的真面目了。
+</pre>
+
+<p>
+example：
+
+</p>
+
+<pre class="example">HeapCreate( 0x0000000A, 0, 0 ) --&gt;&gt; 0x03EA0000;------------------------1
+
+
+(900.1cbc): Break instruction exception - code 80000003 (first chance)
+eax=7ffdd000 ebx=00000000 ecx=00000000 edx=772dd23d esi=00000000 edi=00000000
+eip=77273540 esp=0409ff5c ebp=0409ff88 iopl=0         nv up ei pl zr na pe nc
+cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00000246
+ntdll!DbgBreakPoint:
+77273540 cc              int     3
+0:001&gt; !heap -stat
+_HEAP 03ea0000
+     Segments            00000001
+         Reserved  bytes 00040000
+         Committed bytes 00001000
+     VirtAllocBlocks     00000000
+         VirtAlloc bytes 00000000
+_HEAP 03da0000
+     Segments            00000001
+         Reserved  bytes 00040000
+         Committed bytes 00001000
+     VirtAllocBlocks     00000000
+         VirtAlloc bytes 00000000
+_HEAP 03480000
+     Segments            00000001
+         Reserved  bytes 00040000
+         Committed bytes 00001000
+     VirtAllocBlocks     00000000
+         VirtAlloc bytes 00000000
+_HEAP 02d80000
+     Segments            00000001
+         Reserved  bytes 00010000
+         Committed bytes 00001000
+     VirtAllocBlocks     00000000
+         VirtAlloc bytes 00000000
+_HEAP 02c80000
+     Segments            00000001
+         Reserved  bytes 00010000
+         Committed bytes 00001000
+     VirtAllocBlocks     00000000
+         VirtAlloc bytes 00000000
+_HEAP 01b60000
+     Segments            00000001
+         Reserved  bytes 00040000
+         Committed bytes 00001000
+     VirtAllocBlocks     00000000
+         VirtAlloc bytes 00000000
+_HEAP 01960000
+     Segments            00000001
+         Reserved  bytes 00010000
+         Committed bytes 00001000
+     VirtAllocBlocks     00000000
+         VirtAlloc bytes 00000000
+_HEAP 01670000
+     Segments            00000001
+         Reserved  bytes 00040000
+         Committed bytes 00001000
+     VirtAllocBlocks     00000000
+         VirtAlloc bytes 00000000
+_HEAP 00160000
+     Segments            00000001
+         Reserved  bytes 00100000
+         Committed bytes 00001000
+     VirtAllocBlocks     00000000
+         VirtAlloc bytes 00000000
+0:001&gt; !heap -p -h 0x03EA0000----------------------------------------------2
+    _DPH_HEAP_ROOT @ 3ea1000-----------------------------------------------3
+    Freed and decommitted blocks
+      DPH_HEAP_BLOCK : VirtAddr VirtSize
+    Busy allocations
+      DPH_HEAP_BLOCK : UserAddr  UserSize - VirtAddr VirtSize
+    _HEAP @ 4180000
+      No FrontEnd
+      _HEAP_SEGMENT @ 4180000
+       CommittedRange @ 4180588
+      HEAP_ENTRY Size Prev Flags    UserPtr UserSize - state
+      * 04180588 0048 0000  [00]   04180590    00238 - (busy)
+        041807c8 0103 0048  [00]   041807d0    00810 - (free)
+      * 04180fe0 0004 0103  [00]   04180fe8    00018 - (busy)
+       VirtualAllocdBlocks @ 41800a0
+0:001&gt; dt ntdll!_DPH_HEAP_ROOT createstacktrace 3ea1000-----------------4
+   +0x0b8 CreateStackTrace : 0x0069efe4 _RTL_TRACE_BLOCK----------------5
+0:001&gt; dds 0x0069efe4 --------------------------------------------------6
+0069efe4  00000000
+0069efe8  0000f801
+0069efec  00200000
+0069eff0  63558969 verifier!AVrfDebugPageHeapCreate+0x439
+0069eff4  772ba9a8 ntdll!RtlCreateHeap+0x41
+0069eff8  755fd932 KERNELBASE!HeapCreate+0x55
+0069effc  004bf264 CrashMe!CCrashMeDlg::OnBnClicked_HeapCreate+0x44 [d:\sun\home\dbg\pcrashme\crashme\crashmedlg.cpp @ 395]
+0069f000  004efe12 CrashMe!_AfxDispatchCmdMsg+0xb2 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\cmdtarg.cpp @ 82]
+0069f004  004f0696 CrashMe!CCmdTarget::OnCmdMsg+0x2e6 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\cmdtarg.cpp @ 381]
+0069f008  004c19a3 CrashMe!CDialog::OnCmdMsg+0x23 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\dlgcore.cpp @ 85]
+0069f00c  004e4f74 CrashMe!CWnd::OnCommand+0x174 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 2364]
+0069f010  004e36f9 CrashMe!CWnd::OnWndMsg+0x79 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 1769]
+0069f014  004e3632 CrashMe!CWnd::WindowProc+0x32 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 1755]
+0069f018  004dfd90 CrashMe!AfxCallWndProc+0xf0 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 240]
+0069f01c  004e04a6 CrashMe!AfxWndProc+0xa6 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 403]
+0069f020  757886ef USER32!InternalCallWinProc+0x23
+0069f024  75788876 USER32!UserCallWinProcCheckWow+0x14b
+0069f028  75787631 USER32!SendMessageWorker+0x4d0
+0069f02c  75787695 USER32!SendMessageW+0x7c
+0069f030  74184e95 COMCTL32!Button_NotifyParent+0x3d
+0069f034  74184ef7 COMCTL32!Button_ReleaseCapture+0x113
+0069f038  74184d89 COMCTL32!Button_WndProc+0xa18
+0069f03c  757886ef USER32!InternalCallWinProc+0x23
+0069f040  75788876 USER32!UserCallWinProcCheckWow+0x14b
+0069f044  757889b5 USER32!DispatchMessageWorker+0x35e
+0069f048  75788e9c USER32!DispatchMessageW+0xf
+0069f04c  75787033 USER32!IsDialogMessageW+0x588
+0069f050  004f1f43 CrashMe!CWnd::IsDialogMessageW+0x73 [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\winocc.cpp @ 198]
+0069f054  004ebc5e CrashMe!CWnd::PreTranslateInput+0x6e [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 4332]
+0069f058  004c192f CrashMe!CDialog::PreTranslateMessage+0xef [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\dlgcore.cpp @ 80]
+0069f05c  004e65ad CrashMe!CWnd::WalkPreTranslateTree+0x8d [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\wincore.cpp @ 2946]
+0069f060  004f88df CrashMe!AfxInternalPreTranslateMessage+0x4f [f:\dd\vctools\vc7libs\ship\atlmfc\src\mfc\thrdcore.cpp @ 233]
+
+</pre>
+
+<h3>Heap leak</h3>
+
+<p>
+cmd
+
+</p>
+
+<pre class="example">!address -summary
+	Summary about memory usage for your process. If RegionUsageHeap or
+	RegionUsagePageHeap is growing constantly, then you might have a memory leak on the
+	heap. Proceed with the following steps.
+
+!heap –stat –h 0
+	Will list down handle specific allocation statistics for every AllocSize. 
+	For every AllocSize the following is listed: AllocSize, #blocks, and TotalMem.
+	Take the AllocSize with maximum TotalMem
+
+!heap –flt s &lt;size&gt;
+	&lt;size&gt; = size being allocated by HeapAlloc. Value retrieved in previous step.
+
+!heap -p -a &lt;UserAddr&gt;
+	&lt;UserAddr&gt; = address of our allocation (returned by HeapAlloc, new, ..)
+	Will dump the call-stack but without source information. 
+
+</pre>
+
+<p>
+example
+
+</p>
+
+<pre class="example">0:001&gt; !heap -stat -h 0
+
+Allocations statistics for
+ heap @ 00160000
+group-by: TOTSIZE max-display: 20
+    size     #blocks     total     ( %) (percent of total busy bytes)
+    a00000 1 - a00000  (99.12)--------------------------------------------------------1 from program code
+    3980 1 - 3980  (0.14)
+    b4 28 - 1c20  (0.07)
+    20 dd - 1ba0  (0.07)
+    d0 18 - 1380  (0.05)
+    12e2 1 - 12e2  (0.05)
+    d56 1 - d56  (0.03)
+    78 1c - d20  (0.03)
+    50c 2 - a18  (0.02)
+    10 99 - 990  (0.02)
+    928 1 - 928  (0.02)
+    198 5 - 7f8  (0.02)
+    7d8 1 - 7d8  (0.02)
+    618 1 - 618  (0.01)
+    614 1 - 614  (0.01)
+    5b0 1 - 5b0  (0.01)
+    500 1 - 500  (0.01)
+    40 12 - 480  (0.01)
+    440 1 - 440  (0.01)
+    21c 2 - 438  (0.01)
+
+
+Allocations statistics for
+ heap @ 01670000
+group-by: TOTSIZE max-display: 20
+    size     #blocks     total     ( %) (percent of total busy bytes)
+
+
+Allocations statistics for
+ heap @ 01960000
+group-by: TOTSIZE max-display: 20
+    size     #blocks     total     ( %) (percent of total busy bytes)
+    1830 1 - 1830  (28.04)
+    1124 1 - 1124  (19.87)
+    a14 1 - a14  (11.68)
+    800 1 - 800  (9.27)
+    8 e2 - 710  (8.19)
+    80 d - 680  (7.54)
+    480 1 - 480  (5.22)
+    220 1 - 220  (2.46)
+    214 1 - 214  (2.41)
+    200 1 - 200  (2.32)
+    100 1 - 100  (1.16)
+    fc 1 - fc  (1.14)
+    40 1 - 40  (0.29)
+    10 4 - 40  (0.29)
+    1a 1 - 1a  (0.12)
+
+
+Allocations statistics for
+ heap @ 01b60000
+group-by: TOTSIZE max-display: 20
+    size     #blocks     total     ( %) (percent of total busy bytes)
+
+
+Allocations statistics for
+ heap @ 02c80000
+group-by: TOTSIZE max-display: 20
+    size     #blocks     total     ( %) (percent of total busy bytes)
+
+
+Allocations statistics for
+ heap @ 02d80000
+group-by: TOTSIZE max-display: 20
+    size     #blocks     total     ( %) (percent of total busy bytes)
+    2036 1 - 2036  (29.08)
+    1528 1 - 1528  (19.10)
+    824 2 - 1048  (14.70)
+    76c 1 - 76c  (6.70)
+    244 1 - 244  (2.05)
+    238 1 - 238  (2.00)
+    228 1 - 228  (1.95)
+    58 6 - 210  (1.86)
+    84 3 - 18c  (1.40)
+    76 3 - 162  (1.25)
+    6c 3 - 144  (1.14)
+    60 3 - 120  (1.02)
+    11a 1 - 11a  (0.99)
+    5a 3 - 10e  (0.95)
+    52 3 - f6  (0.87)
+    78 2 - f0  (0.85)
+    72 2 - e4  (0.80)
+    4c 3 - e4  (0.80)
+    48 3 - d8  (0.76)
+    d0 1 - d0  (0.73)
+
+
+Allocations statistics for
+ heap @ 03480000
+group-by: TOTSIZE max-display: 20
+    size     #blocks     total     ( %) (percent of total busy bytes)
+    100 8 - 800  (31.28)
+    18 37 - 528  (20.16)
+    4c4 1 - 4c4  (18.63)
+    8 6b - 358  (13.07)
+    50 3 - f0  (3.67)
+    40 3 - c0  (2.93)
+    80 1 - 80  (1.95)
+    20 4 - 80  (1.95)
+    70 1 - 70  (1.71)
+    54 1 - 54  (1.28)
+    24 2 - 48  (1.10)
+    c 5 - 3c  (0.92)
+    30 1 - 30  (0.73)
+    14 1 - 14  (0.31)
+    10 1 - 10  (0.24)
+    4 1 - 4  (0.06)
+    0 2 - 0  (0.00)
+
+
+Allocations statistics for
+ heap @ 03da0000
+group-by: TOTSIZE max-display: 20
+    size     #blocks     total     ( %) (percent of total busy bytes)
+    4000 2 - 8000  (59.25)
+    800 4 - 2000  (14.81)
+    1362 1 - 1362  (8.97)
+    bee 1 - bee  (5.52)
+    90c 1 - 90c  (4.19)
+    278 2 - 4f0  (2.29)
+    458 1 - 458  (2.01)
+    202 1 - 202  (0.93)
+    200 1 - 200  (0.93)
+    58 2 - b0  (0.32)
+    a0 1 - a0  (0.29)
+    98 1 - 98  (0.27)
+    3c 2 - 78  (0.22)
+
+0:001&gt; !heap -flt s a00000-----------------------------------------------------------------2
+    _DPH_HEAP_ROOT @ 161000
+    Freed and decommitted blocks
+      DPH_HEAP_BLOCK : VirtAddr VirtSize
+    Busy allocations
+      DPH_HEAP_BLOCK : UserAddr  UserSize - VirtAddr VirtSize
+        053d05b0 : 05601000 00a00000 - 05600000 00a02000-----------------------------------3
+    _HEAP @ 260000
+    _DPH_HEAP_ROOT @ 1671000
+    Freed and decommitted blocks
+      DPH_HEAP_BLOCK : VirtAddr VirtSize
+    Busy allocations
+      DPH_HEAP_BLOCK : UserAddr  UserSize - VirtAddr VirtSize
+    _HEAP @ 1820000
+    _DPH_HEAP_ROOT @ 1961000
+    Freed and decommitted blocks
+      DPH_HEAP_BLOCK : VirtAddr VirtSize
+    Busy allocations
+      DPH_HEAP_BLOCK : UserAddr  UserSize - VirtAddr VirtSize
+    _HEAP @ 3e0000
+    _DPH_HEAP_ROOT @ 1b61000
+    Freed and decommitted blocks
+      DPH_HEAP_BLOCK : VirtAddr VirtSize
+    Busy allocations
+      DPH_HEAP_BLOCK : UserAddr  UserSize - VirtAddr VirtSize
+    _HEAP @ 1d30000
+    _DPH_HEAP_ROOT @ 2c81000
+    Freed and decommitted blocks
+      DPH_HEAP_BLOCK : VirtAddr VirtSize
+    Busy allocations
+      DPH_HEAP_BLOCK : UserAddr  UserSize - VirtAddr VirtSize
+    _HEAP @ 2ef0000
+    _DPH_HEAP_ROOT @ 2d81000
+    Freed and decommitted blocks
+      DPH_HEAP_BLOCK : VirtAddr VirtSize
+    Busy allocations
+      DPH_HEAP_BLOCK : UserAddr  UserSize - VirtAddr VirtSize
+    _HEAP @ 1810000
+    _DPH_HEAP_ROOT @ 3481000
+    Freed and decommitted blocks
+      DPH_HEAP_BLOCK : VirtAddr VirtSize
+    Busy allocations
+      DPH_HEAP_BLOCK : UserAddr  UserSize - VirtAddr VirtSize
+    _HEAP @ 3690000
+    _DPH_HEAP_ROOT @ 3da1000
+    Freed and decommitted blocks
+      DPH_HEAP_BLOCK : VirtAddr VirtSize
+    Busy allocations
+      DPH_HEAP_BLOCK : UserAddr  UserSize - VirtAddr VirtSize
+    _HEAP @ 17a0000
+0:001&gt; !heap -p -a 05601000 -------------------------------------------------4
+    address 05601000 found in
+    _DPH_HEAP_ROOT @ 161000
+    in busy allocation (  DPH_HEAP_BLOCK:         UserAddr         UserSize -         VirtAddr         VirtSize)
+                                 53d05b0:          5601000           a00000 -          5600000           a02000
+    63558e89 verifier!AVrfDebugPageHeapAllocate+0x00000229
+    77304ea6 ntdll!RtlDebugAllocateHeap+0x00000030
+    772c7d96 ntdll!RtlpAllocateHeap+0x000000c4
+    772934ca ntdll!RtlAllocateHeap+0x0000023a
+    004bec88 CrashMe!CCrashMeDlg::OnBnClicked_HeapAlloc+0x00000068
+    004efe12 CrashMe!_AfxDispatchCmdMsg+0x000000b2
+    004f0696 CrashMe!CCmdTarget::OnCmdMsg+0x000002e6
+    004c19a3 CrashMe!CDialog::OnCmdMsg+0x00000023
+    004e4f74 CrashMe!CWnd::OnCommand+0x00000174
+    004e36f9 CrashMe!CWnd::OnWndMsg+0x00000079
+    004e3632 CrashMe!CWnd::WindowProc+0x00000032
+    004dfd90 CrashMe!AfxCallWndProc+0x000000f0
+    004e04a6 CrashMe!AfxWndProc+0x000000a6
+    757886ef USER32!InternalCallWinProc+0x00000023
+    75788876 USER32!UserCallWinProcCheckWow+0x0000014b
+    75787631 USER32!SendMessageWorker+0x000004d0
+    75787695 USER32!SendMessageW+0x0000007c
+    74184e95 COMCTL32!Button_NotifyParent+0x0000003d
+    74184ef7 COMCTL32!Button_ReleaseCapture+0x00000113
+    74184d89 COMCTL32!Button_WndProc+0x00000a18
+    757886ef USER32!InternalCallWinProc+0x00000023
+    75788876 USER32!UserCallWinProcCheckWow+0x0000014b
+    757889b5 USER32!DispatchMessageWorker+0x0000035e
+    75788e9c USER32!DispatchMessageW+0x0000000f
+    75787033 USER32!IsDialogMessageW+0x00000588
+    004f1f43 CrashMe!CWnd::IsDialogMessageW+0x00000073
+    004ebc5e CrashMe!CWnd::PreTranslateInput+0x0000006e
+    004c192f CrashMe!CDialog::PreTranslateMessage+0x000000ef
+    004e65ad CrashMe!CWnd::WalkPreTranslateTree+0x0000008d
+    004f88df CrashMe!AfxInternalPreTranslateMessage+0x0000004f
+    004f9d65 CrashMe!CWinThread::PreTranslateMessage+0x00000025
+    004f8975 CrashMe!AfxPreTranslateMessage+0x00000025
+
+</pre>
+
+<h3>Critical Section</h3>
+
+<p>
+cmd
+
+</p>
+
+<pre class="example">!locks
+	displays a list of locked critical sections for the process
+
+!locks -v
+	display all critical sections for the process
+
+!cs [Opt] [CsAddr]
+	Displays one or more critical sections, or the entire
+	critical section tree.
+	Options:
+		-l == display only locked sections
+		-s == causes each CS’s initialization stack to be displayed
+		-o == causes the owner’s stack to be displayed
+		-t == display critical section tree --&gt; EnterCntr, WaitCnt, …
+
+!avrf -cs
+	Display a list of deleted critical sections
+	(DeleteCriticalSection API)
+</pre>
+
+<p>
+Example:
+
+</p>
+
+<pre class="example">0:000&gt; !locks
+*** WARNING: Unable to verify checksum for CrashMe.exe
+
+CritSec +12fe58 at 0012fe58
+WaiterWoken        No
+LockCount          0
+RecursionCount     1
+OwningThread       1d68
+EntryCount         0
+ContentionCount    0
+*** Locked
+
+Scanned 208 critical sections
+0:000&gt; !cs -l
+-----------------------------------------
+DebugInfo          = 0x0018dae0
+Critical section   = 0x0012fe58 (+0x12FE58)
+LOCKED
+LockCount          = 0x0
+WaiterWoken        = No
+OwningThread       = 0x00001d68
+RecursionCount     = 0x1
+LockSemaphore      = 0x0
+SpinCount          = 0x00000000
+0:000&gt; !cs -s -o 0x0012fe58 
+-----------------------------------------
+Critical section   = 0x0012fe58 (+0x12FE58)
+DebugInfo          = 0x0018dae0
+LOCKED
+LockCount          = 0x0
+WaiterWoken        = No
+OwningThread       = 0x00001d68
+RecursionCount     = 0x1
+LockSemaphore      = 0x0
+SpinCount          = 0x00000000
+OwningThread DbgId = ~0s
+OwningThread Stack =
+	ChildEBP RetAddr  Args to Child              
+	0012f464 004bfc05 0012f860 0018c4c0 00000000 KERNELBASE!DebugBreak+0x2 (FPO: [0,0,0])
+	0012f544 004efe12 00000000 00000176 00000004 CrashMe!CCrashMeDlg::OnBnClicked_EnterCs+0x45 (FPO: [Non-Fpo]) (CONV: thiscall)
+	0012f588 004f0696 0012fdc0 00000073 00000000 CrashMe!_AfxDispatchCmdMsg+0xb2 (FPO: [Non-Fpo]) (CONV: stdcall)
+	0012f5ec 004c19a3 00000073 00000000 00000000 CrashMe!CCmdTarget::OnCmdMsg+0x2e6 (FPO: [Non-Fpo]) (CONV: thiscall)
+	0012f628 004e4f74 00000073 00000000 00000000 CrashMe!CDialog::OnCmdMsg+0x23 (FPO: [Non-Fpo]) (CONV: thiscall)
+	0012f68c 004e36f9 00000073 00051348 7c8d090d CrashMe!CWnd::OnCommand+0x174 (FPO: [Non-Fpo]) (CONV: thiscall)
+	0012f7dc 004e3632 00000111 00000073 00051348 CrashMe!CWnd::OnWndMsg+0x79 (FPO: [Non-Fpo]) (CONV: thiscall)
+	0012f7fc 004dfd90 00000111 00000073 00051348 CrashMe!CWnd::WindowProc+0x32 (FPO: [Non-Fpo]) (CONV: thiscall)
+	0012f878 004e04a6 0012fdc0 0007133a 00000111 CrashMe!AfxCallWndProc+0xf0 (FPO: [Non-Fpo]) (CONV: stdcall)
+	0012f898 772386ef 0007133a 00000111 00000073 CrashMe!AfxWndProc+0xa6 (FPO: [Non-Fpo]) (CONV: stdcall)
+	0012f8c4 77238876 004b065e 0007133a 00000111 USER32!InternalCallWinProc+0x23
+	0012f93c 77237631 00000000 004b065e 0007133a USER32!UserCallWinProcCheckWow+0x14b (FPO: [Non-Fpo])
+	0012f97c 77237695 00a29fb0 00a29f48 00000073 USER32!SendMessageWorker+0x4d0 (FPO: [Non-Fpo])
+	0012f99c 74234e95 0007133a 00000111 00000073 USER32!SendMessageW+0x7c (FPO: [Non-Fpo])
+	0012f9bc 74234ef7 0018f9f0 00000000 00051348 COMCTL32!Button_NotifyParent+0x3d (FPO: [Non-Fpo])
+	0012f9d8 74234d89 50012001 00000001 0012fab4 COMCTL32!Button_ReleaseCapture+0x113 (FPO: [Non-Fpo])
+	0012fa38 772386ef 00051348 00000202 00000000 COMCTL32!Button_WndProc+0xa18 (FPO: [Non-Fpo])
+	0012fa64 77238876 741bf82b 00051348 00000202 USER32!InternalCallWinProc+0x23
+	0012fadc 772389b5 00000000 741bf82b 00051348 USER32!UserCallWinProcCheckWow+0x14b (FPO: [Non-Fpo])
+	0012fb3c 77238e9c 741bf82b 00000000 0012fb70 USER32!DispatchMessageWorker+0x35e (FPO: [Non-Fpo])
+ntdll!RtlpStackTraceDataBase is NULL. Probably the stack traces are not enabled.
+</pre>
+
+<h3>Other CMD</h3>
+
+<pre class="example">dt			Display information about a local variable, function 
+			parameter, global variable or data type
+
+dt ntdll!*peb*		List all ntdll.dll variables which contain the word peb
+
+dv /t /i /V		Display local variables
+			/i == classify them into categories (parameters or locals)
+			/V == show addresses and offsets for the relevant base frame register (usually EBP)
+			/t == display type information
+</pre>
+
+<h3>Pseudo-Registters(假寄存器)</h3>
+
+<ol>
+<li>Pseudo Register分为用户定义和系统已经定义好的。
+</li>
+<li>系统定义好的比如：$teb, $peb, $ra
+</li>
+<li>用户可以自己进行定义自己的Register。
+</li>
+<li>用户定义的Register可以带有type的，例如：
+</li>
+</ol>
+
+<pre class="example">r? $t0 = @peb-&gt;ProcessParameter
+	Assigns a typed value to $t0
+	$t0’s type is remembered so it can be used in further expressions
+
+?? @$t0-&gt;CommandLine
+</pre>
+
+<p>
+一些系统的register
+
+</p>
+
+<pre class="example">$ra		Return address currently on the stack.
+		Useful in execution commands, i.e.: “g $ra”
+
+$ip		The instruction pointer
+		x86 = EIP, Itanium = IIP, x64 = RIP
+
+$exentry	Entry point of the first executable of the current process
+
+$retreg		Primary return value register
+		X86 = EAX, Itanium = ret0, x64 = rax
+
+$csp		Call stack pointer
+		X86 = ESP, Itanium = BSP, x64 = RSP
+
+$peb
+$teb
+
+$tpid		Process ID (PID)
+
+$tid		Thread ID (tID)
+
+$ptrsize	Size of a pointer
+
+$pagesize	Number of bytes in one page of memory
+
+…		See “Pseudo-Registry Syntax” in WinDbg’s help.
+
+
+</pre>
+
+<h3>MASM and C++ Expression</h3>
+
+<p>
+<strong>MASM</strong>:
+
+</p>
+
+<ol>
+<li>evaluated by the ? command
+</li>
+<li>each symbol is treated as an addresses (the numerical value of a symbol is the memory
+address of that symbol->to get its value you must dereference it with poi)
+</li>
+<li>source line expressions can be used (`myfile.c:43`)
+</li>
+<li>the at sign for register values is optional (eax or @eax are both fine)
+</li>
+<li>used in almost all examples in  help
+</li>
+<li>The numerical value of any symbol is its memory address
+</li>
+<li>Any operator can be used with any number
+</li>
+<li>Numerals: are interpreted according to the current radix: n [8 , 10 , 16]
+Can be overridden by a prefix: 0x (hex), 0n (decimal), 0t (octal), 0y (binary)
+</li>
+</ol>
+
+<p>
+<strong>C++</strong>:
+
+</p>
+
+<ol>
+<li>evaluated by the ?? command
+</li>
+<li>symbols are understood as appropriate data types
+</li>
+<li>source line expressions cannot be used
+</li>
+<li>the at sign for register values is required (eax will not work)
+</li>
+<li>The numerical value of a variable is its actual value
+</li>
+<li>Operators can be used only with corresponding data types
+</li>
+<li>A symbol that does not correspond to a C++ data type will result in a syntax error
+</li>
+<li>Data structures are treated as actual structures and must be used accordingly. They do not have numerical values.
+</li>
+<li>The value of a function name or any other entry point is the memory address, treated as a function pointer
+</li>
+<li>Numerals: the default is always decimal. Can be overridden by a prefix: 0x (hex), 0 (zero octal)
+</li>
+</ol>
+
+<p>
+<strong>Unary operators</strong>
+
+</p>
+
+<pre class="example">dwo		dword from specified address;
+qwo		qword from specified address;
+poi		pointer-size data from specified address
+wo		low-order word from specified address
+by		low-order byte from specified address
+$iment( Address)
+		Returns the image entry point. Address = image base address
+....
+</pre>
+
+<p>
+<strong>Aliass</strong>：
+可以为相应的命令或者变量起别名。这个应该用的少，所以不过多的提这个，有需要在看help doc吧。
+
+</p>
+
+<p>
+语法：
+<pre class="example">as Name Equivalent		Set alias
+ad Name				delete alias
+al				list alias
+</pre>
+
+<h3>Debug Command Program</h3>
+
+<ul>
+<li>他是由两部分组成的：command和控制语句组成。
+</li>
+<li>变量可以是local variable和pseudo variable组成。
+</li>
+<li>注释的结构是：$$[text]
+</li>
+<li>用{}来括起一个command block。
+</li>
+</ul>
+
+<p>
+一些flow control cmd
+
+</p>
+
+<pre class="example">.block			Performs no action. It is used solely to introduce a block.
+			Note that you cannot simply use {} to create a block.
+
+.if, .else, .elseif	Like the if, else or else if keyword in C
+
+.for, .while, .Break, .continue
+			Like the for, while, break or continue keyword in C
+
+.foreach		Parses the output of debugger commands, a string or a text
+			file. It then takes each item it finds and uses it as the input to a
+			specified list of debugger commands.
+</pre>
+
+<p>
+CMD execution style:
+
+</p>
+
+<ul>
+<li>enter all cmd and with seperated by ";"
+</li>
+<li>save all cmd into script file and run them with $$><(the script file)
+</li>
+</ul>
+
+<h3>Breakpoint</h3>
+
+<p>
+CMD
+
+</p>
+
+<pre class="example">bl			breakpoint list
+bp 			set a breakpoint
+bu			Set Unresolved Breakpoint: defers the actual setting of the
+			breakpoint until the module is loaded
+ba 			Break on Access
+bc			break clear
+be,bd			breakpoin enable, disable.
+
+bp @$exentry		set a breakpoint when entry the program.
+</pre>
+
+<p>
+Example:
+
+</p>
+
+<pre class="example">&gt;bu MyApp!WinMain
+&gt;bu kernel32!LoadlibraryExw
+</pre>
+
+<h3>Exception Analysis Commands</h3>
+
+<pre class="example">.lastevent			first-change or second-chance?
+!analyze -v			Displays detailed information about the current exception
+.exr -1				Display most recent exception
+.exr Addr			Display exception at Addr
+!cppexr				Display c++ exception at address 7c901230
+g, gH				Go with Exception Handled
+gN				Go with Exception Not Handled
+</pre>
+
+<h3>Remote Debug</h3>
+
+<p>
+<strong>Target(Server)</strong>
+
+</p>
+
+<ol>
+<li>Copy <strong>dbgsrv.exe, dbgeng.dll and dbghelp.dll</strong> to the remote computer
+</li>
+<li>Disable the firewall for "dbgsrv.exe"
+</li>
+<li>Run -> <strong>dbgsrv.exe -t tcp:port=1025</strong>
+</li>
+</ol>
+
+<p>
+<em>Note:</em>
+Windows Vista: Start dbgsrv.exe with admin privileges to see all processes.
+
+</p>
+
+<p>
+<strong>Host(Client)</strong>
+
+</p>
+
+<ol>
+<li>Run -> <strong>Windbg.exe -premote tcp:server=TargetIP_or_Name,port=1025</strong>
+</li>
+<li>File (Menu) -> Attach to Process -> Select Process on Target Computer that you would like to debug
+</li>
+</ol>
+
+<p>
+I test this. It works well.
+
+</p>
+
+<p>
+for remote debug command:
+
+</p>
+
+<pre class="example">Cdb.exe –QR server(IP or Name) 	Lists all debugging servers running on the specified network server.
+.detach				Detach from Process
+.endpsrv			End dbgsrv.exe on remote computer. This command will kill
+				the debugged process if you don’t detach first.
+.tlist				lists all processes running on the (remote) system
+</pre>
+
+<p>
+然后呢，就可以在客户机观察remote的机器的event情况。
+这个event分为两部分：
+
+</p>
+
+<ol>
+<li>Exception event: Breakpoint, Access Violation, Stack Overflow.....
+</li>
+<li>Non-Exception Event: Create Thread, Load Module,....
+</li>
+<li>.lastevent to check the last event.
+</li>
+<li>to list all event: sx
+</li>
+</ol>
+
+<p>
+Break or execution status:
+
+</p>
+
+<ol>
+<li>First-chance break on event (sxe)
+</li>
+<li>Second-chance break event (sxd)
+</li>
+<li>Debugger message output on event (sxn)
+</li>
+<li>Ignore event (sxi)
+</li>
+</ol>
+
+<p>
+Handling or Continue status:
+
+</p>
+
+<ol>
+<li>Determines whether an exception event should be considered handled
+(gH) or not-handled (gN) in the target
+</li>
+<li>can open the <strong>Event Fliter</strong> the config the event action.
+</li>
+</ol>
+
+<h2>Gflag</h2>
+
+<ol>
+<li>GFlag set the register to enable and disable feature.
+</li>
+<li>We can also use !gflags in Windbg to set or display the global flags
+</li>
+<li>With GFlags we can enable:
+</li>
+</ol>
+
+<ul>
+
+<ul>
+<li>heap checking
+</li>
+<li>heap tagging
+</li>
+<li>Loader snaps
+</li>
+<li>Debugger for an Image (automatically attached each time an Image is started)
+</li>
+<li>Application verifier 
+</li>
+<li>....
+</ul>
+</li>
+</ul>
+
+<p>
+three tab in GFlag dialog:
+
+</p>
+
+<ol>
+<li>System Registry: System-wide settings that affect all processes running on Windows. 
+They remain effective until you change them. Restart Windows to make the changes effective.
+</li>
+<li>Kernel Flags: Run-time settings that affect the entire system. They take effect immediately without
+rebooting, but they are lost if you shut down or restart the system.
+</li>
+<li>Image File: They affect instances of the specified program that start after the command completes.
+They are saved in the registry and remain effective until you change them.
+</li>
+</ol>
+
+<h2>Application Verifier</h2>
+
+<h3>what is Application Verifier</h3>
+
+<ol>
+<li>is a runtime verification tool for Windows applications
+</li>
+<li>is monitoring an application's interaction with the OS
+</li>
+<li>with !avrf we get access to this tracking information
+</li>
+<li>profiles and tracks:
+</li>
+</ol>
+
+<ul>
+
+<ul>
+<li>Microsoft Win32 APIs (heap, handles, locks, threads, DLL load/unload, and more)
+</li>
+<li>Exceptions
+</li>
+<li>Kernel objects
+</li>
+<li>Registry
+</li>
+<li>File system
+</ul>
+</li>
+</ul>
+
+<p>
+具体的一些CMD可以看看帮助文件吧。
+
+</p>
+
+<h2>Dump File</h2>
+
+<p>
+有三种dump文件：kernel dump，small dump, large dump.
+
+</p>
+
+<p>
+可以用adplus， userdump等等工具，或者在windbg中用命令.dump来获得dump文件。
+
+</p>
+
+<h2>结束语</h2>
+
+<ol>
+<li>多看help document
+</li>
+<li>掌握assembly language.
+</p>
+</li>
+</ol>
+
+<p>
+<a href="debug.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-03-28</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Emacs Outline Mode</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Tool/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Emacs Outline Mode</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+from <a href="http://docs.huihoo.com/homepage/shredderyin/emacs_outline.html">http://docs.huihoo.com/homepage/shredderyin/emacs_outline.html</a>
+
+</p>
+
+<p>
+<p>
+Outline Mode是Emacs自带的模式，其可以让你操作结构化的文档。比如Wiki，code的文件。可以选择性的显示不同层次的内容，用起来比较方便。
+</p>
+<h2>概念</h2>
+<h3>大纲模式将buffer中的行区别为：</h3>
+
+<ol>
+<li>正文（Body）：除标题行外的其他行
+</li>
+<li>标题（Heading）：以一个或者若干星号加一个空格开始的行
+</li>
+</ol>
+
+<h3>标题和正文行的组合：</h3>
+
+<ol>
+<li>记录（Entry）： 标题和其下所有的正文行组成一个记录或者条目
+</li>
+<li>子树（Subtree）： 标题和其下的所有子标题以及它们的正文行组成一棵子树
+</li>
+</ol>
+
+<h3>注意：</h3>
+
+<ol>
+<li>记录的直接正文只能在记录的开始部份
+</li>
+<li>如果记录的正文或者正文和所有子树被隐藏，则该标题行的末尾会出现省略号(...)
+</li>
+<li>如果记录仅仅子树被隐藏，那么在记录正文后面会出现省略号(...), 如果该记录没有正文，则效果同上 
+</p>
+</li>
+</ol>
+
+<h2>配置Outline Mode</h2>
+<p>
+由于 outline-minor-mode 的键绑定前缀 C-c @ 过于复杂，大部分经常使用 outline 的人想把它设置为另一个键，所以以后我在叙述时直接称呼函数名字和简化前缀的键绑定。具体的键绑定请用 C-h w 查询。 
+<pre class="example">(setq outline-minor-mode-prefix [(control o)])
+</pre>
+也就是把其命令的前缀改成了C-o。
+</p>
+
+</p>
+
+<h2>启动Outline Mode</h2>
+<p>
+M-x outline-minor-mode 就可以启动 Outline。还有一个 outline-mode 是一个 major mode，一般都不用它。 
+</p>
+
+</p>
+
+<h2>Short Cut Key</h2>
+<h3>移动的命令</h3>
+<pre class="example">cmd		Function				commends
+C-o C-n  	outline-next-visible-heading  		move by visible headings
+C-o C-p  	outline-previous-visible-heading  
+C-o C-f  	outline-forward-same-level  		similar but skip subheadings
+C-o C-b  	outline-backward-same-level  	
+C-o C-u  	outline-up-heading  			move from subheading to heading	
+</pre>
+<h3>全局操作</h3>
+<pre class="example">C-o C-t  	hide-body  	make all text invisible (not headings). Recursively, Body
+C-o C-a  	show-body  	make everything in buffer visible. Recursively, Body
+C-o C-q  	hide-sublevels  make only the first N levels of headers visible.
+				(C-u, M-(number) to pass the level n, Recursively, Heading
+C-o C-o  	hide-other  	show current entry, and all level parent headings， hide
+</pre>
+<h3>位置相关的操作</h3>
+<pre class="example">C-o C-d  	hide-subtree  	Recursively, Subtree(Body, Heading)
+C-o C-s  	show-subtree  	Recursively, Subtree(Body, Heading)
+C-o TAB  	show-children  	Direct, Heading
+C-o C-k  	show-branches  	Recursively, Heading
+C-o C-l  	hide-leaves  	Recursively, Body
+C-o C-c  	hide-entry  	Direct, Body
+C-o C-e  	show-entry  	Direct, Body
+</pre>
+
+</p>
+
+<p>
+<a href="emacs.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

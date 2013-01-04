@@ -1,0 +1,26 @@
+#title Emacs Wiki Cmd
+
+
+* Short Cut Key
+<example>
+C-c C-a	Jump to an index of all the Wiki pages. 
+C-c C-b	Show all pages that reference this page. 
+C-c C-s	Search for a word in your Wiki pages. 
+C-c C-f	Jump to another Wiki page. Prompt for the name. 
+C-c C-l	Highlight/refresh the current buffer. 
+C-c C-p	Publish any Wiki pages that have changed as HTML. 
+C-c C-r	Rename Wiki link at point. 
+C-c C-t	Publish the current Wiki page. 
+C-c C-e	Edit link at point. 
+C-c C-v	Change Wiki project. 
+C-c C-D	Delete Wiki link at point. This binding will only work on X. 
+C-c =	Diff this page against the last backup version. 
+C-c TAB	Insert a tag interactively. 
+TAB	Move to the next Wiki reference. 
+S-TAB	Move to the previous Wiki reference. 
+C-q TAB	Input table in wiki editing.
+
+M-x emacs-wiki-publish-markup	get the wiki help
+</example>
+
+[[emacs.html][UP]]

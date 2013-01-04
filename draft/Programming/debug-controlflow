@@ -1,0 +1,69 @@
+#title windbg cmd process flow
+
+<p>
+
+* Control Flow
+
+** Temp Variable
+
+临时变量，用$t0~$tn
+
+赋值和取值的方式：
+<example>
+r $t0=0
+r $t0=@t0+1
+</example>
+
+** for
+
+<example>
+.foreach (place { s-[1]w 77000000 L?4000000 5a4d }) { dc place L8 } 
+$$  Get process list LIST_ENTRY in $t0.
+r $t0 = nt!PsActiveProcessHead
+
+$$  Iterate over all processes in list.
+.for (r $t1 = poi(@$t0);
+      (@$t1 != 0) & (@$t1 != @$t0);
+      r $t1 = poi(@$t1))
+{
+    r? $t2 = #CONTAINING_RECORD(@$t1, nt!_EPROCESS, ActiveProcessLinks);
+    as /x Procc @$t2
+
+ $$  Get image name into $ImageName.
+ as /ma $ImageName @@c++(&@$t2->ImageFileName[0])
+
+ .block
+    {
+        .echo ${$ImageName} at ${Procc}
+    }
+
+    ad $ImageName
+    ad Procc
+}
+</example>
+
+在程序中我查看一个二维数组的内容，这个二维数组是new出来的。
+
+<example>
+.for (r $t0=0; $t0<@@c++(m_nVertex); r $t0=@$t0+1) {dD @@c++(*(m_pWeight+@$t0)) L2}
+//@@c++是执行C++语句的。
+//L2代表的是深度为2，也就是二维数组的第二维的个数是2
+</example>
+
+* Command
+** bp
+C++的symbol的bp方式
+<example>
+bp @@c++(myclass::mymethod)
+</example>
+
+** show variable
+
+<example>
+? xxx //masm
+?? variable //c++
+</example>
+
+</p>
+
+[[debug.html][UP]]

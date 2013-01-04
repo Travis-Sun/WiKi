@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>python的字符串处理方法</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Programming/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">python的字符串处理方法</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<h2>复制字符串</h2>
+<pre class="example">sStr1 = 'strcpy'
+sStr2 = sStr1
+sStr1 = 'strcpy2'
+</pre>
+<h2>连接字符串</h2>
+<pre class="example">sStr1 = 'strcat'
+sStr2 = 'append'
+sStr1 += sStr2
+</pre>
+<h2>查找字符</h2>
+<pre class="example">sStr1 = 'strchr'
+sStr2 = 'r'
+nPos = sStr1.index(sStr2)
+</pre>
+<h2>比较字符串</h2>
+<pre class="example">sStr1 = 'strchr'
+sStr2 = 'strch'
+print cmp(sStr1,sStr2)
+</pre>
+<h2>扫描字符串是否包含指定的字符</h2>
+<pre class="example">sStr1 = '12345678'
+sStr2 = '456'
+#sStr1 and chars both in sStr1 and sStr2
+print len(sStr1 and sStr2)
+</pre>
+<h2>字符串长度</h2>
+<pre class="example">sStr1 = 'strlen'
+print len(sStr1)
+</pre>
+<h2>大小写转换</h2>
+<pre class="example">sStr1 = 'JCstrlwr'
+sStr1 = sStr1.upper()
+sStr2 = sStr1.lower()
+</pre>
+<h2>追加指定长度的字符串</h2>
+<pre class="example">sStr1 = '12345'
+sStr2 = 'abcdef'
+n = 3
+sStr1 += sStr2[0:n]
+print sStr1
+</pre>
+<h2>字符串指定长度比较</h2>
+<pre class="example">sStr1 = '12345'
+sStr2 = '123bc'
+n = 3
+print cmp(sStr1[0:n],sStr2[0:n])
+</pre>
+<h2>翻转字符串</h2>
+<pre class="example">sStr1 = 'abcdefg'
+sStr1 = sStr1[::-1]
+print sStr1
+</pre>
+<h2>查找字符串</h2>
+<pre class="example">sStr1 = 'abcdefg'
+sStr2 = 'cde'
+print sStr1.find(sStr2)
+</pre>
+<h2>分割字符串</h2>
+<pre class="example">sStr1 = 'ab,cde,fgh,ijk'
+sStr2 = ','
+sStr1 = sStr1[sStr1.find(sStr2) + 1:]
+print sStr1
+</pre>
+<h2>Other Function</h2>
+<pre class="example">string.atof(s,[base])		string to float
+string.atol(s,[base])		string to long
+string.capitalize(s)		string to long
+......
+</pre>
+
+<p>
+<a href="python.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

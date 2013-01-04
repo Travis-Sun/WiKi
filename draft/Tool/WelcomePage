@@ -1,0 +1,18 @@
+#title Tool
+
+
+<p>
+* Emacs
+
+在[[emacs.html][这里]]可以比较清楚的了解Emacs的命令和一些配置。
+
+
+* Subversion
+
+为了更好的管理自己的code，采用了[[svn.html][SVN]]来进行版本控制
+
+* GIT
+
+[[tool_git.html][分布式版本控制]]
+
+</p>

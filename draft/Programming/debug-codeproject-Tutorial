@@ -1,0 +1,60 @@
+#title Debug Turorial in Code Poject Site
+
+
+<p>
+* Turorial 1 Introduction
+
+the stack struct:
+
+<example>
+High Address
+--------------------
+[Parameter n]     ==  [EBP + n*4 + 4] (The formula)
+...
+[Parameter 2]     ==  [EBP + 12]
+[Parameter 1]     ==  [EBP + 8]
+[Return Address]  ==  [EBP + 4]
+[Previous EBP]    ==  [EBP + 0]
+...
+--------------------
+Low Address. it's stack top.
+Generally, it's EBP + Value to get to function parameters and EBP - Value to get to local variables.
+so we can get the return address for EBP+4
+</example>
+
+There are overflow and underflow situation.
+
+I will use the "DDS" command which means 'Dump Dwords with Symbols' so DDS ebp.
+
+the return address is not the function start address!!
+
+In windows 2003. take a like cookie to check the return address whether changed
+
+* Tutorial 2: Stack
+
+the code is 
+
+<example>
+void test()
+{
+      DWORD MyArray[4];
+      int Index;
+}
+</example>
+
+the stack is 
+
+<example>
+424 [Return Address               ]
+420 [ Previous Base Pointer       ]
+416 [ Local Array Variable Index 3]
+412 [ Local Array Variable Index 2]
+408 [ Local Array Variable Index 1]
+404 [ Local Array Variable Index 0]
+400 [ Local Integer Value         ]
+</example>
+
+* Tutorial 3: Heap
+</p>
+
+[[debug.html][UP]]

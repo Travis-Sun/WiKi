@@ -1,0 +1,13 @@
+#title C# Regular Expression
+
+
+
+* Replace
+<example>
+str = Regex.Replace(str, @"(?<num>\s\d+\.)", "\n${num}");
+</example>
+<p>
+the expression is that insert a '\n' char before the number.
+</p>
+
+[[csharp.html][UP]]

@@ -1,0 +1,52 @@
+#title Strategry Pattern
+
+
+<p>
+* Strategy
+
+** problem
+
+- 设计一个接口（也可以是虚类），然后实现都在子类，但随着业务的开展，
+发现子类是override父类方法的时候有些是大量重复的，有些是有变化的。
+比如书上用的例子：公司产品是设计duck joy，然后随着业务的变化生产出各种各样的鸭子，
+原来的鸭子都只是swim,display,现在呢则需要fly，quack.而且各种产品的fly和quack的方式各不相同。
+在这种情形下如果还把fly和quack放到父类中是不适应要求的，首先要求每个产品都要实现这些方法，
+这种情况下会有两方面的问题，a)有些老的产品没有这些功能，但也因为这种重构而进行修改。b)先得产品中
+关于不同种类有相同的fly行为，当然也有不同的fly行为，这种情况下就造成了重复实现。
+其次是将来的产品中可能添加到一些新的功能，比如载人。那种种情况下还要去改老的code，这个是非常不可要求。
+设计的要求是扩展性，而不是去频繁的修改老的实现。
+- 重复实现的部分根据设计原理就是把他们提取出来。
+这一部分基本上没有什么变化，就是继续保持它的不变性。
+- 根据设计原理，把变化的地方提取出来。
+现在是针对这部分的设计。怎么设计，设计两个接口：fly and quack.需要的duck产品可以来实现这接口。
+这种实现方法避免不了重复问题；此时就要在这两个接口和产品之间加一次来实现其不同fly和不同了quack.
+
+** Implement
+
+所以在这种情况下，按照设计的原则，把保持不变的放在一下，把频繁变化的提取出来放到一起。
+在上面也基本上把实现的模式说了一下，下面就看UML吧。
+
+<example>
+Design Principle:
+1. Identify the aspect of your application that vary 
+   and Separate them from what stays the same.
+2. Program to an interface not an implementation.
+3. Favor composition over inheritance.
+
+The Strategy Pattern defines a family of algorithms encapsulates each one,
+and makes them interchangeable. Strategy lets the algorithm vary independently
+from clients that use it.
+</example>
+
+[[./strategy.gif][Strategy URL]]
+
+可以看到通过上图可以看到：
+各个产品通过setFlyBehavior和setQuackBehavior的方面来给成员变量来复制， perform***的具体执行的方法。
+
+
+
+C#实现的code 在HOME/cs/designpattern/strategy.cs.
+
+</p>
+
+[[designpattern.html][UP]]

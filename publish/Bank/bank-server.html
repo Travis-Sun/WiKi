@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>金融系统集成项目中服务器产品选型要点</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Bank/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">金融系统集成项目中服务器产品选型要点</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<p>
+在我们平时的系统集成项目中以及其他项目的系统集成工作中，总会不可避免的遇到产品选型的阶段。特别是服务器产品选型，由于牵涉到企业的生产运作问题，是 “牵一发而动全身”的事情，因此如何选择服务器就显得尤为重要。如何从市场上众多的产品中挑选出符合要求的最适合的设备，需要专业的技术知识及丰富的选型经验做为指引，下面本文试举出几点选型中注意的要点。
+
+</p>
+
+<ul>
+<li> 找到制约服务器性能的瓶颈
+
+</p>
+
+<p>
+要使服务器性能得到充分发挥，应当清楚不同的服务器需要不同的配置。换句话说，不同应用的服务器可能存在的瓶颈是不同的，有的要重点考虑处理器、内存，有的则要重点考虑硬盘或网络的I/0吞吐能力。
+
+</p>
+
+<p>
+比如文件服务器（FTP）和通信服务器(NEWS/EMAIL)，快速的I/O是这类服务器应用的关键，也就意味着硬盘的I/O吞吐能力会成为主要瓶颈。因为文件服务器主要用来进行读/写操作，而内存（RAM）大小对其性能影响则没有那么大，因为文件不可能长时间呆在内存中。当然，如果客户机数量不多，而且存取文件比较频繁，那么增加RAM以扩大缓存也是必要的。
+
+</p>
+
+<p>
+又如通用的数据库服务器和应用服务器，客户在本地客户机上运行客户端，而数据库服务器系统运行在服务器端，服务器就像中心管道，作用相当重要。这类服务器需要强大的CPU处理能力，大容量的内存，同时需要很好的网络吞吐性能。
+</li>
+<li>根据具体的需求和行业特点选择适合的服务器产品
+
+</p>
+
+<p>
+首先要认真分清服务器的主要用途，根据不同用途需求来确定选择服务器的类型。对于运行各种生产应用的应用服务器，应该采用双CPU或者多CPU的系统。这样的多CPU可以提高应用程序运行的速度，大的内存可以保证使用者数量较多时候保持较高的服务性能及服务效率，另外，快速的大容量的硬盘也利于提高系统整体性能。如雁联公司主要面向金融行业的软件应用领域，提供后台数据库服务器以及基础系统、数据中心的开发和建设，首先会考虑集群平台的应用。
+
+</p>
+
+<p>
+不同客户在选择服务器产品时会有不同的需求，选择服务器时考虑的问题也不相同，我们应该根据应用的实际情况选择服务器的类型和配置，而不能一成不变套用制式。有句老话说的好：“具体问题，具体分析。”实践证明并非选择大容量高配置都是最好的方案。
+</li>
+<li>其他需要注意的问题
+
+</p>
+
+<p>
+作为金融行业，我们在选择服务器时，都会明白应该首先关注设备的高可用性、高可靠性、高稳定性以及高I/O吞吐能力，其次才是高性能、维护便捷性和操作界面等方面。另外我们还应该关注系统软硬件的网络监控技术、远程管理技术和系统灾难恢复功能等等。
+
+</p>
+
+<p>
+把握了这些选择服务器要素后，便可逐一为服务器搭选配置，首先进行硬件配置的选择（CPU、总线、硬盘、冗余部件等）；接着就要对操作系统的兼容性予以考察；然后就是高可用性（备份、双机容错、集群等）；最后不要忘了高可靠性（RAID、冗余电源、冗余风扇、冗余背板等）。
+</li>
+</ul>
+
+<p>
+通过上文提到的需要把握的原则和选型步骤，再结合具体应用和具体环境，就会使我们对服务器产品有全面的考虑和选择，帮助我们为客户搭建出最好硬件服务平台！
+</p>
+
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

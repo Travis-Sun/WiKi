@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Emacs Org Mode</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Tool/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Emacs Org Mode</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<p>
+打开org-mode turial的方法是
+<pre class="example">M-x org-mode
+</pre>
+<h2>Introduct</h2>
+
+<p>
+Org-mode 主要包含标签、待办、日程表几大部分.
+
+</p>
+
+<h2>Config</h2>
+
+<pre class="example">;; highlight the last *
+;;(setq org-hide-leading-stars t) 
+;; into org-agenda mode
+(define-key global-map &quot;\C-ca&quot; 'org-agenda) 
+;; set the timestemp on DONE
+(setq org-log-done 'time) 
+</pre>
+
+<h2>Create File</h2>
+
+<p>
+建一个.org文件，就会自动进入Org-Mode。
+
+</p>
+
+<p>
+头部内容：
+<pre class="example">#+STARTUP: overview ;;1
+#+TAGS: { 桌面(d) 服务器(s) }  编辑器(e) 浏览器(f) 多媒体(m) 压缩(z);;2
+#+TAGS:  { @Windows(w)  @Linux(l) }  ;;3
+#+TAGS:  { 糟糕(1) 凑合(2) 不错(3) 很好(4) 极品(5) } 
+#+SEQ_TODO: TODO(T) WAIT(W) | DONE(D!) CANCELED(C@) ;;4
+#+COLUMNS: %10ITEM  %10PRIORITY %15TODO %65TAGS   ;;5  
+</pre>
+
+<p>
+<em>Notes</em>
+这里的内容可以随时更改，但是要记得在改后用 C-c C-c 刷新设置
+
+</p>
+
+<ol>
+<li>启动时概览
+</li>
+<li>设定标签，括弧中的为标签快捷键（如果没有指定，默认为首字母）。可以设置在多行中
+</li>
+<li>花括号为标签组，组中的标签只能选一个
+</li>
+<li>设定待办状态。将项设置为竖线后面的状态时（DONE CANCELED），会打上 CLOSED 标志
+</li>
+<li>设定列视图
+</li>
+</ol>
+
+<h2>设置大纲</h2>
+<pre class="example">* 工作
+** Emacs
+   神之编辑器
+*** org-mode
+    组织你的意念
+** Vim
+   编辑器之神
+** EmEditor
+* 娱乐
+** Mplayer
+   全能播放器
+* 网络
+** firefox
+** IE
+** PureFTPD
+* 其它
+** WinRAR   
+</pre>
+
+<ul>
+<li>* 之后有一个空格，一定不能省略
+</li>
+<li>* 每一个 * 代表一级分支，*** 就代表第三级分支
+</li>
+</ul>
+
+<pre class="example">TAB		连续的使用TAB，会在显示分支、全部显示、全部隐藏几种状态间循环切换
+S-TAB		作用于全部分支
+C-c C-a 	全部显示
+C-c C-x b 	在一个新缓冲区中显示当前分支
+C-c C-f		同级向前
+C-c C-b		同级向后
+C-c C-n		跨级向前
+C-c C-p		跨级向后
+C-c C-u		上一级
+C-c C-j		跳转
+
+C-RET 		加入新的同级标识
+M-left 		将当前项提升一级
+M-right 	将当前项降低一级
+M-S-left 	将当前分支提升一级
+M-S-right 	将当前分支降低一级
+M-S-up 		将当前分支向上移动
+M-S-down 	将当前分支向下移动
+C-c C-x C-k 	删除当前分支
+C-c C-x M-w 	复制当前分支
+C-c C-x C-y 	粘贴分支
+C-c C-w 	移动当前分支
+C-c * 		为当前分支加入内容
+</pre>
+
+<h2>内容</h2>
+
+<h3>插入链接</h3>
+
+<pre class="example">[[url][link name]]
+</pre>
+
+<h3>Tag</h3>
+
+<p>
+将光标定位在当前项（Emacs）上，按下
+<pre class="example">C-c C-c
+</pre>
+
+<h3>查询Tag</h3>
+
+<pre class="example">C-c \		搜索标签
+C-c / T		搜索标签
+C-u C-c \ 	搜索带 TODO 的标签
+C-c C-c		退出查询视图
+</pre>
+
+<h2>事件</h2>
+
+<p>
+事件默认有两种状态“TODO”、“DONE”，在项标题上 C-c C-t 切换事件状态；M-S-RET 新建事件
+
+</p>
+
+<h3>定义</h3>
+在文件头部定义事件状态：
+
+</p>
+
+<pre class="example">#+SEQ_TODO: TODO | DONE  CANCELED
+#+SEQ_TODO: TODO(T) | DONE(D)  CANCELED(C) 
+#+SEQ_TODO: TODO(T!) | DONE(D@)  CANCELED(C@/!)    
+</pre>
+
+<ol>
+<li>竖线分隔完成与未完成两种状态，完成状态会打上 CLOSED 时间戳
+</li>
+<li>括号里设定快捷键
+</li>
+<li>! 打上时间戳；@ 要求说明
+</li>
+</ol>
+
+<h3>操作</h3>
+<pre class="example">C-u C-c C-t 	手动输入 TODO 状态，如果设定快捷则使用快捷键输入
+S-right		循环切换 TODO 状态，两个以上 TODO 状态时使用
+S-left		循环切换 TODO 状态，两个以上 TODO 状态时使用
+C-S-right	组间切换
+C-S-left	组间切换
+C-c C-v		查询视图
+C-c / t		查询视图
+C-c a t 	全局 TODO 列表
+</pre>
+
+<h2>日程表</h2>
+
+<p>
+在 Emacs 配置文件 .emacs 定义日程表快捷键：
+<pre class="example">(define-key global-map &quot;\C-ca&quot; 'org-agenda)
+</pre>
+
+<pre class="example">C-c [ 将当前文件加入日程表.
+C-c a
+a 	本周事件
+t 	显示所有事件
+m 	查询标签
+L 	当前缓冲区时间线
+s 	查询关键词
+T 	查询带 TODO 关键词的项
+M 	查询带 TODO 关键词的标签
+# 	显示已停止事件
+q 	退出日程表
+</pre>
+
+<p>
+可以将多个 org 文件从日程表加入、移除，或者将日程表锁定在当前 org 文件的某个分支：
+
+</p>
+
+<pre class="example">C-c [ 		将当前文件加入日程表。如果已加入，移动到前面
+C-c ] 		将当前文件从日程表中移除
+C-c C-x &lt; 	锁定到当前树(只显示当前树的事件)
+C-c C-x &gt; 	解除锁定
+</pre>
+
+<h2>优先级</h2>
+事件有“A”、“b”、“C”三种优先级别，使用 C-c , 手动设定级；使用 S-up 和 S-down 进行调整.
+
+</p>
+
+<h2>进度</h2>
+可以给事件设定进度，使用类似 [66%] 或者 [2/3] 这样的形式
+
+</p>
+
+<h2>时间</h2>
+<pre class="example">C-c C-d 	设定截止日期(DEADLINE)
+C-c C-s 	设定计划(SCHEDULED)
+C-c .		在当前位置插入一个时间戳
+C-c . 		插入时间戳；如果连续插入两个时间戳，则插入一个时间范围
+C-u C-c . 	更加精确的时间戳，在日程表中以时间线显示
+C-c ! 		插入时间戳，不在日程表中显示
+C-c &lt; 		直接插入时间戳（当前日期）
+C-c &gt; 		查看日历
+C-c C-o 	访问当前时间戳的日程表
+S-left|S-right 	以天为单位调整时间戳时间
+S-up|S-down 	调整光标所在时间单位；如果光标在时间戳之外，调整时间戳类型（是否在日程表中显示）
+C-c C-y 	计算时间范围长度
+</pre>
+
+</p>
+
+
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

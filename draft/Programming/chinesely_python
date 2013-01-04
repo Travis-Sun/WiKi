@@ -1,0 +1,24 @@
+#title python实现的中文分词功能
+
+<p>
+
+* Dictionary class
+
+实现字典的加载，将字典文件加载到内存中，供分词使用。
+
+字典的格式和C++实现的格式类似，但是文件不是以二进制保存的。
+将字典加载到dictionary的内存结构中，
+key是第一个汉字，然后value就是列表，不含第一个汉字的部分，
+然后再是handle和频率项。
+
+字典文件的结构就是：
+
+word,handle,freq
+word,handle,freq
+
+该类主要实现：load()函数和一个内存空间Index_table。
+
+
+</p>
+
+[[chineseanlysis.html][up]]

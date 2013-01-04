@@ -1,0 +1,53 @@
+#title Debug CMD
+
+<p>
+我可以在emacs中启动shell，然后在shell中运行其windbg的console端的用户调试命令cdb。
+具体命令如下：From：http://windbg.info/doc/1-common-cmds.html
+
+关于cdb命令行的帮助用
+<example>
+cdb -?
+</example>
+
+[[windbg.pdf][windbg cmd info]]
+
+[[windbgA-Z.pdf][windbg A-Z]]
+
+
+
+[[DebugFest.pdf][DebugFest]]
+
+[[L_2003_All_Labs.pdf][DebugFest Lab]]
+
+[[DBG_download.pdf][debug the managed application]]
+
+
+可以参考codeproject site ：http://www.codeproject.com/KB/debug/
+
+Debug Tutorial:
+
+Beginning: http://www.codeproject.com/KB/debug/cdbntsd.aspx
+
+Stack: http://www.codeproject.com/KB/debug/cdbntsd2.aspx
+
+Heap: http://www.codeproject.com/KB/debug/cdbntsd3.aspx
+
+WINDBG Extensions: http://www.codeproject.com/KB/debug/cdbntsd4.aspx
+
+Handle Leaks: http://www.codeproject.com/KB/debug/cdbntsd5.aspx
+
+Kernel: http://www.codeproject.com/KB/debug/cdbntsd6.aspx
+
+Locks: http://www.codeproject.com/KB/debug/cdbntsd7.aspx
+
+
+微软内部的[[http://cprnt][training site]]
+
+
+** [[debug-windbg-A-Z.html][My Option about Windbg From A to Z!]]
+
+** [[debug-codeproject-Tutorial][Debug tutorial]]
+</p>
+
+
+[[WelcomePage][UP]]

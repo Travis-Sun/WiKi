@@ -1,0 +1,42 @@
+#title Singleton
+
+
+<p>
+* Problem
+
+1. 在实际的coding过程中，需要内存只保存一份一个对象，这种情况下就用到单体。
+例如线程池，连接等一下稀奇的资源通常情况下采用的单体的设计模式。
+2. 在面对多线程使用单体的情况下，怎么保证对象的唯一性。
+
+* Implement
+
+<example>
+singleton pattern: ensures the class only one instance,
+and provide global point of access to it.
+</example>
+
+1. 内存中只有一个实例。
+2. 与static有一定关系，但是有与全局的变量有着区别。1 static调试起来比较困难；2 打乱了namespace已经class的封装性。
+3. 其实现是有一个privagte的构造函数，这样保证了class之外不能够随意的进行创建改对象。
+4. singleton是lazy instance.
+5. 在多线程的场景下，通过一下双锁、early instance、以及语言中的关键词来实现。
+
+* UML
+
+[[singleton.gif][UML]]
+
+该pattern比较简单，具体可以看code，code中实现了上面所说的三种方法。
+
+* Code
+
+code: ~/cs/designpattern/singleton.cs
+
+同时提供多线程的测试情况。
+
+* Summary
+
+简单但很实用，尤其是在处理多线程的情况下的实现。
+
+</p>
+
+[[designpattern.html][UP]]

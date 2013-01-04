@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="gbk"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Trace and Dbg in Django with emacs</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Programming/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Trace and Dbg in Django with emacs</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+From: <a href="http://zh-tw.w3support.net/index.php?db=so&amp;id=283294">http://zh-tw.w3support.net/index.php?db=so&#38;id=283294</a>
+
+</p>
+
+<p>
+<p>
+
+</p>
+
+<h2>logging</h2>
+
+<p>
+If all you need is logging, add the following to your settings.py:
+
+</p>
+
+<pre class="example">logging.basicConfig(
+    level = logging.DEBUG,
+    format = '%(asctime)s %(levelname)s %(message)s',
+    filename = '/tmp/mylog.log',
+    filemode = 'w'
+)
+</pre>
+
+<p>
+Now you can log messages to /tmp/mylog.log by adding the following to any view function:
+
+</p>
+
+<pre class="example">import logging
+logging.debug(&quot;Something happened&quot;)
+</pre>
+
+<h2>dbg</h2>
+
+<p>
+Start pdb like this:
+
+</p>
+
+<pre class="example">M-x pdb
+python manage.py runserver --noreload
+</pre>
+
+<p>
+Once you have the (Pdb) prompt, you need to do this:
+
+</p>
+
+<pre class="example">import sys
+sys.path.append('/path/to/directory/containing/views.py')
+</pre>
+
+<p>
+Once you've done this, you should be able to set breakpoints normally. Just navigate to the line number you want, and
+
+</p>
+
+<pre class="example">M-x space
+</pre>
+
+<h2>trace</h2>
+
+<p>
+This isn't emacs specific, but you can use the Python debugger by adding the following to a Django view function:
+
+</p>
+
+<pre class="example">import pdb
+pdb.set_trace()
+</pre>
+
+<p>
+Now when you run the development server and view the page, 
+your browser will appear to hang or load very slowly - switch over to your console, 
+and you have access to the full debugger. You can inspect AND modify state of your application via an interactive shell - 
+check out the Python documentation for the debugger, or this link for some <a href="http://onlamp.com/pub/a/python/2005/09/01/debugger.html">Python&#32;debugging&#32;examples</a>
+
+</p>
+
+<p>
+use this way, when you run the "python xxx.py", the program will give the pdb info. 
+In this way, you can debug the programming with command as you dbg in pdb inteactally operation.
+for example
+<pre class="example">#file:RIgetFilename.py
+import os, sys
+import pdb
+def getFileName(filepath='', extension='.xml'):
+    oldroot = ''
+    for root, dirs, files in os.walk(filepath):
+        for f in files:
+            #r = root
+            if f[-4:]==extension:
+                if oldroot!=root:
+                    print '\n' ,'*', root
+                    oldroot=root
+                print '-',f
+
+if __name__=='__main__':
+    pdb.runcall(getFileName, r'D:\Work\RI\CHS-New\x86')
+
+</pre>
+
+<p>
+after that, you input the command:
+<pre class="example">python RIgetFilename.py
+
+&gt; d:\sun\home\python\rigetfilename.py(6)getFileName()
+-&gt; oldroot = ''
+(Pdb) 
+</pre>
+At this time, you can input the pdb command to debug the file.
+
+</p>
+
+<p>
+</p>
+
+</p>
+
+<p>
+<a href="python.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

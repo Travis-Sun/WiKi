@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Set break point in CLR</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Programming/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Set break point in CLR</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<h2>Set Break</h2>
+
+<h3>Get the Function</h3>
+
+<p>
+由于托管代码和非托管的代码运行机制是不同，在非托管代码中，很容易通过bp就给函数设置上断点了，
+然而这个在托管中不是很容易的，因为托管允许机制是具有JIT，即时编译的。当第一次运行的时候，
+程序中只是设定了一个stub，当调用的时候才启动JIT去编译相应的功能。所以下面的方法能否在第一次编译前
+设置好断点，我没有测试过，但编译后的设置断点是可以的。但从力量上应该也是可以的，前提是module已经加载了。
+
+</p>
+
+<ol>
+<li>!name2ee <modulename> <functionname>
+</li>
+<li>bp address.
+</li>
+</ol>
+
+<p>
+<em>Note</em> 
+
+</p>
+
+<p>
+moduelname=*.exe or *.dll
+
+</p>
+
+<p>
+functionname is case induced.
+
+</p>
+
+<p>
+最后证实了，当function还没有编译的时候不能用上面的方面，其替换的方法会在name2ee的命令后提示出来。
+
+</p>
+
+<p>
+就是name2ee会给出function的<a class="nonexistent" href="mailto:art.of.war.sunzi@gmail.com">MethodDes</a>的提示，然后运行其命令!bpmd -md <methoddes>
+
+</p>
+
+<p>
+</p>
+
+</p>
+
+<p>
+<a href="debug.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

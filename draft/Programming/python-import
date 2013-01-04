@@ -1,0 +1,37 @@
+#title Import
+
+
+<p>
+从网络中摘录的：http://luckyapple.javaeye.com/blog/365481
+</p>
+* 模块的搜索路径 
+<p>
+模块的搜索路径都放在了sys.path列表中，如果缺省的sys.path中没有含有自己的模块或包的路径，可以动态的加入（sys.path.apend）即可。下面是sys.path在Windows平台下的添加规则。 
+
+1、sys.path第一个路径往往是主模块所在的目录。在交互环境下添加一个空项，它对应当前目录。 
+
+2、如果PYTHONPATH环境变量存在，sys.path会加载此变量指定的目录。 
+
+3、我们尝试找到Python Home，如果设置了PYTHONHOME环境变量，我们认为这就是Python Home，否则，我们使用python.exe所在目录找到lib\os.py去推断Python Home。 
+如果我们确实找到了Python Home，则相关的子目录（Lib、plat-win、lib-tk等）将以Python Home为基础加入到sys.path，并导入（执行）lib/site.py，将site-specific目录及其下的包加入。 
+如果我们没有找到Python Home，则把注册表Software\Python\<nop>PythonCore\2.5\<nop>PythonPath的项加入sys.path（HKLM和 HKCU合并后加入），但相关的子目录不会自动添加的。 
+
+4、如果我们没有找到Python Home，并且没有PYTHONPATH环境变量，并且不能在注册表中找到<nop>PythonPath，那么缺省相对路径将加入（如：.\Lib;.\plat-win等）。 
+
+总结如下: 
+
+当在安装好的主目录中运行Python.exe时，首先推断Python Home，如果找到了<nop>PythonHome，注册表中的<nop>PythonPath将被忽略；否则将注册表的<nop>PythonPath加入。 
+如果PYTHONPATH环境变量存在，sys.path肯定会加载此变量指定的目录。 
+如果Python.exe在另外的一个目录下（不同的目录，比如通过COM嵌入到其他程序），Python Home将不推断，此时注册表的<nop>PythonPath将被使用。 
+如果Python.exe不能发现他的主目录（<nop>PythonHome），并且注册表也没有<nop>PythonPath，则将加入缺省的相对目录。
+</P>
+* 标准Import 
+<p>
+Python中所有加载到内存的模块都放在sys.modules。当import一个模块时首先会在这个列表中查找是否已经加载了此模块，如果加载了则只是将模块的名字加入到正在调用import的模块的Local名字空间中。如果没有加载则从sys.path目录中按照模块名称查找模块文件，模块文件可以是py、pyc、pyd，找到后将模块载入内存，并加入到sys.modules中，并将名称导入到当前的Local名字空间。 
+可以看出了，一个模块不会重复载入 。多个不同的模块都可以用import引入同一个模块到自己的Local名字空间，其实背后的<nop>PyModuleObject对象只有一个。 
+
+说一个容易忽略的问题，import只能导入模块，不能导入模块中的对象（类、函数、变量等）。 如一个模块A（A.py）中有个函数getName，另一个模块不能通过import A.getName将getName导入到本模块，只能用import A。如果想只导入特定的类、函数、变量则用from A import getName即可。 
+</p>
+
+[[python.html][UP]]
+

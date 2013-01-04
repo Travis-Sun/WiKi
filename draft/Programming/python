@@ -1,0 +1,61 @@
+#title Python
+
+
+** [[Py2exe.html][Py2exe]]
+<p>
+这里介绍将python打包成exe文件的方法，便于部署。
+</p>
+** [[Refresh.html][Refresh Url]]
+<p>
+这里通过介绍一个对site进行刷新的程序，来了解Python的类的结构。
+</p>
+** [[python-string.html][Python String Operation]]
+<p>
+利用python进行字符串处理的情况很多，老是需要上网上查找python的字符串操作，这里给备一个。
+</p>
+** [[python-import.html][Python Import]]
+<p>
+这里记录一下python的import机制，主要面临修改一个模块后，要restart shell，然后要sys.path.append。比较麻烦，设置一下python的环境可以
+一劳永逸了。
+</p>
+** [[python-pdb.html][PDB]]
+<p>
+在emacs中调试python的方法，包括其其它的命令和调试的命令。
+</p>
+
+** [[python-ch-code.html][Python 的中文问题]]
+<p>
+从书上看到了一些东西，希望对以后处理中文有所帮助。
+</p>
+
+** [[http://wiki.woodpecker.org.cn/moin/WxPythonInAction][wxPython]]
+<p>
+about wxpython site. it's link to intenet.
+</p>
+
+** [[python-diveintopython.html][Dive into Python]]
+
+** [[python-django-dbg.html][dbg and trace in django]]
+
+** [[python-pamie.html][网络操作自动化]]
+<p>
+通过PAMIE的方式进行网络的自动化操作。
+
+通过做北京网站挂号网站的自动挂号系统时，得到的一些经验。
+
+在进行另一个网上的自动抢号登陆的过程中，将其扩充了一下。
+
+以及在登陆链家网站的时候的一下修改。
+
+</p>
+
+** [[python_QA.html][Python使用过程中注意]]
+
+积攒的一些python使用过程中易错的一些点。
+
+** [[python-libintroduct.html][Python Lib介绍]]
+
+介绍一下不同领域中的python的lib的。
+
+
+[[WelcomePage][UP]]

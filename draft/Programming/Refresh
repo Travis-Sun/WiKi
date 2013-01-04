@@ -1,0 +1,61 @@
+#title python Class
+
+<p>
+
+上了首先看看代码中的类吧：
+<example>
+import os, sys, codecs, re, time
+from urllib import urlopen
+from threading import Timer
+import random
+
+class URLView:
+    urlcontent = ''
+    url = 'http://www.bangbenw.com/bxtd/wnsf'
+    times = 1
+    
+    def __init__(self,times=1, url='http://www.bangbenw.com/bxtd/wnsf'):
+        self.url = url
+        self.times = times
+  
+    def runstep(self):
+        self.open_mainurl()
+        self.getSubUrl()
+        for url_t in self.subUrlList:
+            url_temp = self.url + url_t
+            self.open_suburl(url_temp)
+            time.sleep(random.randint(10,100))
+    
+    def open_suburl(self, url):
+        urlopen(url).read()
+        print url
+
+    def open_mainurl(self):
+        self.urlcontent = urlopen(self.url).read()
+        #time.sleep()
+
+    def getSubUrl(self):
+        self.subUrlList = re.findall(r'href="\.(.*?shtml)"', self.urlcontent,re.M)
+
+    
+    def runfast(self):
+        self.runstep()
+        self.times = self.times-1
+        print times
+        if times < 0:
+            pass
+        else:
+            Timer(random.randint(10,100), runfast).start()
+
+
+urlView = URLView(2)
+urlView.runfast()
+</example>
+<ul>
+1. python class的构造函数是__init__
+2. python class的函数的第一个参数默认是self
+3. 在class中调用class的变量、函授要有self.为前缀，表示引用的是class内部的成员
+</ul>
+</p>
+
+[[python.html][UP]]

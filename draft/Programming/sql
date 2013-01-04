@@ -1,0 +1,41 @@
+#title SQL
+
+<p>
+
+* Q1
+
+*** 1. 有100账号各有100￥，某个账号某天如有支出则插入一条新的纪录，纪录当前的余额，求100天后每个账号的余额。
+
+<example>
+mysql implementation
+create table std(name varchar(10), score int, udate datetime);
+Load data infile 'd:\\sqldata.txt' into table std
+line terminated by '\r\n';
+select name, score, udate from std a
+where update=(select max(udate) from std b where a.udate=b.udate)
+order by cast(name as SIGNED);
+
+select name, score, udate from std
+where (name, udate) in (
+select name, max(udate) from std
+group by name)
+order by cast(name as signed);
+
+#get top 10 row
+select * from std limit 10;
+</example>
+
+*** 2. sql server 在执行查询语句时候的顺序
+
+<example>
+select col1,col2
+from table1
+left outer join table2 on table1.col1=table2.col2
+where col="dd"
+group by col2
+having col2!=3
+</example>
+
+</p>
+
+[[WelcomePage][UP]]

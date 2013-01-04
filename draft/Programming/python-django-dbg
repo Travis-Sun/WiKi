@@ -1,0 +1,98 @@
+#title Trace and Dbg in Django with emacs
+
+From: http://zh-tw.w3support.net/index.php?db=so&id=283294
+
+<p>
+
+* logging
+
+If all you need is logging, add the following to your settings.py:
+
+<example>
+logging.basicConfig(
+    level = logging.DEBUG,
+    format = '%(asctime)s %(levelname)s %(message)s',
+    filename = '/tmp/mylog.log',
+    filemode = 'w'
+)
+</example>
+
+Now you can log messages to /tmp/mylog.log by adding the following to any view function:
+
+<example>
+import logging
+logging.debug("Something happened")
+</example>
+
+* dbg
+
+Start pdb like this:
+
+<example>
+M-x pdb
+python manage.py runserver --noreload
+</example>
+
+Once you have the (Pdb) prompt, you need to do this:
+
+<example>
+import sys
+sys.path.append('/path/to/directory/containing/views.py')
+</example>
+
+Once you've done this, you should be able to set breakpoints normally. Just navigate to the line number you want, and
+
+<example>
+M-x space
+</example>
+
+* trace
+
+This isn't emacs specific, but you can use the Python debugger by adding the following to a Django view function:
+
+<example>
+import pdb
+pdb.set_trace()
+</example>
+
+Now when you run the development server and view the page, 
+your browser will appear to hang or load very slowly - switch over to your console, 
+and you have access to the full debugger. You can inspect AND modify state of your application via an interactive shell - 
+check out the Python documentation for the debugger, or this link for some [[http://onlamp.com/pub/a/python/2005/09/01/debugger.html][Python debugging examples]]
+
+use this way, when you run the "python xxx.py", the program will give the pdb info. 
+In this way, you can debug the programming with command as you dbg in pdb inteactally operation.
+for example
+<example>
+#file:RIgetFilename.py
+import os, sys
+import pdb
+def getFileName(filepath='', extension='.xml'):
+    oldroot = ''
+    for root, dirs, files in os.walk(filepath):
+        for f in files:
+            #r = root
+            if f[-4:]==extension:
+                if oldroot!=root:
+                    print '\n' ,'*', root
+                    oldroot=root
+                print '-',f
+
+if __name__=='__main__':
+    pdb.runcall(getFileName, r'D:\Work\RI\CHS-New\x86')
+
+</example>
+
+after that, you input the command:
+<example>
+python RIgetFilename.py
+
+> d:\sun\home\python\rigetfilename.py(6)getFileName()
+-> oldroot = ''
+(Pdb) 
+</example>
+At this time, you can input the pdb command to debug the file.
+
+</p>
+
+[[python.html][UP]]

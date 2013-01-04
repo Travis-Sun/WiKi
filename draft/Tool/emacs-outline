@@ -1,0 +1,73 @@
+#title Emacs Outline Mode
+
+from http://docs.huihoo.com/homepage/shredderyin/emacs_outline.html
+
+
+<p>
+Outline Mode是Emacs自带的模式，其可以让你操作结构化的文档。比如Wiki，code的文件。可以选择性的显示不同层次的内容，用起来比较方便。
+</p>
+* 概念
+<p>
+** 大纲模式将buffer中的行区别为：
+1. 正文（Body）：除标题行外的其他行
+2. 标题（Heading）：以一个或者若干星号加一个空格开始的行
+
+
+** 标题和正文行的组合：
+1. 记录（Entry）： 标题和其下所有的正文行组成一个记录或者条目
+2. 子树（Subtree）： 标题和其下的所有子标题以及它们的正文行组成一棵子树
+
+
+** 注意：
+1. 记录的直接正文只能在记录的开始部份
+2. 如果记录的正文或者正文和所有子树被隐藏，则该标题行的末尾会出现省略号(...)
+3. 如果记录仅仅子树被隐藏，那么在记录正文后面会出现省略号(...), 如果该记录没有正文，则效果同上 
+</p>
+
+* 配置Outline Mode
+<p>
+由于 outline-minor-mode 的键绑定前缀 C-c @ 过于复杂，大部分经常使用 outline 的人想把它设置为另一个键，所以以后我在叙述时直接称呼函数名字和简化前缀的键绑定。具体的键绑定请用 C-h w 查询。 
+<example>
+(setq outline-minor-mode-prefix [(control o)])
+</example>
+也就是把其命令的前缀改成了C-o。
+</p>
+
+* 启动Outline Mode
+<p>
+M-x outline-minor-mode 就可以启动 Outline。还有一个 outline-mode 是一个 major mode，一般都不用它。 
+</p>
+
+* Short Cut Key
+<p>
+** 移动的命令
+<example>
+cmd		Function				commends
+C-o C-n  	outline-next-visible-heading  		move by visible headings
+C-o C-p  	outline-previous-visible-heading  
+C-o C-f  	outline-forward-same-level  		similar but skip subheadings
+C-o C-b  	outline-backward-same-level  	
+C-o C-u  	outline-up-heading  			move from subheading to heading	
+</example>
+** 全局操作
+<example>
+C-o C-t  	hide-body  	make all text invisible (not headings). Recursively, Body
+C-o C-a  	show-body  	make everything in buffer visible. Recursively, Body
+C-o C-q  	hide-sublevels  make only the first N levels of headers visible.
+				(C-u, M-(number) to pass the level n, Recursively, Heading
+C-o C-o  	hide-other  	show current entry, and all level parent headings， hide
+</example>
+** 位置相关的操作
+<example>
+C-o C-d  	hide-subtree  	Recursively, Subtree(Body, Heading)
+C-o C-s  	show-subtree  	Recursively, Subtree(Body, Heading)
+C-o TAB  	show-children  	Direct, Heading
+C-o C-k  	show-branches  	Recursively, Heading
+C-o C-l  	hide-leaves  	Recursively, Body
+C-o C-c  	hide-entry  	Direct, Body
+C-o C-e  	show-entry  	Direct, Body
+</example>
+</p>
+
+
+[[emacs.html][UP]]

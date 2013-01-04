@@ -1,0 +1,554 @@
+#title Dive into Python
+
+读书有感
+
+
+<p>
+* Python的函数
+
+** 文档化函数
+
+- 功能： 也就是介绍一下函数的的一些信息。
+- 实现： 用三重引号来实现，称之为doc string。
+- 好处： 在一些IDE上可以运行时时候来查看一下函数的介绍。doc string是作为函数的一个属性来设计。
+- example
+
+<example>
+def buildConnectionString(params):
+    """Build a connection string from a dictionary of parameters.
+    Returns string."""
+</example>
+
+** 对象
+
+在python中，任何事物都可以称之为对象，属性、函数、doc string。。。。
+
+** 模板搜索的路径
+
+模板的搜索路径在 **import** 一文中以及提起了，它是按照sys.path里面的目录来进行遍历的。
+
+** 测试模块
+
+所谓的测试模块，是在模块中的一段code
+
+<example>
+ex.py
+......
+.....
+if __name__ == "__main__":
+........
+.......
+</example>
+
+__name__是模块的一个属性，如果该模块是单独运行的，此时呢该模块的__name__='__main__'。
+但当别的模板import到这个模块的时候，那的__name__就是模块的名字，上面的例子就是__name__='ex'
+
+* 内置类型
+
+** Dictionary
+
+<example>
+dic = {"key":"value",.....} 
+
+dic["key2"] = "value2" #add element
+dic["key"] = "values" # modify element
+del dic["key"] #del element
+d.clear()   #clear all element.
+</example>
+
+- 其中key是唯一的，key和value可以是任意类型，string, int.....
+- key是大小写敏感的
+- dictionary是无序的
+- dictionary里的类型是可以混搭的
+
+
+** List
+
+其类似数组的数据结构
+
+<example>
+li = [1, 2,4, 6]
+
+li[0] = 1 # start index is 0
+li[-1]=li[4-1] # formulate
+li[:3]
+li[0:]  #slice
+li.append(50) 
+li.extend([50,])
+#this is different with append
+append method append elemnt,but extend likes to join two list.
+
+#diff between append and extend
+
+li.append([10,20]) # the result is [1,2,4,6,[10,20]].其功能是向list末尾追加单个元素
+li.extend([10,20]) # the result is [1,2,4,6,10,20]. 其功能是连接多个list
+li + [5, 7] # return [1,2,4,6,5,7] the function equals extend. the li still is [1,2,4,6]
+li += [5,7] # li is [1,2,4,6,5,7]
+li * 2 # return [1,2,4,6,1,2,4,6]
+
+li.index(1) #return 0
+li.index(5) #return error info
+
+5 in li # return False
+
+#del
+li.remove(1) # result is [2,4,6]
+li.pop() # return last element and remove the element. the list is [1,2,4]
+
+</example>
+
+
+** Tuple
+
+Tuple是不可更改的list。
+
+<example>
+tu = ('a','b','c')
+tu[0:3]
+'a' in tu  # return True
+</example>
+
+- Tuple 没有method
+- Tuple 的读取和list很像
+
+** 变量
+
+<example>
+myParams = {"server":"mpilgrim", \
+"database":"master", \
+"uid":"sa", \
+"pwd":"secret" \
+}
+
+myParams = {"server":"mpilgrim", 
+"database":"master", 
+"uid":"sa", 
+"pwd":"secret" 
+}
+
+v=('a','b','c')
+(x,y,z)=v
+
+range(7) #return [0,1,2,3,4,5,6]
+(M,T,W,TH,F,S,SUN)=range(7)
+</example>
+- 一个语句写成多行，每行结尾用'\'来连接
+- 如果连接符是在括号里面，可以省略
+- 一次可以赋多个值, 用Tuple来实现
+- 连续值赋值range
+
+** 格式化字符串
+
+<example>
+k='uid'
+v='124'
+"%s=%s" %(k,v) #return 'uid=124'
+%.2f # format float number
+</example>
+
+
+** 映射list
+
+含义是：针对list中的每一个元素进行相同的出来。
+
+<example>
+li = [1,2,3,4]
+[elem*2 for elem in li] #return [2,4,6,8]
+
+myParams = {"server":"mpilgrim", 
+"database":"master", 
+"uid":"sa", 
+"pwd":"secret" 
+}
+
+["%s=%s" %(k,v) for k, v in myParams.items()] 
+	#return ["server=mpilgrim", "datebase=master", "uid=sa", "pad=secret"]
+
+myParams.keys() # return ['server','database', 'uid', 'pwd']
+myParams.values() # return ['mpilgrim', 'master', 'sa', 'secret']
+myParams.items() # return [('server','mpilgrim'), ('datebase','master'), ('uid','sa'), ('pad','secret')]
+
+s = ";".join(["%s=%s" %(k,v) for k, v in myParams.items()]) 
+	#s = 'server=mpilgrim;datebase=master; uid=sa;pad=secret'
+
+li2 = s.split(';') #li2 = ["server=mpilgrim", "datebase=master", "uid=sa", "pad=secret"]
+li3 = s.split(';', 1) #li3 = ["server=mpilgrim", "datebase=master; uid=sa;pad=secret"] 1 means split times.
+</example>
+
+* 自省，reflector
+
+也不知道怎么翻译成这个名字了，类型C#中的反射机制，在运行中决定函数的调用。
+也可以说类似C中的回调函数。
+
+<example>
+file1.py
+def info(object, spacing=10, collapse=1):
+	"""Print methods and doc strings.
+	Takes module, class, list, dictionary, or string."""
+	methodList = [method for method in dir(object) if callable(getattr(object, method))]
+	processFunc = collapse and (lambda s: " ".join(s.split())) or (lambda s: s)
+	print "\n".join(["%s %s" %
+			(method.ljust(spacing),
+			processFunc(str(getattr(object, method).__doc__)))
+			for method in methodList])
+if __name__ == "__main__":
+	print info.__doc__
+
+
+Example:
+
+import types
+type(file1.py) == types.ModuleType #return True
+
+horsemen = ['war', 'pestilence', 'famine']
+str(horsemen) # return "['war', 'pestilence', 'famine', 'Powerbuilder']"
+str(None) #return "None"
+
+dir(horsemen) # return horsemen内置的所有的属性
+
+callable(horsemen.append) # return True
+
+getattr(horsemen, "pop")() # return famine, horsemen = ['war', 'pestilence']
+
+getattr(horsemen, "pp", horsemen.pop)() # if pp is not horsement then return horsemen.pop method
+</example>
+
+- 从上面可以看到默认参数的定义；在用的时候不必按属性，可以通过指定参数名来配置。
+- type, str, dir的用法
+- callable函数callable(param) 判断param是否是可以call，当然能被call的都是函数。
+- getattr可以获得对象的引用, getattr(object, attribute)等价于object.attribute
+attribute可以是method名称的字符串。此外getattr还提供了一个default返回值格式：
+getattr(object,"method",defaultmethod)
+
+** 过滤列表
+
+在映射列表的出来中，可以根据一定的条件还筛选出过滤出来的列表。
+
+<example>
+li = [1,2,3,4]
+[elem*2 for elem in li if elem > 3] #return 8
+</example>
+
+
+** and  or
+
+and, or并不是如所期待的那样返回True和False
+
+and其规则是：
+
+1. and会找出一串表达式中，第一个为False的值
+2. 如果在and连接的一串表达式中，都为真，则返回最后一个为真的值.
+3. 为False的值指的是[], (), {} ......
+
+or其规则是：
+
+1. or会返回第一个为True的值
+2. 如果都为假，则返回最后一个假的值
+
+
+and-or 模拟 ? :
+
+<example>
+1 and a or c #return a; invalid when a is false
+0 and a or c #return c; invalid when a is false
+</example>
+
+** Lambda Fuction
+
+是从Lisp，Scheme借鉴过来的，能够形成最小的函数形式。
+
+格式：
+
+<example>
+(lambda x: x*3)(3) #equal f(x)=x*3
+g = lambda x: x*3
+g(3)
+</example>
+
+Notes:
+lambda函数在布尔环境中总是为真.
+
+
+* 对象和面向对象
+
+** from xx import 和  import 
+这两个有什么区别呢：
+
+1. import xxx 通常的用法就是引用某个模块的含义
+2. from xxx import 与1就有比较大的不同，首先可以指定引用某个模块中的子功能；其次是将子功能引入到本文件的作用域里。
+此时再使用的使用就不用象1种要点明其模块名的前缀；最后当本地文件中的名字和模块中的名字相重时，必须采用2这种方式。
+
+** Class定义
+
+1. pass 语句相当于C中的{}，是空语句，相当于占位符
+2. python中的Class是可以继承的，而且是多重继承
+3. initial 函数__init__，其函数与构造函数有一定的差别，它是在对象生成好之后第一时间调用的。
+4. 再子类的定义中，__init__函数要显示的调用父类的__init__函数，否则不会执行其父类的初始函数。所以调用父类的行为是必须的。
+5. 类定义中的函数第一个参数都是self，显式界定对象，然后在外部调用使用的过程则忽略其第一参数self。
+6. 有缺省值参数，调用时不需要按其顺序，只需要指定参数的name就可以进行赋值调用。
+
+** 类的实例化
+1. 类的实例化就像调用一个函数一样简单，没有new关键词。
+2. 垃圾回收，采用的是引用数的方式进行垃圾回收，但一个变量在离开其作用域的时候就会被python的vm给回收。
+3. 有些类的定义中可以是互相引用，这种情况下的引用计数器的方式就会失效，为此python设计了标记后清除的方式来清除循环引用的问题。
+
+** 类的专用方法
+python中有一些专用的方法，你可以定义它们，使用是由python来调用的。
+
+1. __getitem__
+2. __setitem__其功能就如C#中的迭代器的功能类似，可以通过对象[index]的方式来访问数据变量(dict)
+3. 还有其他很多这种专属的方法。
+
+** 类属性
+上面定义的都是类实例的数据属性，在这里类也有自己的属性：类属性。
+其特点是在创建实例之前类属性就存在了，而且在类实例中修改其值，会改变类属性和其他类实例中访问类属性的值。
+其特点就类似C#中的static变量一样。
+
+那么它和数据属性怎么区别：
+1. 数据属性是通过self.作为前缀开始定义或者使用的。而类属性在class定义是就直接定义了，没有前缀。
+2. 使用方面，数据类型在类定义的过程中用self来访问的，而类属性是用self.__class__.类属性来访问的。
+
+<example>
+class MapFileInfo(FileInfo):
+	tagdata = { 'author':(3,33,abc), .....}
+	self.data = {}
+	def __init__(self):
+		self.__class__.tagdata.add(.....)
+		self.data = {....}
+
+map3 = MapFileInfo()
+print MapFileInfo.tagdata
+print MapFileInfo.data
+print map3.tagata
+
+可以看到tagdata是类属性，其定义和调用的特点。而data则是数据属性。
+已经外部使用的方法。
+</example>
+
+** 类私有方法
+
+在python中用以__开头，非__结尾的标识作为私有函数的命名方式。完全是从名字上去区分其特点
+
+<example>
+class Test:
+	def __testApp(self): pass
+
+t = Test()
+t.__testApp()   #error
+
+but you can call the method with follow style:
+t._t__testApp()
+</example>
+
+* 异常和文件处理
+
+** Try
+
+<example>
+try:
+	pass
+except: IOError:
+	pass
+else:
+	pass
+finnaly:
+	pass
+
+raise IOError
+</example>
+
+** file operation
+
+1. append a
+2. write w
+3. read r
+
+** Loop
+
+<example>
+1. for x in xx:
+2. range(5) range(len(xx))
+</example>
+
+** Class Model
+
+class和Model都是对象，在每个对象中都可以看到其class和model的一些属性。
+
+** 目录
+
+目录的访问都是用的os.path中的一些方法实现访问的。
+
+<example>
+1. os.path.join
+2. os.path.split os.path.splitext (filename, extension) = os.path.splitext("filename.doc")
+3. os.listdir("c:\dd")
+4. os.path.isfile("rain.mp3")
+5. os.path.isdir(os.path.join(dir,file))
+6. import glab
+glab.glab('c:\\dd\\*.mp3')
+</example>
+
+* 正则表达式
+
+** regExpression
+
+python的正则表达式在re模块中，在使用的时候import就可以了，然后详细有那些method，可以看一下libary.pdf就可以了。
+
+<example>
+re.sub 是替换匹配的字符串
+re.sub('\d*', '')    #将所有的数字替换掉
+
+# 下面的功能是将str中的Fdc替换成fdc，这个如果直接用re.sub在2.7，2.6中是完成不了的，只能先通过compile来实现。
+# 替换所有匹配的情况
+p = re.compile('Fdc', re.I)
+p.sub('fdc', str)
+
+# 一旦有匹配就返回
+re.search
+
+
+#{m,n} {n} 重复m到n次
+M{1,3}
+
+#(..|..|..) 表示或的关系，只匹配其中一个
+(M{1,2}|N{2,3})
+
+^ 匹配字符串的开始。
+$ 匹配字符串的结尾。
+\b 匹配一个单词的边界。
+\d 匹配任意数字。
+\D 匹配任意非数字字符。
+x? 匹配一个可选的x字符（换句话说，它匹配1次或者0次x 字符）。
+x* 匹配0次或者多次x字符。
+x+匹配1次或者多次x字符。
+x{n,m} 匹配x字符，至少n次，至多m次。
+(a|b|c)要么匹配a，要么匹配b，要么匹配c。
+(x) 一般情况下表示一个记忆组(remembered group). 你可以利用re.search函数返回对象的groups()函数获取它的值。
+
+</example>
+
+通过书中的校验罗马数字的例子中可以看到，在设计和使用正则表达式的匹配字符串的时候，
+应该将源的所有情况都罗列出来，这样才能保证正则表达式的完整性。
+
+
+** 松散方式
+
+上面介绍的都是紧凑模式，默认的就是紧凑模式。
+
+松散模式中：
+
+1. 忽略空白符。空格符，制表符，回车符不匹配它们自身，他们根本不参与匹配
+(如果你想在松散正则表达式中匹配一个空格符，你必须在它前面添加一个反斜线符号对他进行转义)
+2. 忽略注释。在松散正则表达式中的注释和在普通Python代码中的一样：开始于一个#符号，结束于行尾。
+3. 在语句中显示标识re.VERBOSE来表示松散模式
+<example>
+>>> pattern = """
+    ^                   # beginning of string
+    M{0,4}              # thousands - 0 to 4 M's
+    (CM|CD|D?C{0,3})    # hundreds - 900 (CM), 400 (CD), 0-300 (0 to 3 C's),
+                        #            or 500-800 (D, followed by 0 to 3 C's)
+    (XC|XL|L?X{0,3})    # tens - 90 (XC), 40 (XL), 0-30 (0 to 3 X's),
+                        #        or 50-80 (L, followed by 0 to 3 X's)
+    (IX|IV|V?I{0,3})    # ones - 9 (IX), 4 (IV), 0-3 (0 to 3 I's),
+                        #        or 5-8 (V, followed by 0 to 3 I's)
+    $                   # end of string
+    """
+>>> re.search(pattern, 'M', re.VERBOSE)                
+<_sre.SRE_Match object at 0x008EEB48>
+>>> re.search(pattern, 'MCMLXXXIX', re.VERBOSE)        
+<_sre.SRE_Match object at 0x008EEB48>
+>>> re.search(pattern, 'MMMMDCCCLXXXVIII', re.VERBOSE) 
+<_sre.SRE_Match object at 0x008EEB48>
+>>> re.search(pattern, 'M')  
+</example>
+
+</p>
+
+* HTML
+
+** sgmllib处理html文件
+
+sgmllib模块式处理HTML这种标记文件的一个好的方法。
+
+sgmllib模块是边读入边处理的读方式，他有几个方法，在继承的时候应该重写一下。
+
+sgmllib模块在读入html文件的时候，当碰见一个tag的时候，首先会调用start_(tag)的方法，
+如果没有会接着调用do_(tag)的方法，如果没有就调用unkown_starttag的方法来出来其tag。
+其内部实现就是通过getattr的method来实现的。
+
+SGMLParser 将 HTML 分析成 8 类数据，然后对每一类调用单独的方法:
+<example>
+1. 开始标记 (Start tag)
+    是一个开始一个块的 HTML 标记，象 <html>，<head>，<body> 或 <pre> 等，或是一个独一的标记，
+象 <br> 或 <img> 等。当它找到一个开始标记 tagname，SGMLParser 将查找名为 start_tagname 或 do_tagname 的方法。
+例如，当它找到一个 <pre> 标记，它将查找一个 start_pre 或 do_pre 的方法。
+如果找到了，SGMLParser 会使用这个标记的属性列表来调用这个方法；
+否则，它用这个标记的名字和属性列表来调用 unknown_starttag 方法。
+
+2. 结束标记 (End tag)
+    是结束一个块的 HTML 标记，象 </html>，</head>，</body> 或 </pre> 等。
+当找到一个结束标记时，SGMLParser 将查找名为 end_tagname 的方法。如果找到，SGMLParser 调用这个方法，
+否则它使用标记的名字来调用 unknown_endtag 。
+
+3. 字符引用 (Character reference)
+    用字符的十进制或等同的十六进制来表示的转义字符，象 &#160;。
+当找到，SGMLParser 使用十进制或等同的十六进制字符文本来调用 handle_charref 。
+
+4. 实体引用 (Entity reference)
+    HTML 实体，象 &copy;。当找到，SGMLParser 使用 HTML 实体的名字来调用 handle_entityref 。
+
+5. 注释 (Comment)
+    HTML 注释, 包括在 <!-- ... -->之间。当找到，SGMLParser 用注释内容来调用 handle_comment。
+
+6. 处理指令 (Processing instruction)
+    HTML 处理指令，包括在 <? ... > 之间。当找到，SGMLParser 用处理指令内容来调用 handle_pi。
+
+7. 声明 (Declaration)
+    HTML 声明，如 DOCTYPE，包括在 <! ... >之间。当找到，SGMLParser 用声明内容来调用 handle_decl。
+
+8. 文本数据 (Text data)
+    文本块。不满足其它 7 种类别的任何东西。当找到，SGMLParser 用文本来调用 handle_data。 
+
+</example>
+
+** urllib读取内容
+
+利用urllib读取url就像打开一个文件的方式一样来完成。
+
+<example>
+>>> import urllib                                       
+>>> sock = urllib.urlopen("http://diveintopython.org/") 
+>>> htmlSource = sock.read()                            
+>>> sock.close()                                        
+>>> print htmlSource                                    #print the html source
+</example>
+
+
+** locals globals
+
+locals()和globals()都是dictionary。
+
+- locals()中保持的当前函数或者是类方法中的一些变量等信息
+- globals()中保存的是当前模块下的一些变量，这个global很有用，可以实现好多的设计模式。
+比如本书中的，可以通过字符串查找到本模块中的Class，返回的是class类型，这个也是反射的机制吧。
+- locals()是只读，当然可以写，但是不对变量本身起到任何作用，应该是本地变量的一个副本
+- global()是可以读写的，写对变量有修改的作用。所以说locals的性能方面有一定的劣势
+- python在查找一个变量的顺序就是先找局部变量域(locals),然后是全局变量域(globals)，然后是内置变量域(对每个模块都是全局的)
+
+** 基于dictionary的格式输出
+
+<example>
+# tag是dict中的key，%(tag)s是一体的，然后 dict前面留有空格
+"%(tag)s is good" % dict
+</example>
+
+
+* XML 处理
+
+DOM,是将xml文件一次性读入，然后在内存中结构化缓冲起来。
+
+<example>
+from xml.dom import minidom
+</example>
+
+[[python.html][UP]]

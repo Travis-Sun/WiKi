@@ -1,0 +1,579 @@
+#title Machine Learning for Hacker
+
+<p>
+* Machine Learning for Hacker
+
+<example>
+# 在作者的访谈录中
+他提到了自己在R中常用的几个扩展包，其中包括用ggplot2包来绘图，
+用glmnet包做回归，用tm包进行文本挖掘，
+用plyr、reshape、lubridate和stringr包进行数据预处理。
+</example>
+
+* Chap 1. Using R
+<example>
+#1 introducation
+ifelse(condition, yes, no)
+when read, do best to set stringsAsFactors as false
+summary(data) #can check the length and some info about data.
+which() # get the true data.
+as.Date(datacol, format="%Y%m%d")
+tryCatch(function, error=function(e) return(c(NA,NA)), finally=function()....)
+gsub("regular expression", "replace to str", str)
+lappy(list, function) #apply function to every element of list.
+do.call(function, data) for example:do.call(rbind, city.state) #rbind list to matrix
+transform(data.frame, .....) #modify the table structure, for example add two collumn
+match(x, table,...) #get the x position in table, if not match return NA
+subset(x,.. select...) #get subset of x
+strftime(datedata, format="%Y-%m") # change the date to string with some format.
+merge(data1, data2, by.x, by.y,...) # merge two table to one, the operation is simlar with select join in sql.
+
+</example>
+
+* Chap 2. Data Exploring
+<example>
+#2
+file.path("relative folder", "file name")
+with(data, expr,...)  #in expr, you can write the colname without the data name.the expr can be {} block.
+ggplot()+geom_histogram(binwidth=1) # set the bin width throught bin width
+        +facet_grid(....) # 将图形根据设置的factor分开绘出来。
+        +facet_jitter()  # 意思是将横线上的数据打乱重新显示，防止我们不知道有些点是很多点的重合点。
+ggsave(plot=(ggplotvairable), 
+       filename=file.path("path","name"), #可以name设置成pdf,pnd等等保存的格式。
+       height=, width=10)
+ggplotObject #plot ggplot object
+</example>
+
+
+* Chap 3. Classification: Span filter
+<example>
+#3
+apply, lapply, sapply, tapply
+http://xccds1977.blogspot.com/2012/02/r_29.html
+apply()函数的处理对象是矩阵或数组，它逐行或逐列的处理数据，其输出的结果将是一个向量或是矩阵。
+       下面的例子即对一个随机矩阵求每一行的均值。要注意的是apply与其它函数不同，
+       它并不能明显改善计算效率，因为它本身内置为循环运算。
+       m.data <- matrix(rnorm(100),ncol=10)
+       apply(m.data,1,mean)
+lappy()的处理对象是向量、列表或其它对象，它将向量中的每个元素作为参数，
+       输入到处理函数中，最后生成结果的格式为列表。在R中数据框是一种特殊的列表，
+       所以数据框的列也将作为函数的处理对象。下面的例子即对一个数据框按列来计算中位数与标准差。
+       f.data <- data.frame(x=rnorm(10),y=runif(10))
+       lapply(f.data,FUN=function(x) list(median=median(x),sd=sd(x)))
+sapply()可能是使用最为频繁的向量化函数了，它和lappy()是非常相似的，但其输出格式则是较为友好的矩阵格式。
+       sapply(f.data,FUN=function(x) list(median=median(x),sd=sd(x)))
+       class(test)
+       测试过，确实比lapply好用很多。
+tapply的功能则又有不同，它是专门用来处理分组数据的，其参数要比sapply多一个。
+      我们以iris数据集为例，可观察到Species列中存放了三种花的名称，
+      我们的目的是要计算三种花瓣萼片宽度的均值。其输出结果是数组格式。
+      head(iris)
+      attach(iris)
+      tapply(Sepal.Width,INDEX=Species,FUN=mean)
+      可以看到这里第一个参数是要处理的一列数据，然后Index是factor的数据，FUN是处理的方法。
+aggreate(data, by=list(), FUN=...)输出的结果更为友好些，是data.frame.
+      上面的例子实现的功能是：
+      attach(iris)
+      aggregate(Sepal.Width,by=list(Sepcies=Sepcies),FUN=mean)
+replicate()它可以将某个函数重复运行N次，常常用来生成较复杂的随机数。
+      下面的例子即先建立一个函数，模拟扔两个骰子的点数之和，然后重复运行10000次。
+      game <- function() {
+           n <- sample(1:6,2,replace=T)
+           return(sum(n))
+      }
+      replicate(n=10000,game())
+
+set operation:
+union(x,y) #合集
+intersect(x,y) #交集
+setdiff(x,y) #mean in x but not in y, its' different with setdiff(y,x)
+setequal(x,y) #return boolen mean set equal or not.
+is.element(x,y) equal x %in% y
+ggplot  scale_x_log10()+
+        scale_y_log10()  #实现了x,y的比例缩小
+
+suppressWarnings(statement) #我觉的功能就是屏蔽warning信息。
+
+ggplot example:
+class.plot <- ggplot(class.df, aes(x = Pr.HAM, Pr.SPAM)) +  #define data, and x, y axe
+    geom_point(aes(shape = Type, alpha = 0.5)) +  #print point of data, shape is according to Type.
+                                                  # alpha is set transparent.
+    stat_abline(yintercept = 0, slope = 1) +      # draw a line, 
+    scale_x_log10() +                             # scale the x axe
+    scale_y_log10() +                             # scale the y axe
+    scale_shape_manual(values = c("EASYHAM" = 1,  # manually set the sharp. you can check this 
+                                  "HARDHAM" = 2,  # in the right of pic
+                                  "SPAM" = 3),
+                       name = "Email Type") +
+    scale_alpha(legend = FALSE) +                 # relational with the transparent of sharp 
+    xlab("log[Pr(HAM)]") +                        # set the title of x axe
+    ylab("log[Pr(SPAM)]") +                       # set the title of y axe
+    theme_bw() +
+    opts(axis.text.x = theme_blank(), axis.text.y = theme_blank())
+ggsave(plot = class.plot,                         # save cmd, plot is ggplot object
+       filename = file.path("images", "03_final_classification.pdf"), # save type and filename
+       height = 10,
+       width = 10)
+dir() #get all file in some folder.
+垃圾邮件的辨别的方法的理论基础是朴素贝叶斯分类d(v) = max(p(v|t1t2t3..)) = max(p(t1t2t3...|v)*p(v)/p(t1t2t3...))。
+其中v是类别，t1...是类别的属性，可以看到p(v)是一个行业的经验值，而p(t1t2..)对所有类别都是一样的处理，
+所以就不用处理这个参数，而且这个参数还是比较难以得到的。所以再计算的时候忽略它。此外这个是建立在各个属性是独立的基础上的，
+so，才可以用p(t1t2t3..|v)=p(t1|v)*p(t2|v)....进行进一步的处理。
+其处理的步骤是：
+1. 读取垃圾邮件，正常邮件到内存中，
+2. 提取出邮件的message部分，然后用tm package进行text mining。
+3. text minning的结果是把message部分进行分析，得到term在不同的类型中(spam and ham)中的freq。
+4. 对测试数据进行text ming进行提取term集合，然后分别计算该terms用不同类型的freq计算出来的值，进行比较，
+那个比较大，就属于那一类。
+
+这里计算的freq是采用的是该词在同一类型的邮件中，出现该词的邮件数除以总的邮件数。
+spam.occurrence <- sapply(1:nrow(spam.matrix),
+                          function(i)
+                          {
+                            length(which(spam.matrix[i, ] > 0)) / ncol(spam.matrix)
+                          })
+
+</example>
+
+* Chap 4. Rank: Priority inbox
+<example>
+#4
+rank email
+grepl       # regular expression in r, grep l mean logical
+strsplit    # split function
+paste(list, sep=' ', collapse="\n") # join the element of list, 
+            # 如果不指定collapse，则生成一个字符向量，指定这个值之后，将字符向量通过指定值连接成一个字符串。
+priority <- olddata[with(olddata, order(Date)),] #order the olddata according to collum Date.
+table()     # is very useful, action like cross-table, it can get the 
+            # frequency offactor
+ddply(.data, .variable, .fun,...)  # is in plyr package, it applys the 
+            # function to subset(group by variable) then combine them.
+            # in book, the two fun function is similared.
+
+ggplot() + geom_rect  # plot the 2d rectangle, throught example in book
+            # we can see the pic, x and y axe is changed.
+
+在进行分析的时候，有时候数据的差别比较大，这个时候进行排序或者要显示的时候，
+结果并不是令人满意的，这个时候要考虑进行数据的转换。
+书中的这里给的一个启示是：针对数据项的列进行增加操作，保留原始数据。
+通过用transform还是增加了一列，然后对数据进行log操作。这样把数据的差值拉的比较近，
+通过plot图可以看到，也通过log函数曲线看到，数据越大，log的缩小比较就越大。
+在R中，log函数就是自然数为底的对数。另外为了防止数据特别小或者是0，这种情况下
+在原始数据的基础上加1来处理
+log1p(N) == log(N+1)
+strptime(data, pattern) # change the time pattern, convert to some pattern for next solution.
+
+针对inbox，根据其email的重要性，进行rank：
+步骤：
+1. 将数据分成两部分training data and test data.
+2. 运用数据的局限性，所有采用了邮件的sender、邮件的thread信息（时间，已经subject里面的term）以及邮件内容的term来
+设计ranker。
+3. 获得应该是5个方面的参考值，然后通过对test的数据的提取获得这个五个方面的weight，然后相乘得到该email的一个分值。
+4. 通过分值来进行对email进行rank
+
+这里看出也是supervised learning，但是这里的与其他的不太一样，有点和第recommended system类似。
+因为它没有之前介绍的supervised learning方法的结果值进行的training，那这里我们根据什么来进行验证我们的ranker是否有效。
+
+一个重要的理论应该是长尾理论（不知道翻译的对不对，以前看到过这个名词），就是将training的email根据ranker value
+画出其density graph，应该是大多数email分布在lower rank，少量的email分布在higher rank。
+理想的情况是less num bigger value（ranker值越大的email的数量越少）；从实际的效果看也应该是这样，
+好的推荐系统越重要的email，其数量越少。noraml email应该集中在比较lower的rank位置。
+
+</example>
+
+* Chap 5. Regression: Predict Page View
+<example>
+#5
+ggplot +goem_smooth(method='lm', se=FALSE)   # drow the lines model, se is set to 
+                                             # show the residual around the line.
+
+我们在进行liner regression的时候，summary lm方法的结果会得到一个值R^2。
+他的意义是：
+我们在用RMSE(平方平均开方误差)的时候，得到的结果是一个值，但是这个值大小的意义从这个值上是看不出来的。
+我们在用不同的方法去regression的时候都会得到这个值，那就用这个值来进行判断哪一个方法比较给力。
+而R^2=1-(model.rmse/mean.rmse)，这样该值本身就有一个比较，就是和mean的结果比较。如果model的得当，
+得到的应该是接近1的数字。
+</example>
+
+* Chap 6. Regularization: Text Regression
+<example>
+#6
+lm中poly(x,degree=2)生成正交的多项式X回归。degree表示最高次数.
+还有一个函数polym(..., degree=2)还没有搞清楚其作用，应该是可以多个变量的
+通过书中的例子可以看到，可能想通过不断的修改model来提高输出的拟合度，
+但是这样会引起另外一个问题就是Overfitting(过拟合)。产生过拟合的原因是讲
+原本是随机误差的部分考虑到了模型当中，从而影响了整个model的准确度。
+避免overfitting的方法：
+用cross-validation方法。
+1. data split，将数据分开，用部分数据进行分析，然后用另一个部分数据区验证。
+通常情况下将数据分为80%的train数据和20%的测试数据比较合理。
+2. 统计计算出测试数据和train的数据的方差和，选择多项式的次数。
+
+用Regularization的方法
+1. 计算模型的复杂度，这个复杂度是通过计算lm模型的系数来实现的.
+就是在模型的复杂性和对train data的fitting之间的一个train off(权衡)
+策略是：宁可选择一个比较简单的模型也不选择一个overfittring的模型。
+L2.model.complexity <- sum(coef(lm.fit)^2)
+L1.model.complexity <- sum(abs(coef(lm.fit)))
+2. 在R中的glmnet package中提供了计算其模型复杂度的一个参考。
+glmnet(poly(x,degree=n),y)
+output: three colummn: Df %Dev Lambda.
+Df: means 非零的参数个数
+%Dev: means 他的意义和R squred类似，就是线性度的一个指标
+Lambda: means 这个参数和regularization，lambda越大表示模型越复杂，也就是的所有的参数都接近为0
+但是不能够单纯的选择最小的lambda。这时候和cross-table方法结合起来。
+具体的步骤如下：
+1. 将数据分两部分：training data(training.df)和 test data(test.df)。已经总体的数据(df).
+2. 利用函数glmnet求出training data的模型lambda的结果：
+glmnet.fit <- with(training.df, glmnet(poly(X, degree = 10), Y))
+lambdas <- glmnet.fit$lambda
+3. 然后用所有的lambda来对test data做一个测试，计算出其RMSE。
+performance <- data.frame()
+for (lambda in lambdas)
+{
+  performance <- rbind(performance,
+  data.frame(Lambda = lambda,
+  RMSE = rmse(test.y, with(test.df, predict(glmnet.fit, poly(X,
+  degree = 10), s = lambda)))))
+}
+4. 找出最小RSME中最小的lambda值，然后将值应用到整体数据df中，找到合适的参数个数和参数值。
+best.lambda <- with(performance, Lambda[which(RMSE == min(RMSE))])
+glmnet.fit <- with(df, glmnet(poly(X, degree = 10), Y))
+# Twenty-fifth code snippet
+coef(glmnet.fit, s = best.lambda)
+output:
+#11 x 1 sparse Matrix of class "dgCMatrix"
+# 1
+#(Intercept) 0.0101667
+#1 -5.2132586
+#2 0.0000000
+#3 4.1759498
+#4 0.0000000
+#5 -0.4643476
+#6 0.0000000
+#7 0.0000000
+#8 0.0000000
+#9 0.0000000
+#10 0.0000000
+
+同时细节可以看看glmnet的description。可以了解他不仅仅针对多项式，
+还可以针对其他的一下glm的family模型。
+tm_map(x, FUN,...): map function
+</example>
+
+* Chap 7. Opmization: Breaking Codes
+<example>
+#7
+在第七章中就要将的是优化问题。
+optim(x,func)  # x is start list, func, 只能一个参数，然后参数可以是list格式，保证了多变量的优化问题。
+.Machine     #R环境中的变量，可以查看到系统中的数值的大小，比如书中用到的.Machine$double.eps
+此外本单元用到一个比较好的数据样本库，就是lexical的英文单词。他显示出单词出现的一个频率。
+本单元中比较复杂的实例是解码的问题。
+其思想是先给一个随机的解码结果，然后通过不断的迭代调整其中的字符来输出新的解码结果，根据数据样本库来判断其结果的
+概率，然后作为评分的一个标准。这个就是优化的过程，其评分机制保障其向最优方向步进。Metropolis method。
+这个算法是蒙特卡洛模拟算法的一种。其最大的缺点是趋近速度很慢。
+其步骤是：
+1. 首先随机一个比较粗糙的解码结果，这个结果可以是随机或者是经过人工的初步分析。
+起始值的位置很是影响其迭代的次数，此外这个对获取全局最优解还是局部最优解也是有关系的。
+2. 是指替换解码规则机制，修改想要的字母对应关系。
+3. 评判其结果与上一次结果的好坏，保证其向最优解的方向趋近。
+书中的例子中为了防止其有很明显的倾向性的问题，在替换的时候，设置了一个替换的随机值，不是每次都替换，
+也不是概率变坏而不替换。这就保证了不至于是求解过程陷入了局部最优解。
+
+这一章主要介绍的是模拟退火算法。
+通过接受一些相对差一点的结果来避免陷入局部最优解的情况。
+比较经典的算法。是模拟固体的物质在高温的情况下慢慢的冷却之后，物体的原则在自由的情况下能够稳定的回复到固体稳定结构。
+该算法的确定就是获得全局最优解的时间相对比较长。
+而Metropolis准则是怎样选择路径的法则
+若在温度T下，当前状态i-->新状态j
+若Ej<Ei, 则接受j为当前状态
+否则，若p=exp(-(Ej-Ei)/KT)大于[0,1)区间的随机数，
+则仍接受状态j为当前状态，若不成立则保持i为当前状态。
+</example>
+
+* Chap 8. PCA: Build a Market Index
+<example>
+#8 
+这一章注意是介绍的PCA。这个是无监督的机器学习的模式。
+书中提出的例子是股票的例子，每天那么多的股票都在变化，现在怎么了解到每天的整体走势呢。
+这里就利用了PCA的方法，将多只股票信息降为一维，这一维的信息保存了大部分的信息，
+当然肯定有部分信息丢失的情况。然后再用股票市场的指数进行验证，从例子中的结果PCA很好的
+得到了每天的走势情况。
+lubridate package是用来处理时间的包。具体的介绍可以看http://xccds1977.blogspot.jp/2012/07/lubridate.html
+这个需要翻墙去看这个。
+lubridate包主要有两类函数，一类是处理时点数据（time instants），另一类是处理时段数据（time spans）。
+1. 时点类函数，它包括了解析、抽取、修改。
+# 从字符型数据解析时间，会自动识别各种分隔符
+> x <- ymd('2010-04-08')
+# 观察x日期是一年中的第几天
+> yday(x)
+# 修改x日期中的月份为5月
+> month(x) <- 5
+2. 时段类函数，它可以处理三类对象，分别是：
+interval：最简单的时段对象，它由两个时点数据构成。
+duration：去除了时间两端的信息，纯粹以秒为单位计算时段的长度，不考虑闰年和闰秒，
+它同时也兼容基本包中的difftime类型对象。
+period：以较长的时钟周期来计算时段长度，它考虑了闰年和闰秒，适用于长期的时间计算。
+以2012年为例，duration计算的一年是标准不变的365天，而period计算的一年就会变成366天。
+了时点和时段数据，就可以进行各种计算了。
+# 从两个时点生成一个interval时段数据
+> y <- new_interval(x,now())
+# 从interval格式转为duration格式
+> as.duration(y)
+# 时点+时段生成一个新的时点
+> now() + as.duration(y)
+# 10天后的时间数据
+> now() + ddays(10)
+# 下面的两条语句很容易看出duration和period的区别，dyears(1)表示duration对象的一年，它永远是365天。
+# 而years(1)表示period对象的一年，它识别出2012是闰年，它有366天，所以得到正确的时点。
+> ymd('20120101') + dyears(1)
+[1] "2012-12-31 UTC"
+> ymd('20120101') + years(1)
+[1] "2013-01-01 UTC"
+
+reshape package进行table的转化，
+书中用到比较好用的一个例子就是交叉表的实现，就是行转为列的形式表示。
+cast(data, formaula, value) # formula表示行列的转化公式，
+                            # 然后value在每一个对应的值填入什么样的值。
+#example
+cast(prices, Data~Stock, value="Close")
+> head(prices)
+        Date Stock Close
+1 2011-05-25   DTE 51.12
+2 2011-05-24   DTE 51.51
+3 2011-05-23   DTE 51.47
+4 2011-05-20   DTE 51.90
+5 2011-05-19   DTE 51.91
+6 2011-05-18   DTE 51.68
+>head(cast(prices, Data~Stock, value="Close"))
+        Date   ADC   AFL ARKR ...   UTR
+1 2002-01-02 17.70 23.78 8.15 ... 39.34
+2 2002-01-03 16.14 23.52 8.15 ... 39.49
+3 2002-01-04 15.45 23.92 7.79 ... 39.38
+4 2002-01-07 16.59 23.12 7.79 ... 38.55
+5 2002-01-08 16.76 25.54 7.35 ... 38.98
+6 2002-01-09 16.78 26.30 7.40 ... 39.60
+还有一个melt函数，melt函数的作用是将列变成行的操作。
+melt(data, id.vals='Date')  # id.vals是每行不变的值。
+#example
+> head(comparison)
+        Date MarketIndex        DJI
+1 2002-01-02  -1.0346886 -0.3251888
+2 2002-01-03  -1.0265119 -0.2602872
+3 2002-01-04  -1.0199864 -0.2027079
+4 2002-01-07  -1.0230787 -0.2439139
+5 2002-01-08  -0.9953525 -0.2744783
+6 2002-01-09  -0.9873846 -0.3115893
+> melt(comparison, id.vals='Date')
+           Date       Index      Price
+1    2002-01-02 MarketIndex -1.0346886
+2    2002-01-03 MarketIndex -1.0265119
+3    2002-01-04 MarketIndex -1.0199864
+..
+..
+4729 2011-05-20         DJI   1.277723
+4730 2011-05-23         DJI   1.191762
+4731 2011-05-24         DJI   1.175296
+4732 2011-05-25         DJI   1.200570 
+
+> as.numeric(matrix) # convert matrix to a list.
+> subset(date, date>ymd('2002-12-31')) # get the subset accoring to condition
+> rev(list) # reverse the order of list.
+
+刚开始读进来的DJI和算出的MarketIndex的scale是不同的，没有办法进行比较。
+所以对两组数据都进行scale操作。
+
+添加一点stringr包的一些操作：
+info: http://xccds1977.blogspot.jp/2012/07/stringr.html
+
+library(stringr)
+ 
+# 合并字符串
+fruit <- c("apple", "banana", "pear", "pinapple")
+res <- str_c(1:4,fruit,sep=' ',collapse=' ')
+str_c('I want to buy ',res,collapse=' ')
+ 
+# 计算字符串长度
+str_length(c("i", "like", "programming R", 123,res))
+ 
+# 按位置取子字符串
+str_sub(fruit, 1, 3)
+# 子字符串重新赋值
+capital <-toupper(str_sub(fruit,1,1))
+str_sub(fruit, rep(1,4),rep(1,4)) <- capital 
+ 
+# 重复字符串
+str_dup(fruit, c(1,2,3,4))
+ 
+# 加空白
+str_pad(fruit, 10, "both")
+# 去除空白
+str_trim(fruit)
+ 
+#  根据正则表达式检验是否匹配
+str_detect(fruit, "a$")
+str_detect(fruit, "[aeiou]")
+ 
+# 找出匹配的字符串位置
+str_locate(fruit, "a")
+ 
+# 提取匹配的部分
+str_extract(fruit, "[a-z]+")
+str_match(fruit, "[a-z]+")
+ 
+# 替换匹配的部分
+str_replace(fruit, "[aeiou]", "-")
+ 
+# 分割
+str_split(res, " ")
+
+可以看到进行数据的分析的时候，尽量使将转成多列的形式，这样分析数据间相对性，以及其他的特征的时候比较方便。
+当要绘出数据的图像呈现出比较直观的情况下，则多是将数据转成row的形式，我想其中的原因是图像只能表示二维数据。
+多维的数据要通过降维将数据展开，然后在图片上通过其他的方式的展开，形成对比，或者作为factor的方式来显示。
+就像股票的这个例子一样在分析25股票的相关性的时候，是通过cast函数将数据形成一个M*M的多列数据来进行。
+而当要显示这些数据的时候，则是将数据的列的值作为row数据一列中的factor来进行多行的展开(melt)。
+所以这两个函数是很有用的。
+</example>
+
+* Chap 9. MDS: Visually Exploring US Senator Similarity
+<example>
+#9 
+本章主要讲述的是聚类的操作。
+1. 计算其相关矩阵（简单的由m%*%t(m)来实现的）
+2. 根据相关矩阵计算出其欧式距离
+3. 用MDS(multidimensinal scaling, 多维度分析)来降到二维上，进行展示
+
+通过将美国国会不同党派针对法案的投票来分析党派之间的聚类关系。
+dict(matrix)  # 获得不同向量间的距离。
+cmdscale(matrix, k=n)  # 通过一定的旋转变换到另一个空间，k维空间。
+                       # 书中用的是降维到二位，比如plot出来。
+do.call("func", list)  # apply func to each item in list.
+# complex plot action
+base.110 <- ggplot(cong.110, aes(x = x, y = y)) +
+  scale_size(range = c(2,2), legend = FALSE) +  # set the scale size
+  scale_alpha(legend = FALSE) + theme_bw() +
+  opts(axis.ticks = theme_blank(),
+       axis.text.x = theme_blank(),
+       axis.text.y = theme_blank(),
+       title = "Roll Call Vote MDS Clustering for 110th U.S. Senate",
+       panel.grid.major = theme_blank()) +
+  xlab("") +
+  ylab("") +
+  # set the shape scheme
+  scale_shape(name = "Party", breaks = c("100", "200", "328"),
+              labels = c("Dem.", "Rep.", "Ind."), solid = FALSE) +
+  # set the color scheme
+  scale_color_manual(name = "Party", values = c("100" = "red",
+                                                "200" = "blue",
+                                                "328"="black"),
+                     breaks = c("100", "200", "328"),
+                     labels = c("Dem.", "Rep.", "Ind."))
+print(base.110 + geom_point(aes(shape = party,
+                                alpha = 0.75,
+                                size = 2)))
+print(base.110 + geom_text(aes(color = party,
+                               alpha = 0.75,
+                               label = cong.110$name,
+                               size = 2)))
+
+</example>
+
+* Chap 10. kNN: Recommendation System
+<example>
+#10 KNN k-nearst-narbour algorithm.
+KNN recommendation system.
+根据某个点，找出里这个点最近的k个邻居的距离作为一个类。
+推荐系统分为两类型：一类item-based，一类是user-based。
+在选择这两个方法的时候主要是根据实际的需求。如果没有特定的需求还是从计算成本来考虑的。
+如果系统数据中item的数量比user多，则采用user-based。反之采用item-based。
+1. 计算各列间的距离
+2. 或者每个节点最近的K个邻居，作为推荐的对象
+比如书中安装包的例子采用的是item-based的方式，首先调整matrix的结构，
+将每列的信息设置成不同package的信息（item信息），每行是每一个用户针对的这些安装包的installed值
+然后取出installation package间的相关系数，
+然后在相关系数的基础上计算出各个installation package的距离，
+然后根据距离来基础出每个package最近的25个package（这个是可调的，由实际情况决定），
+然后根据这些来判断用户是否对某一个package感兴趣，同时可以计算出每一个用户所有installation package
+的安装概率，选出最大的10个作为推选。具体的做法是：
+上面有installation package的相关矩阵
+然后计算出各个package的25个邻居，
+然后回到原始的matrix(user-pakcage)， 这对每一个用户的各个package的安装概率，
+用其邻居的数据的平均作为其值，
+然后选择10个推选项。
+
+扩展抽象的来说就是：
+这里书中用了cor来求列间的相关系数，cor的matrix参数是按照列向量来计算的。
+1. 首先计算item间的相关系数
+2. 根据相关系数获得item间的neighbor
+3. 用户根据不同的item计算出25个neighbor节点，然后计算出其item的平均值，
+4. 用户根据其计算的item的平均值排序获得其推荐的item list
+</example>
+* Chap 11. Anylize Social Graphs
+<example>
+# 11 social network analysis
+ggplot中，coord_flip() #将x,y轴对折起来。coordinates flip.
+本章主要讲述的如何处理social networks数据。根据数据设计一个twitter的推荐功能。
+社交网站的社交模型主要有下列几种，用户的关系是网状结构的：无向图，有向图已经有权限和label的有向图。
+facebook属于无向图的结构，而微博和twitter属于有向图的。
+分析的步骤：
+1. 从网络上抓取数据，twitter有数量的限制，但是google把这些数据给缓存起来，可以从google上进行抓取。
+但是呢，我试验过没有成功，我不再纠结这个事情，但是这里有这个思路。
+R中用的RCrul包，感觉还可以。我的做法一般都是用python抓取并处理数据，然后用R进行分析。
+2. 对抓取下来的数据进行处理，这里用到了R的 JSONIO的package。已经将数据保存到igraph
+结构中（R的igraph package).
+3. 设计推荐系统。其理论就四句话：朋友的朋友是我的朋友，朋友的敌人是我的敌人，
+敌人的朋友是我的敌人，敌人的敌人是我的朋友。
+所以比较简单的设计方法是找到我所有我follow（关注）我人，作为我的朋友；
+然后找到所有我朋友follow的人但是我没有follow的人来作为推进的朋友，更加我朋友的follow的次数作为
+推荐给我作为朋友的权重。
+non.friends <- sapply(1:nrow(user.el), function(i) ifelse(any(user.el[i,] == user | 
+    !user.el[i,1] %in% friends) | user.el[i,2] %in% friends, FALSE, TRUE))
+这个语句是找到我朋友的朋友，但是不是我的朋友的逻辑语句，比较绕所有贴在这。user.el是
+user.el <- get.edgelist(user.graph)得来的。其数据的格式是：
+> head(user.el)
+     [,1]         [,2]          
+[1,] "drewconway" "311nyc"      
+[2,] "drewconway" "aaronkoblin" 
+[3,] "drewconway" "abumuqawama" 
+[4,] "drewconway" "acroll"      
+[5,] "drewconway" "adamlaiacano"
+[6,] "drewconway" "aeromax" 
+</example>
+
+* Chap 12. Model Compairion
+<example>
+# 12 comparing algorithm
+从分类器的角度出发，我们已经了解了几款分类器：线性回归、logical regression、KNN等，但是在我们面临比较复杂的
+类别分类的情况下这些分类器就可能有些力不从心。此时书上引入了SVM(support vector machine)支持向量机的反正
+他在处理一下某些非线性有比较好的表现。
+他的方法是通过把数据映射到更高维度的空间进行分类。
+library('e1071')
+svm(model,data,    #model like label~X+Y
+	kernal,	   #svm includes 4 kernal:liner, polynomial, radial and sigmoid
+	degree,    #mainly used in polynomial, tuning complex of polynomial. exist overfitting problem
+	cost,      #for all kernals. as it increased, performance of model will worse.
+	gamma)     #as it's bigger, the better is perfmance of model.
+
+有经验的Machine Learning engineer会对一个问题采用多个方法进行验证，找到其方法的适用性，为什么可用，为什么不可用。
+#add row to data.frame
+performance <- rbind(performance, data.frame(Lambda=lambda, MSE=mse))
+
+从书上我理解到的意思，对各个模型都用default参数进行试验，不能这个tuning了和没有tuning的相比，那就没有可比性了。
+
+这个试验的数据还是垃圾邮件的数据，通过用logical regression、kvm、knn。通过radial的结果看
+数据的分类应该是线性分类（svm中的radial和sigmoid对非线性的数据处理比较好些），同时测试的结果看
+应该是logical regression的mse误差最小。
+the ideal model for your problem depends on the structure of your data.
+We hope you’ll walk away with several lessons in mind: 
+(1) you should always try multiple algorithms on any practical data set, 
+especially because they’re so easy to experiment with in R; 
+(2) the types of algorithms that work best are problem-specific; and 
+(3) the quality of the results you get from a model are influenced 
+by the structure of the data and also by the amount of work you’re willing 
+to put into setting hyperparameters, so don’t shirk the hyperparameter tuning step 
+if you want to get strong results.
+
+</example>
+<p>
+
+[[statsbook.html][UP]]

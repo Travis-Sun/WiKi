@@ -1,0 +1,52 @@
+#title Microsoft Manual of Style for Technical Publications
+
+
+* Documenting the User Interface
+
+** Screen
+
+*** Windows Desktop
+<example>
+icon, desktop, taskbar, taskbar button, open window, Start menu, 
+submenu, Start button, Quick launch bar, notification area.
+</example>
+
+*** Open window
+<example>
+title bar, menu bar, tool bar, Address bar, status bar, scroll bar
+Minimize button, Maxmize button, Close button, 
+window border, scroll box, scroll arrow, window corner
+</example>
+
+*** Browser
+<example>
+Internet Explorer logo, Web page, Media bar, Links bar, Address bar
+</example>
+
+*** Web page
+<example>
+link, banner,nevigation button, left nevigation bar
+</example>
+
+*** Document
+<example>
+program icon, document window, split box, split bar, view button.
+</example>
+
+** Dialog Boxes and Property Sheets
+
+developer calls button, switch and so on as *control*.
+
+*** Dialog Box Syntax
+
+ - click. Use for commands, command buttons, option buttons, and options in a list, gallery, or palette.
+ - select and clear. Use for check box.
+ - type and select. 
+ - Use bold type in procedures for dialog box titles, labels, and options. like:
+
+On the *Tools* menu, click *Options*, and then click the *View* tab.
+Select the *Bookmarks* check box.
+</ul>
+
+
+[[WelcomePage][UP]]

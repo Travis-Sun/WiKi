@@ -1,0 +1,21 @@
+#title Notes
+
+
+<p>
+
+* 头文件
+1. class里面声明了static函数，在cpp文件中就不必用static限定符。在访问的使用用Classname::staticfunName
+
+* const
+
+* wchar_t
+
+wchar_t *key = L"中华";
+int length = wcslen(key);
+wcout<< key
+
+
+
+</p>
+
+[[cc.html][UP]]

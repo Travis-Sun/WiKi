@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>spelling corrector</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../DataAnalysis/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">spelling corrector</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+应用贝叶斯概率论来实现英文的拼写纠正问题。
+
+</p>
+
+<h2>理论</h2>
+
+<pre class="example">c(correct) 正确的word
+
+w(wrong) 错误的word
+
+
+目标就是p(c|w)最大的那个c，
+
+p(c|w) = p(w|c) * p(c) / p(w)
+
+对同一个w，p(w)是一样的，所有可以忽略
+
+所有就转成了求 p(w|c) * p(c)的最大值。
+
+p(c)就是对于正确的词出现的概率，这个可以从大量的语料集中统计出来，
+该词出现的次数越多，该词的p(c)越大
+
+p(w|c)就是将一个c写成不同错误的word的概率，这里我们进行一个合理假设：
+就是w越和c接近，p(w|c)越大。
+
+这里讲这种接近分成下面几种形式（修改一处的4中情况）：
+
+1. w比c少1个字符
+2. w比c多1个字符
+3. w中的靠近的2个字符顺序想法(abcd and acbd)
+4. w为修改c中某位字符
+
+同时可以继续延伸成修改两处的情况，就是修改过一处的基础上再做一次一处修改。
+</pre>
+
+<h2>实现</h2>
+
+<p>
+用R来实现的。这里利用了R中的Parallel package来实现部分的计算功能。
+
+</p>
+
+<p>
+这里的parallel compute的一点心得，由于R的并行计算就是多个进程在不同的cpu core上计算，
+所有在分并行操作的时候，我觉得尽量粗粒度的让其并行计算。
+可以从任务栏中看到我机器上的4核同时计算的场面。
+
+</p>
+
+<pre class="example"># parallel library parallel and foreach
+library(parallel)
+
+# corpus file path
+words.file = file.path(&quot;Data&quot;,&quot;words.txt&quot;)
+
+# get the word frequent table
+getwords &lt;- function(words.file) {
+  # read file
+  con &lt;- file(words.file, open=&quot;rt&quot;)
+  words &lt;- readLines(con)
+  close(con)
+  # construct dataframe for words
+  # can change to parallel run
+  # connect to one string
+  result &lt;- tolower(paste(words, collapse=&quot; &quot;))
+  # delete the chars without a-z, blankspace
+  str &lt;- gsub(&quot;[^a-z\ ]&quot;,&quot;&quot;,result)
+  words &lt;- strsplit(str, ' +')
+  return(table(words))
+}
+
+# nearly words of inputing word
+# change one char
+getnearlywords &lt;- function(word) {
+  #cObj &lt;- makeCluster(detectCores())
+  result &lt;- c()
+  # can change to parallel run
+  for (j in 0:(nchar(word))) {
+     a &lt;- substr(word, 0, j)
+     b &lt;- substr(word, j+1, nchar(word))
+     if (nchar(b)&gt;0) {
+       # delete a char
+       w &lt;- paste(c(a,substr(b,2,nchar(word))),collapse=&quot;&quot;)
+       result &lt;- c(result, w)       
+       # replace a char
+       result &lt;- c(result,do.call(rbind,lapply(letters,
+                                               FUN=function(alp) {
+                                                 w &lt;- paste(c(a, alp, substr(b,2,nchar(word))),collapse=&quot;&quot;)
+                                                 return(w)
+                                               })))
+     }
+     # transpose    
+     if (nchar(b)&gt;1) {
+       w&lt;- paste(c(a,substr(b,2,2),substr(b,1,1), substr(b,3,nchar(b))),collapse=&quot;&quot;)
+       result &lt;- c(result,w)
+     }
+     # insert
+     result &lt;- c(result, do.call(rbind, lapply(letters,
+                                               FUN=function(alp) {
+                                                 w &lt;- paste(c(a,alp,b),collapse=&quot;&quot;)
+                                                 return(w)
+                                               })))
+   }                      
+  return(unique(result))
+}
+
+knownword &lt;- function(words) {
+  words.valid &lt;- words[words %in% names(words.table)]
+  if (length(words.valid)!=0)
+    return(words.valid[which.max(words.table[words.valid])])
+  else
+    return(NA)
+}
+
+correct &lt;- function(input) {
+  if (is.na(words.table[input])) {    
+    #change one char
+    words.1char &lt;- getnearlywords(input)
+    length(words.1char)
+    words.return = knownword(unique(words.1char))
+    if (!is.na(words.return)) return(words.return)
+    #change two chars
+    # parallel run
+    cObj &lt;- makeCluster(detectCores())
+    words.2char &lt;- c(do.call(rbind,parLapply(cObj,words.1char,fun=getnearlywords))[,])
+    stopCluster(cObj)
+    # sequencial run
+    #words.2char &lt;- c(do.call(rbind,lapply(words.1char,FUN=getnearlywords))[,])
+    #total chars
+    #words.total &lt;- unique(c(words.1char,words.2char))
+    #length(words.total)
+    # two changed chars
+    words.return = knownword(unique(words.2char))
+    return(words.return)
+    # main time consume.
+    #system.time(words.table[words.total])
+    #system.time(which(!is.na(words.table[words.total])))
+    #system.time(which.max(words.table[words.total]))
+    #system.time(words.valid[which.max(words.table[words.valid])])
+    #words.valid &lt;- words.total[words.total %in% names(words.table)]
+    #words.valid
+    #return(words.valid[which.max(words.table[words.valid])])
+  }
+  else {
+    return(input)
+  }
+}
+  
+# word table, value is frequency, collum is words
+words.table &lt;- getwords(words.file)
+# get the right word
+input &lt;- &quot;korrecter&quot;
+#system.time(correct(input))
+correct(input)
+</pre>
+
+<p>
+python implementation:
+
+</p>
+
+<pre class="example">#-*- coding:utf-8 -*-
+
+import re, collections
+
+CORPUSPATH=r'data'
+
+
+def words(text):
+    return re.findall('[a-z]+', text.lower())
+
+
+def train(feature):
+    model = collections.defaultdict(lambda: 1)
+    for f in feature:
+        model[f] += 1
+    return model
+
+
+NWORDS = train(words(file('data/words.txt').read()))
+
+
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
+
+def edits1(word):
+    splits = [(word[:i],word[i:]) for i in range(len(word)+1)]
+    deletes = [a + b[1:] for a, b in splits if b]
+    transposes = [a + b[1] + b[0] + b[2:] for a,b in splits if len(b)&gt;1]
+    replaces = [a + c + b[1:] for a,b in splits for c in alphabet if b]
+    inserts = [a + c + b for a,b in splits for c in alphabet]
+    return set(deletes + replaces + inserts)
+
+
+def edits2(word):
+    return set(e2 for e1 in edits1(word) for e2 in edits1(e1) if e2 in NWORDS)
+
+def correct(word):
+    def known(word): return set(w for w in word if w in NWORDS)
+    candidates = known([word]) or known(edits1(word)) or known(edits2(word)) or [word]    
+    return max(candidates, key=NWORDS.get)
+
+
+if __name__=='__main__':
+    in_word = 'korrecter'
+    print correct(in_word)
+
+</pre>
+
+<p>
+<b>Notes:</b>这里有一个细节要注意：修改一处比修改两处的优先级要高，没有修改的比修改过的优先级要高。
+
+</p>
+
+<p>
+所有python在实现的时候用or的方式作为结果的返回，找到第一个不为空的集合。
+
+</p>
+
+<p>
+这里以前的R实现有些问题，就像了修改了。和Python的实现能够同步了。
+
+</p>
+
+<p>
+<a href="statsexercise.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-11-22</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

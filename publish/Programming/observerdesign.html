@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Observer Pattern</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Programming/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Observer Pattern</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<h2>Observer</h2>
+
+<h3>problem</h3>
+
+<ul>
+<li>希望当数据发生变化时，系统展示部分也随之变化。产生联动效果。
+</li>
+<li>展示部分也可能有多种变化，应该适应其扩展性。
+</li>
+</ul>
+
+<p>
+如书中的例子，天气预报的问题，当预测中心把预测的天气温度、湿度、风力等
+信息更新之后，数据的显示终端能够及时发生变化，此外随之客户的需求，增添多种形式的显示终端。
+这种情况下需要用到observer模式。
+
+</p>
+
+<h3>implement</h3>
+
+<p>
+这里实现observer模式，有两种模式：pull和push两种模式。pull指的是，首先publisher通知subscriber有数据变化，
+然后在subscriber从publisher获取数据，并显示出来。push指的是，publisher通知subscriber有数据变化，并把数据
+推送到publisher，然后publisher将数据显示出来。
+
+</p>
+
+<pre class="example">Design Principle:
+1. Publisher + Subscriber = Observer Pattern
+2. Strive for loosely coupled designs between objects that interact.
+
+Observer Pattern defines a one-to-many dependency between objects 
+so that when one object changes state, all of its dependents 
+are notified and updated automatically.
+</pre>
+
+<p>
+push UML:
+
+</p>
+
+<p>
+<a href="observer_2.gif"><img src="observer_2.gif" alt="push&#32;UML" /></a>
+
+</p>
+
+<p>
+pull UML:
+
+</p>
+
+<p>
+<a href="observer_1.gif"><img src="observer_1.gif" alt="pull&#32;UML" /></a>
+
+</p>
+
+<p>
+嗯，从上面看应该都是pull模式，这种模式比push模式好一点时，push是把所有的数据都发过来，可能有些不需要的数据也都发过来了。
+push的方法，就是把数据通过update的参数的形式发给observer。
+pull的模式就只取自己需要的数据，通过调用get***的方法来实现提取数据。
+
+</p>
+
+<p>
+C# code example in HOME/cs/designpattern/obsever.cs.
+
+</p>
+
+<p>
+</p>
+
+</p>
+
+<p>
+<a href="designpattern.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

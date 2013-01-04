@@ -1,0 +1,87 @@
+#title Factory Design
+
+
+<p>
+* Problem
+
+1. 一个问题有多种实现的类，那我们在使用这些类的时候，总是new，new这样造成的后果是
+代码的维护性会很差。
+2. 当实现类有变化的时候，我们需要修改我们的客户端的code
+3. 当实现类有扩展的时候，我们的客户端也要进行大量的code的修改
+4. 所以现在的目标是不用new的方式来创建类。
+5. 例如书中所用到的例子：一个pizza店提供各种pizza，而每种pizza的实现process是一样，
+但是具体的细节的操作是不同的。
+6. 还有就是书中的不同地方的调料的不同搭配问题，这种问题面临的是多族product，那从每一族的product
+中挑出不同的口味的调料来实现不同口味的pizza的调料的搭配。
+
+* Implement
+
+1. 针对问题，首先第一，我们采用一个abtract方法来实现各种pizza的create操作。
+2. 这对低端的pizza发生变化，调用他的客户端code也会发生变化的情况，解决其思路，就是将类的new下沉到子类中来实现，
+就是通过子类来实现abstract的方法来实现具体对象的生成。
+3. 而abstract factory是将product分族，然后将每族中的product挑出组成一种style的pizza，这样就组成不同的
+style的pizza生产的工厂。
+4. 而abstract factory的模式和factory method模式的实现很像，共性都是延迟object的实例化到子类中，而client
+端基本上不变。abstract factory是一个组的product实现；factory method则是倾向用方法的来实现product的
+实例化。从UML图中也可以看到，abstract factory是针对很多的product的create操作，而factory method则是针对
+某一个特定的product的create。
+
+<example>
+Design Principle:
+1. Depend upon abstractions. Do not depend upon concrete classes
+2. No variable should hold a reference to a concrete class
+3. No class should derive from a concrete class
+4. No method should override an implemented method of any of its base classes.
+
+Factory Method Pattern defines an interface for creating an object,
+but lets subclasses decide which class to instantiate. 
+Factory Method lets a class defer instantiation so subclasses.
+
+Abstract Factory Pattern provides an interface for creating families of related
+or dependent objects without specifying their concrete classes.
+</example>
+
+
+* UML
+
+Factory Method UML:
+
+[[factorymethod.gif][Factory Method UML]]
+
+那从上面的UML图中可以看到：直接的联系是在subclass里面来实现，而client是通过接口或者abstract class。
+
+Abstract Factory UML：
+
+[[abstractfactory.gif][Abstract Factory UML]]
+
+可以看到：abstract factory pattern 是针对一族product而设置。
+
+* Code
+
+code: home/cs/designpattern/factory.cs
+
+* Summary
+
+工厂方法和抽象工厂两种设计模式都是创建性的模式，减少客户端对实际类的依赖，所以呢，通过接口或者抽象类来进行隔离。
+这样通过子类来进行选择实体类的创建。这样呢可以看到把整体的设计结构不断的细分，放到最后，你所修改的就只是其细小分支
+下的class的内容，其他的部分都不会改变；而且扩展的话也就是在其接口或者abstract class分下来一个新的支流来实现控制。
+充分的满足其可扩展不可修改性；此外可以看到设计原则中提到了，subclass不要修改其父类的行为，这样流程的控制在父类中进行。
+
+此外关于工厂方法和抽象工厂的区别上面也多次体现出来。工厂方法依赖于继承，他是继承其父类的abstract create方法，来进行具体
+的创建工作，直接拿到product。而抽象工厂则工厂有点组成厂的特定，他是将所有的product的零件组装到一起，然后呢交付给客户端一个
+相对完整的成品，所以其中一般都用到了工厂方法。
+
+最后就是客户端怎么使用这些模式呢，看到了几个设计模式，可以看到很喜欢将一个复杂的class作为参数传入到一个统一的框架中进行使用。
+不如这次，那我在使用抽象工厂的时候，首次我首先生成一个工厂，然后把工厂对象传入到具体的流程中来完成随后产品进行的操作。学习！！！
+
+** 补充
+
+这几天改了performance的那个程序有些感触：
+
+1. 将某些实习延迟到子类中实习就用abstract关键字，然后子类中override一下就可以了。
+2. 如果父类要实现方法，子类也要将该方法不同的实现，那这个时候就用到virsual的关键字，这样用子类的时候就调用子类的方法，
+用父类的时候就是用父类的方法，详细可以看我的Windows.Ime.<nop>ResultAnalysis的项目，父类<nop>CommonPerformanceParser和
+子类<nop>HKBPerformanceParser</nop>中的getSummary采用的这个设计。
+
+</p>
+[[designpattern.html][UP]]

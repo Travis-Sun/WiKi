@@ -1,0 +1,29 @@
+#title Set break point in CLR
+
+<p>
+* Set Break
+
+** Get the Function
+
+由于托管代码和非托管的代码运行机制是不同，在非托管代码中，很容易通过bp就给函数设置上断点了，
+然而这个在托管中不是很容易的，因为托管允许机制是具有JIT，即时编译的。当第一次运行的时候，
+程序中只是设定了一个stub，当调用的时候才启动JIT去编译相应的功能。所以下面的方法能否在第一次编译前
+设置好断点，我没有测试过，但编译后的设置断点是可以的。但从力量上应该也是可以的，前提是module已经加载了。
+
+
+1. !name2ee <modulename> <functionname>
+2. bp address.
+
+*Note* 
+
+moduelname=*.exe or *.dll
+
+functionname is case induced.
+
+最后证实了，当function还没有编译的时候不能用上面的方面，其替换的方法会在name2ee的命令后提示出来。
+
+就是name2ee会给出function的MethodDes<nop>的提示，然后运行其命令!bpmd -md <methoddes>
+
+</p>
+
+[[debug.html][UP]]

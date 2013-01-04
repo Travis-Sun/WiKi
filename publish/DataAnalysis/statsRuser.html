@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>R的累积</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../DataAnalysis/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">R的累积</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<p>
+
+</p>
+
+<h2>Other note about R</h2>
+
+<p>
+<a href="http://zoonek2.free.fr/UNIX/48_R/02.html#17">http://zoonek2.free.fr/UNIX/48_R/02.html#17</a>
+
+</p>
+
+<h2>R 环境</h2>
+在emacs + ESS + R的搭配中，中文显示不论是在图片上还是在ESS中都是存在的问题，
+下面是我的处理的方法：
+
+</p>
+
+<h4>1. 在*.r文件中， 文件开头设置如下，这样保证了在emacs + ESS可以正常的显示中文。</h4>
+
+<pre class="example">#coding=utf-8，or #-*- coding: utf-8 -*-
+</pre>
+
+<h4>2. 然后在rtem.exe的环境中运行如下命令，设置在R processor中显示的方式。</h4>
+
+<pre class="example">&gt; Sys.setlocale(category = &quot;LC_ALL&quot;, locale = &quot;Chinese_People's Republic of China.936&quot;)
+</pre>
+
+<p>
+这种方法是个参考，一旦我的文件环境是utf-8，在Emacs+ESS环境下就不能正常的显示，又折腾死我了。下面是我最想的步骤
+
+</p>
+
+<h4>1. 在Emacs中设置UTF-8作为默认的code-system</h4>
+
+<pre class="example">(prefer-coding-system 'chinese-iso-8bit)
+(prefer-coding-system 'chinese-gbk)
+(prefer-coding-system 'utf-8)
+
+</pre>
+
+<h4>2. 确保所有的输入都是UTF-8类型</h4>
+
+<h4>3. 在R cmd(Rtem.exe)中设置setlocale</h4>
+
+<pre class="example">Sys.setlocale(locale = 'C')
+</pre>
+
+<p>
+这种情况下可以try一下。
+
+</p>
+
+<p>
+有时候处理完之后，读出来的数据还会是乱码，可以下面的方法try一下：
+<pre class="example">iconv(data,from='UTF-8',to='UTF-8')
+iconv(data,from='UTF-8',to='')
+</pre>
+
+<h2>R and MySQL</h2>
+
+<h4>1. install mysql and odbc</h4>
+一般情况下安装mysql都会安装上odbc connector。
+<h4>2. install RODBC package in R</h4>
+<h4>3. config dns in odbc</h4>
+设置dataSource名字，这个名字是外部（R）来连接数据源用的。
+然后设置IP，和用户名密码，用户名字mysql默认的账号是root。
+<pre class="example">install.packages(&quot;RODBC&quot;)
+library(RODBC)
+conn&lt;-odbcConnect(&quot;RDatabase&quot;, uid=&quot;root&quot;, pwd=&quot;sc369963/123456&quot;)
+std &lt;- sqlQuery(conn, &quot;select * from std&quot;)
+std
+close(conn)
+</pre>
+
+<h2>地图绘制</h2>
+
+<h4>1. maps， mapdata library 方法</h4>
+
+<pre class="example">install.packages(&quot;maps&quot;, &quot;mapdata&quot;)
+library(maps)
+library(mapdata)
+map(&quot;china&quot;, col = &quot;darkgray&quot;, ylim = c(18, 54), panel.first = grid())
+</pre>
+
+<p>
+这种方法有一个缺点，就是重庆还没有从四川分离出来，也就是数据比较老。
+
+</p>
+
+<h4>2. 根据GIS数据自绘地图多边形</h4>
+
+<p>
+可以参考这篇文章： <a href="http://cos.name/2009/07/drawing-china-map-using-r/">http://cos.name/2009/07/drawing-china-map-using-r/</a>
+
+</p>
+
+<pre class="example">library(maptools)
+x=readShapePoly('bou2_4p.shp')
+plot(x)
+</pre>
+
+<h4>3. color in R</h4>
+
+<pre class="example">#可以查看所有的color值。
+colors()
+</pre>
+
+<h2>Help</h2>
+
+<h4>1. R package中的一些介绍</h4>
+<pre class="example">vignette(all = TRUE)
+也就是各个包下面的介绍性文章（有的没有）
+不同包用在不同的领域中，可以了解其中的一些知识。
+</pre>
+
+<h2>ESS</h2>
+
+<p>
+一些常用的命令：
+
+</p>
+
+<pre class="example">run line: C c C j;
+run line and open interaction window: C c A j
+insert &lt;-: S -
+insert _: S - -
+</pre>
+
+<h2>Debug</h2>
+
+<pre class="example">1、browser(): 在脚本文件适当的位置插入browser()，重新载入模块，运行，程序会在该行中断。
+命令：n: step; c: continue; where: print the call back; Q: quit; enter: last command；
+
+2、traceback(): 打印上一次的出错信息；
+
+3、定义一个全局变量捕捉中间数据信息，比如一个全局变量a，可以在函数内a&lt;&lt;-***来给全局变量赋值；
+
+4、设定options(warn=1)，即时提示warning信息，不设置则警告信息会在程序执行完毕之后才会输出；
+
+5、try() 和tryCatch()是两个很好的处理error的函数；
+
+6、warning()输出一个警告信息，stop()函数终止程序运行并退出，geterrmessage()得到最后一次出错信息。
+</pre>
+
+<h2>Machine Learing for Hacker</h2>
+
+<p>
+<a href="statsbook_MLforHack.html">this</a>
+
+</p>
+
+<h2>从网上抓起数据</h2>
+<a href="http://cos.name/cn/topic/107477">http://cos.name/cn/topic/107477</a>
+
+</p>
+
+<pre class="example">require(RCurl)
+require(XML)
+
+k = postForm(&quot;http://www.zhepb.gov.cn/htdocs/apinew/api_view_l.asp&quot;,
+             T1 = &quot;2012-6-1&quot;, B1 = &quot;%B2%E9%D1%AF&quot;,
+             style = 'post', .encoding = &quot;utf-8&quot;)
+
+k = iconv(k, 'gbk', 'utf-8')
+
+k = htmlParse(k, asText = TRUE, encoding = 'utf-8')
+
+k = sapply(getNodeSet(doc = k, path = &quot;//font[@color='#0000FF' and @size='2']&quot;),
+           xmlValue)[1:24]
+
+matrix(k, ncol = 4, byrow = TRUE)
+
+# [,1]   [,2]       [,3]       [,4]
+# [1,] &quot;地区&quot; &quot;污染指数&quot; &quot;空气质量&quot; &quot;首要污染物&quot;
+# [2,] &quot;香洲&quot; &quot;35&quot;       &quot;优      &quot; &quot;无&quot;
+# [3,] &quot;吉大&quot; &quot;33&quot;       &quot;优      &quot; &quot;无&quot;
+# [4,] &quot;前山&quot; &quot;38&quot;       &quot;优      &quot; &quot;无&quot;
+# [5,] &quot;唐家&quot; &quot;35&quot;       &quot;优      &quot; &quot;无&quot;
+# [6,] &quot;全市&quot; &quot;35&quot;       &quot;优      &quot; &quot;无&quot;
+</pre>
+
+</p>
+
+<h2>Parallel in R</h2>
+
+<p>
+在R中使用Parallel package实现并行计算。
+
+</p>
+
+<p>
+在parallele中也是将数据进行分割、计算和整合操作。与lapply函数的实现差不多，
+但是呢，parallel是将计算分布到不同的cpu上了。
+
+</p>
+
+<p>
+parallel整合了snow和multicore两个package来实现的，其中snow package的是可以应该到windows
+系统中，但是multicore主要是POXIT的机器上实现的。
+
+</p>
+
+<p>
+下面讨论parallel在单机多核的机器上实现，是学习别人写的parallel日记来的：
+
+</p>
+
+<pre class="example">clusterObj = makeCluster(n)  # set up n cluster to run
+coreNum = detectCores()   # return the cores number in the machine.
+results = parLapply(clusterObj, paramValue, func) # lapply parallel run.
+do.call(results, rbind) # 整合结果
+registerDoParallel(clusterObj) #
+stopCluster(clusterObj) # close cluster object
+</pre>
+
+<h2>Text Mining and apply usage in R</h2>
+
+<pre class="example">score.sentiment&lt;-function(sentences, pos.words, neg.words, .progress='none')
+{
+    require(plyr)
+    require(stringr)
+    #this line was added to remove foreign characters from the text
+    sentences=iconv(sentences, &quot;latin1&quot;, &quot;ASCII&quot;, sub=&quot;&quot;)
+    # we got a vector of sentences. plyr will handle a list or a vector as an &quot;l&quot; for us
+    # we want a simple array of scores back, so we use &quot;l&quot; + &quot;a&quot; + &quot;ply&quot; = laply:
+    scores  =  laply(sentences, function(sentence, pos.words, neg.words) { # laply advanted usage
+        # clean up sentences with R's regex-driven global substitute, gsub():
+        sentence  =  gsub('[[:punct:]]', '', sentence)
+        sentence  =  gsub('[[:cntrl:]]', '', sentence)
+        sentence  =  gsub('\\d+', '', sentence)
+        # and convert to lower case:
+        senctences=tolower(sentence)
+        # split into words. str_split is in the stringr package
+        word.list  =  str_split(sentence, '\\s+')
+        # sometimes a list() is one level of hierarchy too much
+        words  =  unlist(word.list) # good function to deal with list
+        # compare our words to the dictionaries of positive &amp; negative terms
+        pos.matches  =  match(words,  pos.words)
+        neg.matches  =  match(words,  neg.words)
+        # match() returns the position of the matched term or NA
+        # we just want a TRUE/FALSE:
+        pos.matches  = !is.na(pos.matches)
+        neg.matches  = !is.na(neg.matches)
+        # and conveniently enough, TRUE/FALSE will be treated as 1/0 by sum():
+        score  =  sum(pos.matches) - sum(neg.matches)
+        return(score)
+    },  pos.words,  neg.words,  .progress=.progress  )
+    scores.df  =  data.frame(score=scores,  text=sentences)
+    return(scores.df)
+}
+</pre>
+
+<h2>实际中碰到的问题的积累</h2>
+
+<pre class="example">merge()   : 实现两个data.frame的join操作，就像SQL的join操作
+merge(df1,df2, by.x='sku', by.y='skucode')
+
+reshape package中
+cast()/melt()  : 是行转列 和 列转行的操作
+reshape() function 也可以实现这样的操作，具体看help
+
+ggplot2 package
+aex(): 设置x,y color, shape等等
+scale_x_log10() 设置x,y轴的比例关系
+fecet_grid(.~fator) 更加factor将多个图分开
+geom_point() 画点
+geom_line() 画线
+
+</pre>
+
+<p>
+<a href="WelcomePage.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-12-26</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

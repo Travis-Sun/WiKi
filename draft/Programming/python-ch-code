@@ -1,0 +1,25 @@
+#title Python的中文处理问题
+
+
+<p>
+* 《可爱的python》
+
+在用python处理中文的时候注意：encode和decode的情况。
+
+1. 首先将别的编码方式转换成unicode
+2. 然后从unicode转成其他的格式
+3. Unix支持utf-8，而windows则支持gb2312
+
+Example:
+
+<example>
+f = open('test')
+line = f.readline()
+uline = unicode(line, 'gb2312')
+u8line = uline.encode('utf-8')
+
+open a gb2312 file, change to unicode, then change to utf-8 from unicode
+</example>
+</p>
+
+[[python.html][UP]]

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>CORBA</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../Programming/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">CORBA</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+<p>
+From: <a href="http://oss.org.cn/ossdocs/gnu/linux/corba.html">http://oss.org.cn/ossdocs/gnu/linux/corba.html</a>
+
+</p>
+
+<h2>CORBA概念</h2>
+
+<p>
+公用对象请求代理（调度）程序体系结构（Common Object Request Broker Architecture），缩写为 CORBA，
+是对象管理组织（Object Management Group）对应当今快速增长的软硬件的协同工作能力的要求而提出的方案。
+简而言之，CORBA 允许应用程序和其他的应用程序通讯，而不论他们在什么地方或者由谁来设计。CORBA 1.1 由对象管理组织在 1991 年发布。
+他定义了接口定义语言（IDL）和应用编程接口（API），从而通过实现对象请求代理（ORB）来激活客户/服务器的交互。
+CORBA 2.0 于 1994 年的 12 月发布。他定义了如何跨越不同的 ORB 提供者而进行通讯。
+
+</p>
+
+<p>
+ORB 是一个中间件，他在对象间建立客户-服务器的关系。
+通过 ORB，一个客户可以很简单地使用服务器对象的方法而不论服务器是在同一机器上还是通过一个网络访问。
+ORB 截获调用然后负责找到一个对象实现这个请求，传递参数和方法，最后返回结果。
+客户不用知道对象在哪里，是什么语言实现的，他的操作系统以及其他和对象接口无关的东西。
+
+</p>
+
+<p>
+在传统的客户/服务器程序中，开发者使用他们自己设计的或者公认的标准定义设备之间的协议。
+协议的定义依赖于实现的语言，网络的传输和其他许许多多因素。ORB 将这个过程简单化。
+使用 ORB，协议定义是通过应用接口，而该接口是接口定义语言（IDL）的一个实现，他和使用的编程语言无关的。
+并且 ORB 提供了很大的灵活性。他让程序员选择最适当的操作系统，运行环境和设计语言来建设系统中每个组件。
+更重要的是，他允许集成已经存在的组件。
+
+</p>
+
+<p>
+RBA 是在面向对象标准化和互操作性道路上的一个信号。通过 CORBA，用户不必要知道软硬件的平台和他们处在企业网的什么地方就可以操作。
+
+</p>
+
+<h2>ORB 结构</h2>
+下面我来用些图形说明一下：
+
+</p>
+
+<p>
+<a href="corba_1.gif"><img src="corba_1.gif" alt="" /></a>
+
+</p>
+
+<p>
+上面的图形说明的是客户端发送一个请求到对象的实现。客户端是希望对某对象执行操作的实体。
+对象的实现是一片代码和数据来实际实现对象。ORB 负责下面的必要的机制：对该请求找到对象的实现，让对象的实现准备好接受请求，和请求交换数据。
+客户端的接口完全独立于对象的位置，其实现的语言和其他不影响对象接口的东西。
+
+</p>
+
+<p>
+<a href="corba_2.gif"><img src="corba_2.gif" alt="ORB&#32;接口的结构" /></a>
+
+</p>
+
+<p>
+上面的图形显示的是一个独立的对象请求代理（ORB）的结构。ORB 的接口是灰色的矩形。箭头说明 ORB 的调用关系。
+
+</p>
+
+<p>
+为了提出一个请求，客户端可以使用动态调用接口（Dynamic Invocation Interface）（和目标对象的接口独立）或者一个 OMG 的 IDL 占位程序（具体的占位程序依赖于目标对象的接口）。
+客户端也可以直接和 ORB 在某些地方交互。
+
+</p>
+
+<p>
+对象的实现通过 OMG 的 IDL 产生的骨架或者是一个动态骨架的调用来接受请求。对象的实现可能在处理请求或其他的时候调用 ORB。
+
+</p>
+
+<p>
+对象接口定义的定义可以有下面两种方式。接口可以通过接口定义语言静态的定义，这叫做 OMG 的 IDL。
+该语言按照可以进行的操作和该操作的参数定义对象类型。或者（也可以作为补充），接口可以加入到 Interface Repository service。
+该服务描述了该接口作为一个对象的组件，并允许运行时访问这些组件。在任何 ORB 实现中，IDL 和 Interface Repository 有相同的表达能力。
+
+</p>
+
+<p>
+<a href="corba_3.gif"><img src="corba_3.gif" alt="客户端使用占位程序或者动态调用接口" /></a>
+
+</p>
+
+<p>
+客户端通过访问对象的对象引用和了解对象的类型及要求执行的操作来发布一个请求。客户调用占位程序例程来请求或者动态构造请求。
+
+</p>
+
+<p>
+无论动态还是占位程序的接口都可以相同实现。接收方不可能知道请求是如何发布的。
+
+</p>
+
+<p>
+<a href="corba_4.gif"><img src="corba_4.gif" alt="对象的实现接受请求" /></a>
+
+</p>
+
+<p>
+ORB 向对象实现定位适当的代码，传递参数，传输控制。这一切都通过 IDL 骨架或者动态骨架。骨架对于不同的接口和对象适配器是不同的。
+在执行该请求的时候，对象的实现可能由 ORB 通过对象适配器来获得一定的服务。当请求完成，控制和输出值返回给客户。
+
+</p>
+
+<p>
+对象的实现可能会选择使用的对象适配器。该决定基于对象的实现要求的服务。
+
+</p>
+
+<p>
+<a href="corba_5.gif"><img src="corba_5.gif" alt="接口和&#32;Implementation&#32;Repositories" /></a>
+
+</p>
+
+<p>
+上图说明的是接口和实现信息如何让客户和对象实现访问的。接口用 OMG 的 IDL 和/或 Interface Repository 定义。该定义用于产生客户占位程序和对象的实现的骨架。
+
+</p>
+
+<p>
+对象的实现的信息在安装时就提供好了，储存在 Implementation Repository 中以便请求发布的时候使用。
+
+</p>
+
+<h2>CORBA的优势</h2>
+
+<ul>
+<li>CORBA在面向对象的标准化和互操作上迈出了坚实的一步。使用CORBA，用户能在不知道软件和硬件平台以及网络位置的情况下透明的获取信息；
+</li>
+<li>CORBA自动进行许多网络规划任务如对象注册、定位、激活；多路径请求；分帧和错误处理机制；并行处理以及执行操作； 
+</li>
+<li>作为面向对象系统中的通信核心， CORBA为当代的计算环境中带来了真正意义上的互联；
+</li>
+<li>ORBA定义了一种面向对象的软件构件构造方法，使不同的应用可以共享由此构造出来的软件构件；
+</li>
+<li>每个对象都将其内部操作细节封装起来，同时又向外界提供了精确定义的接口，从而降低了应用系统的复杂性，也降低了软件 开发费用；
+</li>
+<li>CORBA的平台无关性实现了对象的跨平台引用，开发人员可以在更大的范围内选择最实用的对象加入到自己的应用系统之中；  
+</li>
+<li>CORBA的语言无关性使开发人员可以在更大的范围内相互利用别人的编程技能和成果， 是实现软件复用的实用化工具；  
+</p>
+</li>
+</ul>
+
+<p>
+<a href="java.html">Back</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

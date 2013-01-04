@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>中国地震情况</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../DataAnalysis/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">中国地震情况</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+refer:
+<a href="http://www.bjt.name/2010/01/chinese-earthquake-visualization/">http://www.bjt.name/2010/01/chinese-earthquake-visualization/</a>;
+<a href="http://yihui.name/cn/2008/10/china-map-and-city-locations-with-r/">http://yihui.name/cn/2008/10/china-map-and-city-locations-with-r/</a>
+
+</p>
+
+<p>
+<p>
+
+</p>
+
+<h4>1. 从中国地震网上赚取数据</h4>
+
+<p>
+采用了python写的tool，从地震数据官网<a href="http://data.earthquake.cn/datashare/globeEarthquake_csn.jsp">http://data.earthquake.cn/datashare/globeEarthquake_csn.jsp</a>
+把数据抓取下来。
+
+</p>
+
+<p>
+然后根据几种描述震级的方式的转换公式，转到同一格式上（理论上是不能这样进行的，具体的原因可以google一下），
+
+</p>
+
+<pre class="example">ml=(1.17mb+0．67)/1.13
+ml=(ms+1.08)/1.13
+</pre>
+
+<p>
+python code:
+
+</p>
+
+<pre class="example">#coding=gbk
+
+
+import urllib, os, sys, codecs
+from sgmllib import SGMLParser
+
+# schedule weekly
+# data url
+URL = r'http://data.earthquake.cn/datashare/globeEarthquake_csn.jsp'
+
+class EarthQuakeSite(SGMLParser):
+
+    def reset(self):
+        self.rowdata = []
+        self.thisdata = []
+        self.indata = False
+        self.indatatable = False
+        self.startdiv = False
+        SGMLParser.reset(self)
+        
+
+    def unknown_starttag(self, tag, attrs):
+        if tag=='div': self.startdiv = True
+        if self.startdiv and tag=='table':
+            #print 'tag %s' % tag
+            #print 'attrs: ', attrs
+            if (u'bgcolor',u'FBFBFB') in attrs:
+                self.indatatable = True
+                #print 'indatatable'
+        if self.indatatable and tag=='td':
+            #print 'indata'
+            self.indata = True
+            
+
+    def unknown_endtag(self, tag):
+        if self.startdiv and tag=='table':
+            self.startdiv = False
+            self.indatatable = False
+        if self.indata and tag=='td':
+            self.indata = False
+        if self.indatatable and tag=='tr':
+            self.thisdata.append(self.rowdata)
+            self.rowdata = []
+            
+
+    def handle_data(self, text):
+        if self.indata:
+            if 'ML' in text:                
+                self.rowdata.append(text.strip().replace('ML',''))
+            elif 'Ms' in text:
+                self.rowdata.append(str((float(text.strip().replace('Ms',''))+1.08)/1.13))
+            elif 'mb' in text:
+                self.rowdata.append(str((1.17*float(text.strip().replace('mb',''))+0.67)/1.13))
+            else:
+                self.rowdata.append(text.strip())
+
+    def output(self):
+        return self.thisdata
+
+
+if __name__=='__main__':
+    stream = urllib.urlopen(URL)
+    Reader = codecs.getreader(&quot;gbk&quot;)
+    fh = Reader(stream)
+    content = fh.read()
+    earthquake = EarthQuakeSite()
+    earthquake.feed(content)
+    earthquake.close()
+    #len(earthquake.output())
+    f = codecs.open(r'D:\SUN\HOME\R\map\chinamap\earthquake.data', 'wb', 'gbk')
+    for li in earthquake.output():
+        f.write(','.join(li) + '\n')
+</pre>
+
+<h4>2. 绘制地图，并把地震数据绘制到地图上</h4>
+
+<h5>1 绘制地图</h5>
+
+<p>
+这样有两种方式，可以参考<a href="statsRuser.html">statsRuser.html</a>
+
+</p>
+
+<pre class="example">#-*- coding: utf-8 -*-
+#coding=utf-8
+
+library(maps)
+library(mapdata)
+map(&quot;china&quot;, col = &quot;darkgray&quot;, ylim = c(18, 54), panel.first = grid())
+
+#for capital
+dat = read.csv(textConnection(&quot;城市,jd,wd
+    北 京,116.4666667,39.9
+    上 海,121.4833333,31.23333333
+    天 津,117.1833333,39.15
+    重 庆,106.5333333,29.53333333
+    哈尔滨,126.6833333,45.75
+    长 春,125.3166667,43.86666667
+    沈 阳,123.4,41.83333333
+    呼和浩特,111.8,40.81666667
+    石家庄,114.4666667,38.03333333
+    太 原,112.5666667,37.86666667
+    济 南,117,36.63333333
+    郑 州,113.7,34.8
+    西 安,108.9,34.26666667
+    兰 州,103.8166667,36.05
+    银 川,106.2666667,38.33333333
+    西 宁,101.75,36.63333333
+    乌鲁木齐,87.6,43.8
+    合 肥,117.3,31.85
+    南 京,118.8333333,32.03333333
+    杭 州,120.15,30.23333333
+    长 沙,113,28.18333333
+    南 昌,115.8666667,28.68333333
+    武 汉,114.35,30.61666667
+    成 都,104.0833333,30.65
+    贵 阳,106.7,26.58333333
+    福 州,119.3,26.08333333
+    台 北,121.5166667,25.05
+    广 州,113.25,23.13333333
+    海 口,110.3333333,20.03333333
+    南 宁,108.3333333,22.8
+    昆 明,102.6833333,25
+    拉 萨,91.16666667,29.66666667
+    香 港,114.1666667,22.3
+    澳门,113.5,22.2&quot;))
+text(dat$jd, dat$wd, dat[, 1], cex = 0.9, col = rgb(0,
+    0, 0, 0.7), pos = c(2, 4, 4, 4, 3, 4, 2, 3, 4, 2, 4, 2, 2,
+    4, 3, 2, 1, 3, 1, 1, 2, 3, 2, 2, 1, 2, 4, 3, 1, 2, 2, 4, 4, 2))
+axis(1, lwd = 0); axis(2, lwd = 0); axis(3, lwd = 0); axis(4, lwd = 0)
+
+#get the point about earthquake
+eqdata &lt;- read.csv('earthquake.data', header=TRUE)
+#length(eqdata); eqdata
+eqdata &lt;- data.frame(eqdata);
+#change the col name
+names(eqdata) &lt;- c('地震日期','地震时间','纬度','经度','深度', '震级', '事件类型', '参考地点')
+
+#save to file, maybe doesn't work
+#data(eqdata)
+#sink(&quot;eqdata.data&quot;)
+
+hist(eqdata$震级, breaks=16)
+
+#add the earthquake data
+symbols(eqdata$经度, eqdata$纬度, circles=eqdata$震级, fg=&quot;white&quot;, bg=&quot;red&quot;, inches=0.15, add=TRUE)
+
+</pre>
+
+<h4>3 分析结果</h4>
+
+<p>
+地震级别直方图：
+
+</p>
+
+<p>
+<a href="earthquake_hist.png"><img src="earthquake_hist.png" alt="" /></a>
+
+</p>
+
+<p>
+近一周地震分布情况(2011-12-30至2012-01-05)
+
+</p>
+
+<p>
+<a href="earthquake_map.png"><img src="earthquake_map.png" alt="" /></a>
+
+</p>
+
+<ol>
+<li>从直方图可以看到，中国是小阵不断啊，大震很少
+</li>
+<li>看到地震主要分布在四川、乌鲁木齐一带。乌鲁木齐一带应该是珠穆拉马蜂的造山运动的结果，
+云南-四川-山西-甘肃一条长龙还是地震活动比较密集的地带。比较奇怪的是中国沿海地区在近一周的情况比较稳定。
+</li>
+<li>查找一下大于7级的地震
+</li>
+</ol>
+
+<pre class="example">#level &gt; 7 earthquake
+&gt; eqdata[eqdata[,6] &gt; 7,]
+      地震日期   地震时间  纬度   经度 深度     震级 事件类型         参考地点
+259 2012-01-01 13:27:54.1 31.45 138.25  350 7.840708 天然地震 日本本州东部海域
+
+&gt; eqdata[eqdata[,6] &gt; 6,]
+      地震日期   地震时间  纬度   经度 深度     震级 事件类型         参考地点
+259 2012-01-01 13:27:54.1 31.45 138.25  350 7.840708 天然地震 日本本州东部海域
+422 2011-12-31 01:07:21.7 30.80 138.35  400 6.598230 天然地震 日本本州以南地区
+532 2011-12-30 06:25:50.7 -4.35 155.45  500 6.598230 天然地震       所罗门群岛
+&gt; eqdata[eqdata[,6] &gt; 5,]
+      地震日期   地震时间  纬度   经度 深度     震级 事件类型         参考地点
+4   2012-01-03 23:40:00.1 12.30 143.85   30 5.823009 天然地震 马里亚纳群岛以南
+188 2012-01-02 05:07:29.8  2.30 128.65   90 5.976991 天然地震       印度尼西亚
+204 2012-01-02 02:09:04.8  4.55  96.15   10 5.823009 天然地震       印度尼西亚
+259 2012-01-01 13:27:54.1 31.45 138.25  350 7.840708 天然地震 日本本州东部海域
+422 2011-12-31 01:07:21.7 30.80 138.35  400 6.598230 天然地震 日本本州以南地区
+532 2011-12-30 06:25:50.7 -4.35 155.45  500 6.598230 天然地震       所罗门群岛
+</pre>
+
+<p>
+可以看到日本地区还是不太平。可以看到5级以上的地震都不是在中国版图上，有两个4.76级的地震分布发生在新疆和台湾。
+这两个级别应该是mb换算过来，应该关注点不同吧。
+</p>
+
+</p>
+
+<p>
+<a href="statsexercise.html">UP</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2012-02-01</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
