@@ -28,17 +28,146 @@
 
 </p>
 
-<h3><a href="alg-heapsort.html">堆排序</a></h3>
+<h2>数据结构</h2>
 
-<h3><a href="alg-shellsort.html">希尔排序</a></h3>
+<p>
+<strong>0. array，list， stack， queue</strong>，hash，可散列表，再散列表，桶式散列
 
-<h3><a href="alg-quicksort.html">快速排序</a></h3>
+</p>
 
-<h3><a class="nonexistent" href="mailto:art.of.war.sunzi@gmail.com">链式基本排序</a></h3>
+<p>
+hash冲突的解决；填充率；
 
-<h3><a href="alg-mergesort.html">二路归并排序</a></h3>
+</p>
 
-<h3><a href="alg-haffman.html">最优二叉树</a></h3>
+<p>
+<strong>1. tree</strong>
+
+</p>
+
+<p>
+森林（结构）、二叉树、平衡二叉树、()
+
+</p>
+
+<p>
+<strong>2. B树</strong>
+
+</p>
+
+<p>
+用于数据库中的数据类型，主要是M叉树，M叉树对根、节点和叶节点的元素的个数有一定的限制。
+
+</p>
+
+<p>
+根节点有2个到M子节点；非根节点的关键字的个数是<a href="./latex/_430240229.png"><img src="./latex/_430240229.png" alt="" /></a>
+<!-- end of latex2png with input: $ \lceil M/2 \rceil \le j \le M $-->
+
+</p>
+
+<p>
+<strong>3. 图</strong>
+
+</p>
+
+<p>
+稠密矩阵和邻接表两种情况表示。
+
+</p>
+
+<p>
+拓扑排序、有向图、无相图、有圈图、负圈图、最小生成树、NP完全、Dijkstra（迪杰斯特拉）算法、A*算法、
+单源最短距离、多源最短距离、广度优先算法、深度优先算法、强连通、欧拉问题、模拟退火算法（Recuit Algorithm)、
+
+</p>
+
+<h2>排序算法</h2>
+
+<p>
+<strong>0. 插入排序</strong>
+
+</p>
+
+<p>
+时刻保持这前面的元素是排好序的。
+
+</p>
+
+<p>
+<strong>1.<a href="alg-heapsort.html">&#32;堆排序</a></strong>
+
+</p>
+
+<p>
+利用二叉堆排序，二叉堆的性质是min/max在第一个元素，然后兑换最后一个元素和第一个元素，二叉堆的大小减1，
+然后重新构建二叉堆，然后重复上面的操作，直至二叉堆的大小为1。N趟二叉堆的重构，所有时间复杂度为O(Nlog(N))。
+
+</p>
+
+<p>
+<strong>2. <a href="alg-shellsort.html">希尔排序</a></strong>
+
+</p>
+
+<p>
+增量排序，设置一个增量的序列，按照这个序列间隔依次进行排序。这种排序的时间复杂度很大程度取决于增量序列的选择。
+其时间复杂度为亚二次，因为其复杂度小于N^2
+
+</p>
+
+<p>
+<strong>3. <a href="alg-quicksort.html">快速排序</a></strong>
+
+</p>
+
+<p>
+着重在几点上，a.枢纽元素的选择，避免最好的情况出现。书中用的取首末中三个值，取中值的方法。然后安装请前后分别来遍历，
+将大于和小于枢纽的元素分两边，对大于枢纽和小于枢纽的部分分别重复上面的操作。
+此外在N很小的情况下，快速排序的效率并不高这时可以切换到插入排序的状态下进行。
+
+</p>
+
+<p>
+<strong>4. <a class="nonexistent" href="mailto:art.of.war.sunzi@gmail.com">链式基本排序</a></strong>
+
+</p>
+
+<p>
+<strong>5. <a href="alg-mergesort.html">二路归并排序</a></strong>
+
+</p>
+
+<p>
+主要是用于外部排序。内存不足以支撑排序的情况下，需要多次将数据读取到内存中进行排序。这种情况下影响算法的效率不再是
+算法本身的复杂，而是读取外层的大小和方式了。安排好读取的顺序、次数以及大小才是外部排序迫切需要解决的问题。
+
+</p>
+
+<p>
+<strong><a href="alg-haffman.html">6.&#32;最优二叉树</a></strong>
+
+</p>
+
+<h2>算法设计</h2>
+
+<p>
+<strong>1.贪婪算法</strong>
+
+</p>
+
+<p>
+<em>调度问题</em>
+
+</p>
+
+<p>
+单机调度、多机调度。
+
+</p>
+
+<p>
+</p>
 
 </p>
 
@@ -52,7 +181,7 @@
         <col width="33%" /><col width="34%" /><col width="33%" />
         <tr>
           <td align="left">
-            <span class="footdate">Updated: 2012-02-01</span>
+            <span class="footdate">Updated: 2013-01-04</span>
           </td>
           <td align="center">
             <span class="foothome">
