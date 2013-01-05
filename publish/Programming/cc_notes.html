@@ -40,11 +40,27 @@
 <h2>wchar_t</h2>
 
 <p>
-wchar_t *key = L"中华";
+wchar_t <em>key = L"中华";
 int length = wcslen(key);
 wcout<< key
 
 </p>
+
+<p>
+</em>* wchar_t 的输出问题
+因为在英文的环境中输出的时候，包括在控制台或者是文件中出现乱码的情况。
+这个时候有可能是本地的环境的问题。在main文件中设置:
+
+</p>
+
+<pre class="example">#include &lt;locale.h&gt;
+
+setlocale(LC_ALL, &quot;chs&quot;);
+wchar_t s1 =L&quot;是非成败转头空123&quot;;
+wprintf(&quot;%s\n&quot;, s1); // output to console
+wcout &lt;&lt; s1 &lt;&lt; endl; // output to console
+fwprintf(fh, &quot;%s\n&quot;, s1); // output to file which fh point to.
+</pre>
 
 <p>
 </p>
@@ -61,7 +77,7 @@ wcout<< key
         <col width="33%" /><col width="34%" /><col width="33%" />
         <tr>
           <td align="left">
-            <span class="footdate">Updated: 2012-12-28</span>
+            <span class="footdate">Updated: 2013-01-05</span>
           </td>
           <td align="center">
             <span class="foothome">

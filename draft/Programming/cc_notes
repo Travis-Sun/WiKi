@@ -14,6 +14,20 @@ wchar_t *key = L"中华";
 int length = wcslen(key);
 wcout<< key
 
+** wchar_t 的输出问题
+因为在英文的环境中输出的时候，包括在控制台或者是文件中出现乱码的情况。
+这个时候有可能是本地的环境的问题。在main文件中设置:
+
+<example>
+#include <locale.h>
+
+setlocale(LC_ALL, "chs");
+wchar_t s1 =L"是非成败转头空123";
+wprintf("%s\n", s1); // output to console
+wcout << s1 << endl; // output to console
+fwprintf(fh, "%s\n", s1); // output to file which fh point to.
+</example>
+
 
 
 </p>
