@@ -36,6 +36,8 @@ memcached分配空间的方法是用slab class来进行分配的，每个slab cl
 
 采用的是分离链接法来处理的hash冲突。在系统中分为oldbucket和primary_hashtable两个hash表。
 
+这里的hashta
+
 如果oldbucket满了，就可散列成原来的2倍大小的空间进行expend。将原来的primary_hashtable赋给oldbucket
 
 assoc_init function: 初始化一个hash表

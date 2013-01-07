@@ -35,19 +35,26 @@
 </li>
 </ol>
 
+<h3>extent c的用法</h3>
+
 <h2>const</h2>
 
-<h2>wchar_t</h2>
-
-<p>
-wchar_t <em>key = L"中华";
-int length = wcslen(key);
-wcout<< key
+<pre class="example">const int &amp;a = 4;  //1
+int &amp;a = 4; //2
+</pre>
+1语句是对的，因为在这种情况的const引用可以自动生成一个临时的匿名变量，然后a指向这个匿名的变量。
+而2语句则是错误的。
 
 </p>
 
-<p>
-</em>* wchar_t 的输出问题
+<h2>wchar_t</h2>
+
+<pre class="example">wchar_t *key = L&quot;中华&quot;;
+int length = wcslen(key);
+wcout&lt;&lt; key
+</pre>
+
+<h3>wchar_t 的输出问题</h3>
 因为在英文的环境中输出的时候，包括在控制台或者是文件中出现乱码的情况。
 这个时候有可能是本地的环境的问题。在main文件中设置:
 
@@ -77,7 +84,7 @@ fwprintf(fh, &quot;%s\n&quot;, s1); // output to file which fh point to.
         <col width="33%" /><col width="34%" /><col width="33%" />
         <tr>
           <td align="left">
-            <span class="footdate">Updated: 2013-01-05</span>
+            <span class="footdate">Updated: 2013-01-06</span>
           </td>
           <td align="center">
             <span class="foothome">

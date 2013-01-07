@@ -6,13 +6,24 @@
 * 头文件
 1. class里面声明了static函数，在cpp文件中就不必用static限定符。在访问的使用用Classname::staticfunName
 
+** extent c的用法
+
 * const
+
+<example>
+const int &a = 4;  //1
+int &a = 4; //2
+</example>
+1语句是对的，因为在这种情况的const引用可以自动生成一个临时的匿名变量，然后a指向这个匿名的变量。
+而2语句则是错误的。
 
 * wchar_t
 
+<example>
 wchar_t *key = L"中华";
 int length = wcslen(key);
 wcout<< key
+</example>
 
 ** wchar_t 的输出问题
 因为在英文的环境中输出的时候，包括在控制台或者是文件中出现乱码的情况。
