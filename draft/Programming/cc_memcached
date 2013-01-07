@@ -3,9 +3,11 @@
 memcached code anlysis.
 
 <p>
-ref: [[memcached.pdf][doc1]];[[Memcached_1.pdf][doc2]]
-ref: consistant hash alg:
-ref: crc32 alg:
+memcached ref: [[memcached.pdf][doc1]];[[Memcached_1.pdf][doc2]]
+
+consistant hash alg ref:
+
+crc32 alg ref:
 
 读取code加上结合上面的两个文档来进行的。
 
