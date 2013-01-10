@@ -3,7 +3,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <title>Tool</title>
+    <title>Latex</title>
     <meta name="generator" content="emacs-wiki.el" />
     <meta http-equiv="Content-Type"
           content="text/html; charset=utf-8" />
@@ -20,46 +20,86 @@
     
     -->
 
-    <h1 id="top">Tool</h1>
+    <h1 id="top">Latex</h1>
 
     <!-- Page published by Emacs Wiki begins here -->
 <p>
-<h2>Emacs</h2>
-
 <p>
-在<a href="emacs.html">这里</a>可以比较清楚的了解Emacs的命令和一些配置。
 
 </p>
 
-<h2>Subversion</h2>
+<h2>1. Beamer creates slide</h2>
 
 <p>
-为了更好的管理自己的code，采用了<a href="svn.html">SVN</a>来进行版本控制
-
-</p>
-
-<h2>GIT</h2>
-
-<p>
-<a href="tool_git.html">分布式版本控制</a>
-
-</p>
-
-<h2>Latex</h2>
-
-<p>
-<a href="tool_latex.html">Latex</a>比较经典的排版工具，核心部分由高纳德开发。提供了很多的template，自由的生成slide等等功能。
+利用模板beamer来生成slide是latex比较好用的一个应用。
 
 </p>
 
 <p>
-本网站的数学公式也是由latex产生的。
+这里有两篇文章帮助学习了解制作slide过程：
+
+</p>
+
+<p>
+<a href="The beamer class.pdf">beamer&#32;class的详细介绍</a> 和 <a href="Beamer Guide.pdf">Beamer&#32;Guide</a>
+
+</p>
+
+<p>
+中英文结合的简单的latex的模板
+
+</p>
+
+<pre class="example">\documentclass[CJK]{beamer}
+
+
+\usepackage{CJK}
+\usetheme{Warsaw}
+
+\begin{document}
+  \begin{CJK}{UTF8}{song}
+    \title[用 Beamer 制作的幻灯片]{
+      Example Presentation Created \\
+      with the Beamer Package \\
+      (用 Beamer 制作的幻灯片)}
+    \author{作者 Till Tantau}
+    \date{\today}
+
+    \frame{\titlepage}
+    
+    \section*{Outline}
+    \frame{\tableofcontents}
+    
+    \section{Introduction (简介)}
+    \subsection{Overview of the Beamer Class (Beamer 类的概要)}
+    \frame{
+      \frametitle{Features of the Beamer Class (Beamer 类的特点)}
+      
+      \begin{itemize}
+      \item&lt;1-&gt; Normal LaTeX class (标准的 LaTeX 类).        
+      \item&lt;2-&gt; Easy overlays (重构简单).
+      \item&lt;3-&gt; No external programs needed (无需额外的程序).
+      \end{itemize}
+    }
+  \end{CJK}
+\end{document}
+</pre>
+
+<h2>2. Resume</h2>
+
+<p>
+同样可以利用latex来生成自己的resume，这将是我要将要进行的一行工作，比较cool。
 
 </p>
 
 <p>
 </p>
 
+</p>
+
+<p>
+<a href="WelcomePage.html">UP</a>
+</p>
     <!-- Page published by Emacs Wiki ends here -->
     <div class="navfoot">
       <hr />

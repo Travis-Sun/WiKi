@@ -1,0 +1,59 @@
+#title Latex
+
+<p>
+
+* 1. Beamer creates slide
+
+利用模板beamer来生成slide是latex比较好用的一个应用。
+
+这里有两篇文章帮助学习了解制作slide过程：
+
+[[The beamer class.pdf][beamer class的详细介绍]] 和 [[Beamer Guide.pdf][Beamer Guide]]
+
+
+中英文结合的简单的latex的模板
+
+<example>
+\documentclass[CJK]{beamer}
+
+
+\usepackage{CJK}
+\usetheme{Warsaw}
+
+\begin{document}
+  \begin{CJK}{UTF8}{song}
+    \title[用 Beamer 制作的幻灯片]{
+      Example Presentation Created \\
+      with the Beamer Package \\
+      (用 Beamer 制作的幻灯片)}
+    \author{作者 Till Tantau}
+    \date{\today}
+
+    \frame{\titlepage}
+    
+    \section*{Outline}
+    \frame{\tableofcontents}
+    
+    \section{Introduction (简介)}
+    \subsection{Overview of the Beamer Class (Beamer 类的概要)}
+    \frame{
+      \frametitle{Features of the Beamer Class (Beamer 类的特点)}
+      
+      \begin{itemize}
+      \item<1-> Normal LaTeX class (标准的 LaTeX 类).        
+      \item<2-> Easy overlays (重构简单).
+      \item<3-> No external programs needed (无需额外的程序).
+      \end{itemize}
+    }
+  \end{CJK}
+\end{document}
+</example>
+
+* 2. Resume
+
+同样可以利用latex来生成自己的resume，这将是我要将要进行的一行工作，比较cool。
+
+</p>
+
+
+[[WelcomePage.html][UP]]

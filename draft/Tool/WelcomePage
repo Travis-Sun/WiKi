@@ -15,4 +15,10 @@
 
 [[tool_git.html][分布式版本控制]]
 
+* Latex
+
+[[tool_latex.html][Latex]]比较经典的排版工具，核心部分由高纳德开发。提供了很多的template，自由的生成slide等等功能。
+
+本网站的数学公式也是由latex产生的。
+
 </p>
