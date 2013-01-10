@@ -36,37 +36,55 @@
 </p>
 
 <h2>R 环境</h2>
+
+<h3>Emacs + ESS setting</h3>
+
+<p>
 在emacs + ESS + R的搭配中，中文显示不论是在图片上还是在ESS中都是存在的问题，
 下面是我的处理的方法：
 
 </p>
 
-<h4>1. 在*.r文件中， 文件开头设置如下，这样保证了在emacs + ESS可以正常的显示中文。</h4>
+<p>
+<em>1. 在.r文件中, 文件开头设置如下，这样保证了在emacs + ESS可以正常的显示中文</em>
+
+</p>
 
 <pre class="example">#coding=utf-8，or #-*- coding: utf-8 -*-
 </pre>
 
-<h4>2. 然后在rtem.exe的环境中运行如下命令，设置在R processor中显示的方式。</h4>
+<p>
+<em>2. 然后在rtem.exe的环境中运行如下命令，设置在R processor中显示的方式</em>
+
+</p>
 
 <pre class="example">&gt; Sys.setlocale(category = &quot;LC_ALL&quot;, locale = &quot;Chinese_People's Republic of China.936&quot;)
 </pre>
 
 <p>
-这种方法是个参考，一旦我的文件环境是utf-8，在Emacs+ESS环境下就不能正常的显示，又折腾死我了。下面是我最想的步骤
+这种方法是个参考，一旦我的文件环境是utf-8，在Emacs+ESS环境下就不能正常的显示，又折腾死我了。下面是我最想的步骤：
 
 </p>
 
-<h4>1. 在Emacs中设置UTF-8作为默认的code-system</h4>
+<p>
+<em>1. 在Emacs中设置UTF-8作为默认的code-system</em>
+
+</p>
 
 <pre class="example">(prefer-coding-system 'chinese-iso-8bit)
 (prefer-coding-system 'chinese-gbk)
 (prefer-coding-system 'utf-8)
-
 </pre>
 
-<h4>2. 确保所有的输入都是UTF-8类型</h4>
+<p>
+<em>2. 确保所有的输入都是UTF-8类型</em>
 
-<h4>3. 在R cmd(Rtem.exe)中设置setlocale</h4>
+</p>
+
+<p>
+<em>3. 在R cmd(Rtem.exe)中设置setlocale</em>
+
+</p>
 
 <pre class="example">Sys.setlocale(locale = 'C')
 </pre>
@@ -80,6 +98,21 @@
 有时候处理完之后，读出来的数据还会是乱码，可以下面的方法try一下：
 <pre class="example">iconv(data,from='UTF-8',to='UTF-8')
 iconv(data,from='UTF-8',to='')
+</pre>
+
+<h3>R 输入code和输出环境的设置</h3>
+
+<pre class="example">source(&quot;sourcefile.r&quot;) # run the r code in sourcefile.r
+sink(&quot;txtoutput.txt&quot;) # redirect output to txtoutput.txt, not include graph
+dev.off()   # let the graph to terminal
+pdf(&quot;filename.pdf&quot;)
+win.metafile(&quot;filename.wmf&quot;) # Windows metafile
+png(&quot;filename.png&quot;)
+jpeg(&quot;filename.jpg&quot;)
+bmp(&quot;filename.bmp&quot;)
+postscript(&quot;filename.ps&quot;)
+#output graph may doesn't work, so 
+# i alway use to ggplot and ggsave the graph to pdf and other format.
 </pre>
 
 <h2>R and MySQL</h2>
@@ -304,7 +337,7 @@ geom_line() 画线
         <col width="33%" /><col width="34%" /><col width="33%" />
         <tr>
           <td align="left">
-            <span class="footdate">Updated: 2012-12-26</span>
+            <span class="footdate">Updated: 2013-01-09</span>
           </td>
           <td align="center">
             <span class="foothome">

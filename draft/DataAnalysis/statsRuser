@@ -7,36 +7,38 @@
 http://zoonek2.free.fr/UNIX/48_R/02.html#17
 
 * R 环境
+
+** Emacs + ESS setting
+
 在emacs + ESS + R的搭配中，中文显示不论是在图片上还是在ESS中都是存在的问题，
 下面是我的处理的方法：
 
-*** 1. 在*.r文件中， 文件开头设置如下，这样保证了在emacs + ESS可以正常的显示中文。
+*1. 在.r文件中, 文件开头设置如下，这样保证了在emacs + ESS可以正常的显示中文*
 
 <example>
 #coding=utf-8，or #-*- coding: utf-8 -*-
 </example>
 
-*** 2. 然后在rtem.exe的环境中运行如下命令，设置在R processor中显示的方式。
+*2. 然后在rtem.exe的环境中运行如下命令，设置在R processor中显示的方式*
 
 <example>
 > Sys.setlocale(category = "LC_ALL", locale = "Chinese_People's Republic of China.936")
 </example>
 
 
-这种方法是个参考，一旦我的文件环境是utf-8，在Emacs+ESS环境下就不能正常的显示，又折腾死我了。下面是我最想的步骤
+这种方法是个参考，一旦我的文件环境是utf-8，在Emacs+ESS环境下就不能正常的显示，又折腾死我了。下面是我最想的步骤：
 
-*** 1. 在Emacs中设置UTF-8作为默认的code-system
+*1. 在Emacs中设置UTF-8作为默认的code-system*
 
 <example>
 (prefer-coding-system 'chinese-iso-8bit)
 (prefer-coding-system 'chinese-gbk)
 (prefer-coding-system 'utf-8)
-
 </example>
 
-*** 2. 确保所有的输入都是UTF-8类型
+*2. 确保所有的输入都是UTF-8类型*
 
-*** 3. 在R cmd(Rtem.exe)中设置setlocale
+*3. 在R cmd(Rtem.exe)中设置setlocale*
 
 <example>
 Sys.setlocale(locale = 'C')
@@ -49,6 +51,23 @@ Sys.setlocale(locale = 'C')
 iconv(data,from='UTF-8',to='UTF-8')
 iconv(data,from='UTF-8',to='')
 </example>
+
+** R 输入code和输出环境的设置
+
+<example>
+source("sourcefile.r") # run the r code in sourcefile.r
+sink("txtoutput.txt") # redirect output to txtoutput.txt, not include graph
+dev.off()   # let the graph to terminal
+pdf("filename.pdf")
+win.metafile("filename.wmf") # Windows metafile
+png("filename.png")
+jpeg("filename.jpg")
+bmp("filename.bmp")
+postscript("filename.ps")
+#output graph may doesn't work, so 
+# i alway use to ggplot and ggsave the graph to pdf and other format.
+</example>
+
 
 * R and MySQL
 

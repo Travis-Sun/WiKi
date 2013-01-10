@@ -26,13 +26,16 @@
 <p>
 <h2>Machine Learning for Hacker</h2>
 
-<pre class="example"># 在作者的访谈录中
+<p>
+# 在作者的访谈录中
 他提到了自己在R中常用的几个扩展包，其中包括用ggplot2包来绘图，
 用glmnet包做回归，用tm包进行文本挖掘，
 用plyr、reshape、lubridate和stringr包进行数据预处理。
-</pre>
+
+</p>
 
 <h2>Chap 1. Using R</h2>
+
 <pre class="example">#1 introducation
 ifelse(condition, yes, no)
 when read, do best to set stringsAsFactors as false
@@ -48,10 +51,10 @@ match(x, table,...) #get the x position in table, if not match return NA
 subset(x,.. select...) #get subset of x
 strftime(datedata, format=&quot;%Y-%m&quot;) # change the date to string with some format.
 merge(data1, data2, by.x, by.y,...) # merge two table to one, the operation is simlar with select join in sql.
-
 </pre>
 
 <h2>Chap 2. Data Exploring</h2>
+
 <pre class="example">#2
 file.path(&quot;relative folder&quot;, &quot;file name&quot;)
 with(data, expr,...)  #in expr, you can write the colname without the data name.the expr can be {} block.
@@ -65,6 +68,7 @@ ggplotObject #plot ggplot object
 </pre>
 
 <h2>Chap 3. Classification: Span filter</h2>
+
 <pre class="example">#3
 apply, lapply, sapply, tapply
 http://xccds1977.blogspot.com/2012/02/r_29.html
@@ -133,19 +137,47 @@ ggsave(plot = class.plot,                         # save cmd, plot is ggplot obj
        height = 10,
        width = 10)
 dir() #get all file in some folder.
-垃圾邮件的辨别的方法的理论基础是朴素贝叶斯分类d(v) = max(p(v|t1t2t3..)) = max(p(t1t2t3...|v)*p(v)/p(t1t2t3...))。
+</pre>
+
+<p>
+垃圾邮件的辨别的方法的理论基础是朴素贝叶斯分类
+
+</p>
+
+<p>
+<a href="./latex/_25244024.png"><img src="./latex/_25244024.png" alt="" /></a>
+[FIXME: invalid characters]
+
+</p>
+
+<p>
 其中v是类别，t1...是类别的属性，可以看到p(v)是一个行业的经验值，而p(t1t2..)对所有类别都是一样的处理，
 所以就不用处理这个参数，而且这个参数还是比较难以得到的。所以再计算的时候忽略它。此外这个是建立在各个属性是独立的基础上的，
-so，才可以用p(t1t2t3..|v)=p(t1|v)*p(t2|v)....进行进一步的处理。
-其处理的步骤是：
-1. 读取垃圾邮件，正常邮件到内存中，
-2. 提取出邮件的message部分，然后用tm package进行text mining。
-3. text minning的结果是把message部分进行分析，得到term在不同的类型中(spam and ham)中的freq。
-4. 对测试数据进行text ming进行提取term集合，然后分别计算该terms用不同类型的freq计算出来的值，进行比较，
-那个比较大，就属于那一类。
+so，才可以用<a href="./latex/_407788971.png"><img src="./latex/_407788971.png" alt="" /></a>
+[FIXME: invalid characters]
 
+</p>
+
+<p>
+其处理的步骤是：
+
+</p>
+
+<ol>
+<li>读取垃圾邮件、正常邮件到内存中，
+</li>
+<li>提取出邮件的message部分，然后用tm package进行text mining。
+</li>
+<li>text minning的结果是把message部分进行分析，得到term在不同的类型中(spam and ham)中的freq。
+</li>
+<li>对测试数据进行text ming进行提取term集合，然后分别计算该terms用不同类型的freq计算出来的值，进行比较，
+那个比较大，就属于那一类。
+</li>
+</ol>
+
+<p>
 这里计算的freq是采用的是该词在同一类型的邮件中，出现该词的邮件数除以总的邮件数。
-spam.occurrence &lt;- sapply(1:nrow(spam.matrix),
+<pre class="example">spam.occurrence &lt;- sapply(1:nrow(spam.matrix),
                           function(i)
                           {
                             length(which(spam.matrix[i, ] &gt; 0)) / ncol(spam.matrix)
@@ -170,80 +202,174 @@ ddply(.data, .variable, .fun,...)  # is in plyr package, it applys the
 ggplot() + geom_rect  # plot the 2d rectangle, throught example in book
             # we can see the pic, x and y axe is changed.
 
+</pre>
+
+<p>
 在进行分析的时候，有时候数据的差别比较大，这个时候进行排序或者要显示的时候，
 结果并不是令人满意的，这个时候要考虑进行数据的转换。
+
+</p>
+
+<p>
 书中的这里给的一个启示是：针对数据项的列进行增加操作，保留原始数据。
 通过用transform还是增加了一列，然后对数据进行log操作。这样把数据的差值拉的比较近，
 通过plot图可以看到，也通过log函数曲线看到，数据越大，log的缩小比较就越大。
 在R中，log函数就是自然数为底的对数。另外为了防止数据特别小或者是0，这种情况下
 在原始数据的基础上加1来处理
-log1p(N) == log(N+1)
+
+</p>
+
+<pre class="example">log1p(N) == log(N+1)
 strptime(data, pattern) # change the time pattern, convert to some pattern for next solution.
+</pre>
 
-针对inbox，根据其email的重要性，进行rank：
+<p>
+针对inbox，根据其email的重要性，进行rank。
+
+</p>
+
+<p>
 步骤：
-1. 将数据分成两部分training data and test data.
-2. 运用数据的局限性，所有采用了邮件的sender、邮件的thread信息（时间，已经subject里面的term）以及邮件内容的term来
-设计ranker。
-3. 获得应该是5个方面的参考值，然后通过对test的数据的提取获得这个五个方面的weight，然后相乘得到该email的一个分值。
-4. 通过分值来进行对email进行rank
 
+</p>
+
+<ol>
+<li>将数据分成两部分training data and test data.
+</li>
+<li>因为数据的局限性，所以采用了邮件的sender、邮件的thread信息（时间，已经subject里面的term）以及邮件内容的term来
+设计ranker。
+</li>
+<li>获得应该是5个方面的参考值，然后通过对test的数据的提取获得这个五个方面的weight，然后相乘得到该email的一个分值。
+</li>
+<li>通过分值来进行对email进行rank
+</li>
+</ol>
+
+<p>
 这里看出也是supervised learning，但是这里的与其他的不太一样，有点和第recommended system类似。
 因为它没有之前介绍的supervised learning方法的结果值进行的training，那这里我们根据什么来进行验证我们的ranker是否有效。
 
+</p>
+
+<p>
 一个重要的理论应该是长尾理论（不知道翻译的对不对，以前看到过这个名词），就是将training的email根据ranker value
 画出其density graph，应该是大多数email分布在lower rank，少量的email分布在higher rank。
 理想的情况是less num bigger value（ranker值越大的email的数量越少）；从实际的效果看也应该是这样，
-好的推荐系统越重要的email，其数量越少。noraml email应该集中在比较lower的rank位置。
+好的推荐系统越重要的email，其数量越少。noraml email应该集中在比较lower rank位置。
 
-</pre>
+</p>
 
 <h2>Chap 5. Regression: Predict Page View</h2>
 <pre class="example">#5
 ggplot +goem_smooth(method='lm', se=FALSE)   # drow the lines model, se is set to 
                                              # show the residual around the line.
 
-我们在进行liner regression的时候，summary lm方法的结果会得到一个值R^2。
+</pre>
+我们在进行liner regression的时候，summary lm方法的结果会得到一个值<a href="./latex/_430435292.png"><img src="./latex/_430435292.png" alt="" /></a>
+<!-- end of latex2png with input: $ R^2 $-->。
 他的意义是：
 我们在用RMSE(平方平均开方误差)的时候，得到的结果是一个值，但是这个值大小的意义从这个值上是看不出来的。
 我们在用不同的方法去regression的时候都会得到这个值，那就用这个值来进行判断哪一个方法比较给力。
-而R^2=1-(model.rmse/mean.rmse)，这样该值本身就有一个比较，就是和mean的结果比较。如果model的得当，
+而<a href="./latex/_53214355.png"><img src="./latex/_53214355.png" alt="" /></a>
+<!-- end of latex2png with input: $ R^2=1-(model.rmse/mean.rmse) $-->，这样该值本身就有一个比较，就是和mean的结果比较。如果model的得当，
 得到的应该是接近1的数字。
-</pre>
+
+</p>
 
 <h2>Chap 6. Regularization: Text Regression</h2>
-<pre class="example">#6
-lm中poly(x,degree=2)生成正交的多项式X回归。degree表示最高次数.
-还有一个函数polym(..., degree=2)还没有搞清楚其作用，应该是可以多个变量的
-通过书中的例子可以看到，可能想通过不断的修改model来提高输出的拟合度，
-但是这样会引起另外一个问题就是Overfitting(过拟合)。产生过拟合的原因是讲
-原本是随机误差的部分考虑到了模型当中，从而影响了整个model的准确度。
-避免overfitting的方法：
-用cross-validation方法。
-1. data split，将数据分开，用部分数据进行分析，然后用另一个部分数据区验证。
-通常情况下将数据分为80%的train数据和20%的测试数据比较合理。
-2. 统计计算出测试数据和train的数据的方差和，选择多项式的次数。
 
-用Regularization的方法
-1. 计算模型的复杂度，这个复杂度是通过计算lm模型的系数来实现的.
-就是在模型的复杂性和对train data的fitting之间的一个train off(权衡)
+<p>
+lm中poly(x,degree=2)生成正交的多项式X回归，degree表示最高次数。
+
+</p>
+
+<p>
+还有一个函数polym(..., degree=2)还没有搞清楚其作用，应该是可以多个变量的。
+通过书中的例子可以看到，可能想通过不断的修改model来提高输出的拟合度，
+但是这样会引起另外一个问题就是Overfitting(过拟合)。
+
+</p>
+
+<p>
+产生过拟合的原因是原本是随机误差的部分考虑到了模型当中，从而影响了整个model的准确度。
+
+</p>
+
+<p>
+避免overfitting的方法：
+
+</p>
+
+<p>
+<strong>用cross-validation方法</strong>
+
+</p>
+
+<ol>
+<li>data split，将数据分开，用部分数据进行分析，然后用另一个部分数据区验证。
+通常情况下将数据分为80%的train数据和20%的测试数据比较合理。
+</li>
+<li>统计计算出测试数据和train的数据的方差和，选择多项式的次数。
+</li>
+</ol>
+
+<p>
+<strong>用Regularization的方法</strong>
+
+</p>
+
+<ol>
+<li>计算模型的复杂度，这个复杂度是通过计算lm模型的系数来实现的.
+就是在模型的复杂性和对train data的fitting之间的一个train-off(权衡)
 策略是：宁可选择一个比较简单的模型也不选择一个overfittring的模型。
+</li>
+</ol>
+
+<pre class="example">model complexity defination
 L2.model.complexity &lt;- sum(coef(lm.fit)^2)
 L1.model.complexity &lt;- sum(abs(coef(lm.fit)))
-2. 在R中的glmnet package中提供了计算其模型复杂度的一个参考。
-glmnet(poly(x,degree=n),y)
+</pre>
+
+<ol>
+<li>在R中的glmnet package中提供了计算其模型复杂度的一个参考。
+</li>
+</ol>
+
+<pre class="example">glmnet(poly(x,degree=n),y)
 output: three colummn: Df %Dev Lambda.
 Df: means 非零的参数个数
 %Dev: means 他的意义和R squred类似，就是线性度的一个指标
 Lambda: means 这个参数和regularization，lambda越大表示模型越复杂，也就是的所有的参数都接近为0
-但是不能够单纯的选择最小的lambda。这时候和cross-table方法结合起来。
+</pre>
+
+<p>
+但是不能够单纯的选择最小的lambda,这时候和cross-table方法结合起来。
+也是通过train和test数据之间train-off的判断来获取best Lambda。
+
+</p>
+
+<p>
 具体的步骤如下：
-1. 将数据分两部分：training data(training.df)和 test data(test.df)。已经总体的数据(df).
-2. 利用函数glmnet求出training data的模型lambda的结果：
-glmnet.fit &lt;- with(training.df, glmnet(poly(X, degree = 10), Y))
+
+</p>
+
+<ol>
+<li>将数据分两部分：training data(training.df)和 test data(test.df)。已经总体的数据(df).
+</li>
+<li>利用函数glmnet求出training data的模型lambda的结果：
+</li>
+</ol>
+
+<pre class="example">glmnet.fit &lt;- with(training.df, glmnet(poly(X, degree = 10), Y))
 lambdas &lt;- glmnet.fit$lambda
-3. 然后用所有的lambda来对test data做一个测试，计算出其RMSE。
-performance &lt;- data.frame()
+</pre>
+
+<ol>
+<li>然后用所有的lambda来对test data做一个测试，计算出其RMSE。
+</li>
+</ol>
+
+<pre class="example">performance &lt;- data.frame()
 for (lambda in lambdas)
 {
   performance &lt;- rbind(performance,
@@ -251,8 +377,14 @@ for (lambda in lambdas)
   RMSE = rmse(test.y, with(test.df, predict(glmnet.fit, poly(X,
   degree = 10), s = lambda)))))
 }
-4. 找出最小RSME中最小的lambda值，然后将值应用到整体数据df中，找到合适的参数个数和参数值。
-best.lambda &lt;- with(performance, Lambda[which(RMSE == min(RMSE))])
+</pre>
+
+<ol>
+<li>找出最小RSME中最小的lambda值，然后将值应用到整体数据df中，找到合适的参数个数和参数值。
+</li>
+</ol>
+
+<pre class="example">best.lambda &lt;- with(performance, Lambda[which(RMSE == min(RMSE))])
 glmnet.fit &lt;- with(df, glmnet(poly(X, degree = 10), Y))
 # Twenty-fifth code snippet
 coef(glmnet.fit, s = best.lambda)
@@ -270,6 +402,7 @@ output:
 #8 0.0000000
 #9 0.0000000
 #10 0.0000000
+可以看到很多的二项式的系数是零，这样保持了model complex最小。
 
 同时细节可以看看glmnet的description。可以了解他不仅仅针对多项式，
 还可以针对其他的一下glm的family模型。
@@ -597,7 +730,7 @@ if you want to get strong results.
         <col width="33%" /><col width="34%" /><col width="33%" />
         <tr>
           <td align="left">
-            <span class="footdate">Updated: 2012-12-24</span>
+            <span class="footdate">Updated: 2013-01-08</span>
           </td>
           <td align="center">
             <span class="foothome">
