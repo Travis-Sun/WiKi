@@ -176,7 +176,7 @@ If set/leave chinese-font-size to nil, it will follow english-font-size"
 (require 'emacs-wiki-table)    
 (load "~/.emacs.d/lisp/latex2png.el")
 (push '("latex" t t t gs-latex-tag) emacs-wiki-markup-tags)
-(setq gs-latex2png-scale-factor 1.5)            ;; set pic sieze
+(setq gs-latex2png-scale-factor 1.5)            ;; set pic size
 
 (setq emacs-wiki-projects
         `(("Tool" . ((emacs-wiki-directories . ("~/WiKi/draft/Tool"))
@@ -200,6 +200,9 @@ If set/leave chinese-font-size to nil, it will follow english-font-size"
 	("MyProject" . ((emacs-wiki-directories . ("~/WiKi/draft/MyProject"))
 		    (emacs-wiki-publishing-directory . "~/WiKi/publish/MyProject")
 		    (emacs-wiki-default-page . "../MyProject/WelcomePage")))
+	("Blog" . ((emacs-wiki-directories . ("~/WiKi/draft/Blog"))
+		    (emacs-wiki-publishing-directory . "~/WiKi/publish/Blog")
+		    (emacs-wiki-default-page . "../Blog/WelcomePage")))        
         ("Default" . ((emacs-wiki-directories . ("~/WiKi/draft/default"))
                       (emacs-wiki-publishing-directory . "~/WiKi/publish/Default")
                       (emacs-wiki-default-page . "../Default/WelcomePage")))))
@@ -441,11 +444,11 @@ spot using forward-word."
   (list "." 
 	"../include" ))
 (defconst cedet-win32-include-dirs
-  (list ;"~/bin/MinGW/include"
-        ;"~/bin/MinGW/include/c++/3.4.5"
-        ;"~/bin/MinGW/include/c++/3.4.5/mingw32"
-        ;"~/bin/MinGW/include/c++/3.4.5/backward"
-        ;"~/bin/MinGW/lib/gcc/mingw32/3.4.5/include"
+  (list "~/bin/MinGW/include"
+        "~/bin/MinGW/include/c++/3.4.5"
+        "~/bin/MinGW/include/c++/3.4.5/mingw32"
+        "~/bin/MinGW/include/c++/3.4.5/backward"
+        "~/bin/MinGW/lib/gcc/mingw32/3.4.5/include"
         "C:\\Program Files\\Microsoft Visual Studio 10.0\\VC\\include"))
 
 (require 'semantic-c nil 'noerror)
