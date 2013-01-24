@@ -253,6 +253,102 @@ score.sentiment<-function(sentences, pos.words, neg.words, .progress='none')
 }
 </example>
 
+
+* ggplot2 usage
+
+ggplot2 slide info: [[ggplot_slides/01-basics.pdf][Basic]] , [[ggplot_slides/02-large.pdf][Display Big Data]]  , [[ggplot_slides/03-transformations.pdf][Data Multipulation]]  , [[ggplot_slides/04-polishing.pdf][Polish Your Plot]]
+
+<example>
+library(ggplot2)
+#quick plot
+qplot(x,y,data...)
+
+#facet_grid() 根据要求分离出多个图，相当于细化出来。
+qplot(displ,hwy,data=mpg) + facet_grid(.~cyl)
+qplot(displ,hwy,data=mpg) + facet_grid(drv~.)
+qplot(displ,hwy,data=mpg) + facet_grid(drv~cyl)
+
+#reorder()可以对x轴进行排序，让graph比较好看点
+qplot(reorder(class, hwy),hwy, data=mpg, geom='jitter')
+
+
+#geom设置不同的图层
+#jitter # point， 不重叠的点
+#barplot and so on
+qplot(reorder(class, hwy),hwy, data=mpg, geom=c('jitter', 'boxplot'))
+
+#binwidth 设置barplot的宽度
+qplot(carat, data=diamonds, binwidth=.1)
+
+#+xlab('') + ylab('') 设置坐标轴的含义
+#+xlim(10,20) + ylim(200,10000) 设置坐标轴的显示范围
+
+# set color two, one is beautiful, another
+# 表示图片中的成分有两种形式，一种是通过fill的方式彩色的分段在一个整体里面；
+# 另一种是通过facet_wrap的方式将成分分开处理。
+# fill is beautiful, +facet_wrap(~XX) split multi-graph
+qplot(depth, data=diamonds, fill=cut) 
+qplot(depth, data=diamonds) + facet_wrap(~cut)
+
+#weight
+cuts <- as.data.frame(table(cut=diamonds$cut))
+qplot(cut, weight=Freq, data=cuts)
+
+# 离散用boxplot，连续用hist
+
+# group=round()() 将相同的数据靠拢一下这样便于boxplot进行操作
+# group=interaction(..,..) # 获得interaction里面多项绑定, 
+# 其意思作为一体，例如interaction(cut, color)将所有的cut,color连接一起作为一项
+# check the difference between them
+qplot(table, price, data=diamonts, geom='boxplot')
+qplot(table, price, data=diamonts, group=round(table), geom='boxplot')
+
+# 如果point plot的时候，点比较多看不出规律来，可以通过
+# alpha=I()设置半透明的状态，可以通过这样抓到主要的趋势, 必须用I表示标准的颜色，
+# 然后设置I(1/10)，就是将颜色降到原来的1/10
+qplot(carat, price, data=diamonts, alpha=I(1/10))
+qplot(carat, price, data=diamonds, geom="bin2d", bins=100)
+
+# bin2d ，形成方格的表示。有点像heat图的格式
+qplot(carat, price, data=diamonds, geom="bin2d", bins=100)
+
+#+geom_smooth() liner + smooth
+qplot(carat, price, data=diamonds) + geom_smooth()
+qplot(log10(carat), log10(pirce), data=diamonds) + geom_smooth(method='lm')
+
+
+# read file 手动选择要读入的问题
+options(stringsAsFactors = FALSE)
+data <- read.csv(file.choose())
+
+# subset(dataset, conditaions)函数，从一个dataset中提取子集
+subset(diamonds, carat>2)
+subset(diamonds, carat>2 & cut=='Ideal')
+
+#substr()提取子字符串
+
+# gl()
+b <- gl(2, 2, 8, labels = c("ctrl", "treat"))
+
+
+#transform()， 修改已经存在的data frame.
+
+#Scale plot
+#格式：scale_aesthetic_name
++scale_x_continuous()
++scale_y_discrete()
++scale_color_discrete()
+
++scale_color_gradient(low='blue', high='red')
+
++ scale_x_continuous(limits=c(1,8)) = + xlim(1,8)
+
+
+
+
+
+</example>
+
 * 实际中碰到的问题的积累
 
 <example>

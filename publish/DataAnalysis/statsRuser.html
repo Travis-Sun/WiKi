@@ -316,6 +316,103 @@ stopCluster(clusterObj) # close cluster object
 }
 </pre>
 
+<h2>ggplot2 usage</h2>
+
+<p>
+ggplot2 slide info: <a href="ggplot_slides/01-basics.pdf">Basic</a> , <a href="ggplot_slides/02-large.pdf">Display&#32;Big&#32;Data</a>  , <a href="ggplot_slides/03-transformations.pdf">Data&#32;Multipulation</a>  , <a href="ggplot_slides/04-polishing.pdf">Polish&#32;Your&#32;Plot</a>
+
+</p>
+
+<pre class="example">library(ggplot2)
+#quick plot
+qplot(x,y,data...)
+
+#facet_grid() 根据要求分离出多个图，相当于细化出来。
+qplot(displ,hwy,data=mpg) + facet_grid(.~cyl)
+qplot(displ,hwy,data=mpg) + facet_grid(drv~.)
+qplot(displ,hwy,data=mpg) + facet_grid(drv~cyl)
+
+#reorder()可以对x轴进行排序，让graph比较好看点
+qplot(reorder(class, hwy),hwy, data=mpg, geom='jitter')
+
+
+#geom设置不同的图层
+#jitter # point， 不重叠的点
+#barplot and so on
+qplot(reorder(class, hwy),hwy, data=mpg, geom=c('jitter', 'boxplot'))
+
+#binwidth 设置barplot的宽度
+qplot(carat, data=diamonds, binwidth=.1)
+
+#+xlab('') + ylab('') 设置坐标轴的含义
+#+xlim(10,20) + ylim(200,10000) 设置坐标轴的显示范围
+
+# set color two, one is beautiful, another
+# 表示图片中的成分有两种形式，一种是通过fill的方式彩色的分段在一个整体里面；
+# 另一种是通过facet_wrap的方式将成分分开处理。
+# fill is beautiful, +facet_wrap(~XX) split multi-graph
+qplot(depth, data=diamonds, fill=cut) 
+qplot(depth, data=diamonds) + facet_wrap(~cut)
+
+#weight
+cuts &lt;- as.data.frame(table(cut=diamonds$cut))
+qplot(cut, weight=Freq, data=cuts)
+
+# 离散用boxplot，连续用hist
+
+# group=round()() 将相同的数据靠拢一下这样便于boxplot进行操作
+# group=interaction(..,..) # 获得interaction里面多项绑定, 
+# 其意思作为一体，例如interaction(cut, color)将所有的cut,color连接一起作为一项
+# check the difference between them
+qplot(table, price, data=diamonts, geom='boxplot')
+qplot(table, price, data=diamonts, group=round(table), geom='boxplot')
+
+# 如果point plot的时候，点比较多看不出规律来，可以通过
+# alpha=I()设置半透明的状态，可以通过这样抓到主要的趋势, 必须用I表示标准的颜色，
+# 然后设置I(1/10)，就是将颜色降到原来的1/10
+qplot(carat, price, data=diamonts, alpha=I(1/10))
+qplot(carat, price, data=diamonds, geom=&quot;bin2d&quot;, bins=100)
+
+# bin2d ，形成方格的表示。有点像heat图的格式
+qplot(carat, price, data=diamonds, geom=&quot;bin2d&quot;, bins=100)
+
+#+geom_smooth() liner + smooth
+qplot(carat, price, data=diamonds) + geom_smooth()
+qplot(log10(carat), log10(pirce), data=diamonds) + geom_smooth(method='lm')
+
+
+# read file 手动选择要读入的问题
+options(stringsAsFactors = FALSE)
+data &lt;- read.csv(file.choose())
+
+# subset(dataset, conditaions)函数，从一个dataset中提取子集
+subset(diamonds, carat&gt;2)
+subset(diamonds, carat&gt;2 &amp; cut=='Ideal')
+
+#substr()提取子字符串
+
+# gl()
+b &lt;- gl(2, 2, 8, labels = c(&quot;ctrl&quot;, &quot;treat&quot;))
+
+
+#transform()， 修改已经存在的data frame.
+
+#Scale plot
+#格式：scale_aesthetic_name
++scale_x_continuous()
++scale_y_discrete()
++scale_color_discrete()
+
++scale_color_gradient(low='blue', high='red')
+
++ scale_x_continuous(limits=c(1,8)) = + xlim(1,8)
+
+
+
+
+
+</pre>
+
 <h2>实际中碰到的问题的积累</h2>
 
 <pre class="example">merge()   : 实现两个data.frame的join操作，就像SQL的join操作
@@ -344,7 +441,7 @@ geom_line() 画线
         <col width="33%" /><col width="34%" /><col width="33%" />
         <tr>
           <td align="left">
-            <span class="footdate">Updated: 2013-01-11</span>
+            <span class="footdate">Updated: 2013-01-24</span>
           </td>
           <td align="center">
             <span class="foothome">
