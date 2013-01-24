@@ -405,7 +405,11 @@ b &lt;- gl(2, 2, 8, labels = c(&quot;ctrl&quot;, &quot;treat&quot;))
 
 +scale_color_gradient(low='blue', high='red')
 
-+ scale_x_continuous(limits=c(1,8)) = + xlim(1,8)
++ scale_x_continuous(limits=c(1,8)) 
++ xlim(1,8) #这个的功能等同于上一句的功能。
+
+#char title
++labs(title=&quot;title&quot;)
 
 
 
