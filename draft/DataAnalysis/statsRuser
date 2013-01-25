@@ -258,6 +258,10 @@ score.sentiment<-function(sentences, pos.words, neg.words, .progress='none')
 
 ggplot2 slide info: [[ggplot_slides/01-basics.pdf][Basic]] , [[ggplot_slides/02-large.pdf][Display Big Data]]  , [[ggplot_slides/03-transformations.pdf][Data Multipulation]]  , [[ggplot_slides/04-polishing.pdf][Polish Your Plot]]
 
+ggplot2 book: [[ggplot2.pdf][ggplot2]]
+
+ggplot2 package introduction: [[04-ggplot2.pdf][ggplot2 package]]
+
 <example>
 library(ggplot2)
 #quick plot

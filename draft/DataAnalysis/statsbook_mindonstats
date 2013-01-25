@@ -72,8 +72,9 @@ mdata <- matrix(data=data, nrow=, ncol=3, byrow=TRUE,
 
 barplot(t(mdata),beside=TRUE, col=c("blue","green","red"),legend=cname)
 #ggplot
-ggplot(data=data.f,aes(x=rownames(data.f), weight=data,fill=data)) + geom_bar(width=1)
-ggplot(data=data.f,aes(x=rownames(data.f), weight=data,color=c())) + geom_bar(width=1)
+
+
+
 #ggplot
 ggplot(data=data.f,aes(x=rownames(data.f), fill=data)) + geom_bar(width=1) + coord_polar(theta='x') 
 pie(t(mdata[1:3]),col=rainbow(3))
