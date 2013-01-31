@@ -258,7 +258,7 @@ score.sentiment<-function(sentences, pos.words, neg.words, .progress='none')
 
 ggplot2 slide info: [[ggplot_slides/01-basics.pdf][Basic]] , [[ggplot_slides/02-large.pdf][Display Big Data]]  , [[ggplot_slides/03-transformations.pdf][Data Multipulation]]  , [[ggplot_slides/04-polishing.pdf][Polish Your Plot]]
 
-ggplot2 book: [[ggplot2.pdf][ggplot2]]
+ggplot2 book: [[ggplot2.pdf][ggplot2-Elegant Graphics for Data Analysis]]
 
 ggplot2 package introduction: [[04-ggplot2.pdf][ggplot2 package]]
 
@@ -351,10 +351,49 @@ b <- gl(2, 2, 8, labels = c("ctrl", "treat"))
 #char title
 +labs(title="title")
 
+</example>
 
+* ggthemes
 
+ref: http://site.douban.com/182577/widget/notes/10568279/note/257294505/
 
+ggthemes package intro: [[http://cran.r-project.org/web/packages/ggthemes/ggthemes.pdf][ggthemes]]
 
+ggthemes是关于ggplot2的绘图的theme。可以通过install.packages()来安装了。
+
+example:
+
+<example>
+# ggplot 提供的theme，这里是Set1，可以设置成Set2...可以try一下。
+ggplot(mtcars,aes(x=mpg,y=wt,size=cyl,colour=factor(gear)))+
+geom_point(alpha=.5)+ #透明度
+scale_size_area()+ #区域和数值成比例
+scale_colour_brewer(palette="Set1")+ 
+ggtitle("Motor Trend Car Road Tests")
+
+#excel-style:
+ggplot(mtcars,aes(x=mpg,y=wt,size=cyl,colour=factor(gear)))+
+geom_point()+
+scale_size_area()+
+theme_excel() +
+scale_fill_excel()+
+ggtitle("Motor Trend Car Road Tests")
+
+#economist-style:
+ggplot(mtcars,aes(x=mpg,y=wt,size=cyl,colour=factor(gear)))+
+geom_point(alpha=.5)+
+scale_size_area()+
+theme_economist() +
+scale_colour_economist()+
+ggtitle("Motor Trend Car Road Tests")
+
+#solarized-style:
+ggplot(mtcars,aes(x=mpg,y=wt,size=cyl,colour=factor(gear)))+
+geom_point()+
+scale_size_area()+
+theme_solarized(light=FALSE) +
+scale_colour_solarized("red")+
+ggtitle("Motor Trend Car Road Tests")
 </example>
 
 * 实际中碰到的问题的积累

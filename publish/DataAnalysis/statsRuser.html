@@ -324,7 +324,7 @@ ggplot2 slide info: <a href="ggplot_slides/01-basics.pdf">Basic</a> , <a href="g
 </p>
 
 <p>
-ggplot2 book: <a href="ggplot2.pdf">ggplot2</a>
+ggplot2 book: <a href="ggplot2.pdf">ggplot2-Elegant&#32;Graphics&#32;for&#32;Data&#32;Analysis</a>
 
 </p>
 
@@ -421,10 +421,60 @@ b &lt;- gl(2, 2, 8, labels = c(&quot;ctrl&quot;, &quot;treat&quot;))
 #char title
 +labs(title=&quot;title&quot;)
 
+</pre>
 
+<h2>ggthemes</h2>
 
+<p>
+ref: <a href="http://site.douban.com/182577/widget/notes/10568279/note/257294505/">http://site.douban.com/182577/widget/notes/10568279/note/257294505/</a>
 
+</p>
 
+<p>
+ggthemes package intro: <a href="http://cran.r-project.org/web/packages/ggthemes/ggthemes.pdf">ggthemes</a>
+
+</p>
+
+<p>
+ggthemes是关于ggplot2的绘图的theme。可以通过install.packages()来安装了。
+
+</p>
+
+<p>
+example:
+
+</p>
+
+<pre class="example"># ggplot 提供的theme，这里是Set1，可以设置成Set2...可以try一下。
+ggplot(mtcars,aes(x=mpg,y=wt,size=cyl,colour=factor(gear)))+
+geom_point(alpha=.5)+ #透明度
+scale_size_area()+ #区域和数值成比例
+scale_colour_brewer(palette=&quot;Set1&quot;)+ 
+ggtitle(&quot;Motor Trend Car Road Tests&quot;)
+
+#excel-style:
+ggplot(mtcars,aes(x=mpg,y=wt,size=cyl,colour=factor(gear)))+
+geom_point()+
+scale_size_area()+
+theme_excel() +
+scale_fill_excel()+
+ggtitle(&quot;Motor Trend Car Road Tests&quot;)
+
+#economist-style:
+ggplot(mtcars,aes(x=mpg,y=wt,size=cyl,colour=factor(gear)))+
+geom_point(alpha=.5)+
+scale_size_area()+
+theme_economist() +
+scale_colour_economist()+
+ggtitle(&quot;Motor Trend Car Road Tests&quot;)
+
+#solarized-style:
+ggplot(mtcars,aes(x=mpg,y=wt,size=cyl,colour=factor(gear)))+
+geom_point()+
+scale_size_area()+
+theme_solarized(light=FALSE) +
+scale_colour_solarized(&quot;red&quot;)+
+ggtitle(&quot;Motor Trend Car Road Tests&quot;)
 </pre>
 
 <h2>实际中碰到的问题的积累</h2>
@@ -455,7 +505,7 @@ geom_line() 画线
         <col width="33%" /><col width="34%" /><col width="33%" />
         <tr>
           <td align="left">
-            <span class="footdate">Updated: 2013-01-25</span>
+            <span class="footdate">Updated: 2013-01-31</span>
           </td>
           <td align="center">
             <span class="foothome">
