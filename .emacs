@@ -3,6 +3,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(ede-project-directories (quote ("d:/Home/GitHub/memcached" "d:/Home/GitHub/http-parser")))
  '(org-agenda-files (quote ("~/MyToDo/Project.org" "~/MyToDo/Project_SPM.org" "~/MyToDo/Personal.org")))
  '(safe-local-variable-values (quote ((todo-categories "Work" "Personal")))))
 (custom-set-faces
@@ -565,7 +566,7 @@ spot using forward-word."
 ;; r language
 (load "~/.emacs.d/lisp/ess-5.14/lisp/ess-site")
 (require 'ess-site)
-(setq inferior-R-program-name "~/bin/R/R-2.15.1/bin/x64/Rterm.exe")
+(setq inferior-R-program-name "~/bin/R/R-2.15.2/bin/x64/Rterm.exe")
 ;;设置set-buffer-process-coding-system，这样就能正确使用中文了.
 ;(add-hook 'ess-post-run-hook (function (lambda ()
 ;(set-buffer-process-coding-system 'cn-gb-2312 'cn-gb-2312))))
@@ -575,3 +576,11 @@ spot using forward-word."
 ;(setq load-path (cons  (expand-file-name "E:/Programs/emacs-21.3/ess-5.3.0/lisp/ess-site") load-path )
 ;(autoload 'R "ess-site" "" t)
 ;(add-hook 'ess-post-run-hook (function (lambda () (set-buffer-process-coding-system 'cn-gb-2312 'cn-gb-2312))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Lisp
+(setq inferior-lisp-program "~/bin/clisp-2.49/clisp.exe")
+;;(setq inferior-lisp-program "~/bin/sbcl/1.1.4/sbcl.exe")
+(add-to-list 'load-path "~/.emacs.d/lisp/slime-2013-03-05/")  ; your SLIME directory
+(require 'slime-autoloads)
+(slime-setup '(slime-fancy))
