@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Data Analysis Example</title>
+    <meta name="generator" content="emacs-wiki.el" />
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8" />
+    <link rel="made" href="mailto:art.of.war.sunzi@gmail.com" />
+    <link rel="home" href="../DataAnalysis/WelcomePage.html" />
+    <link rel="index" href="../WiKiIndex.html.html" />
+    <link rel="stylesheet" type="text/css" href="../css/core.css">
+  </head>
+  <body>
+
+    <!-- If you want a menu, uncomment the following lines and
+    put (require 'emacs-wiki-menu) in your Emacs setup somewhere.
+
+    
+    -->
+
+    <h1 id="top">Data Analysis Example</h1>
+
+    <!-- Page published by Emacs Wiki begins here -->
+<p>
+ref:<a href="http://www.ats.ucla.edu/stat/dae/">http://www.ats.ucla.edu/stat/dae/</a>
+
+</p>
+
+<h2>Robust Regression</h2>
+
+<ol>
+<li>什么情况下用robust regression？
+</li>
+<li>它的本质做法是什么？R中怎么样实现？
+</li>
+</ol>
+
+<p>
+本着这两方面的问题，我进行展开。
+
+</p>
+
+<p>
+首先问什么使用Robust Regression，在我们采集到的样本中经常会出现一下奇异点，
+就是数值突然特别大或者特别小，很大的影响了我们的回归模型，这种情况下，
+我们通常的做法是进行判断是否是影响很大的奇异点，如果是那么我们会将奇异点删除，然后再做线性回归。
+但是存在这样的问题，这些点是正常的样本点，它也是反映总体的一下性质。这个时候就用到了robust regression。
+
+</p>
+
+<p>
+我们知道regression的做法是用最新二乘法来实现残差的平方和最小<a href="./latex/_192327987.png"><img src="./latex/_192327987.png" alt="" /></a>
+<!-- end of latex2png with input: $ \min(\sum(f(x)-y)^2) $-->，
+那么robust regression的做法是将差别比较大的残差值加一个weight，减小其影响。从而整体上降低了模型残差平方和。
+
+</p>
+
+<pre class="example">#robust regression
+require(MASS)
+require(foreign)
+
+cdata &lt;- read.dta(&quot;http://www.ats.ucla.edu/stat/data/crime.dta&quot;)
+head(cdata)
+nrow(cdata)
+
+summary(ols &lt;- lm(crime~poverty+single,data=cdata))
+
+opar &lt;- par(mfrow=c(2,2), oma=c(0,0,1.1,0))
+plot(ols, las=1)
+
+cdata[c(9,25,51), 1:2]
+ccdata &lt;- cbind(cdata, res=ols$resid)
+ccdata &lt;- ccdata[order(abs(ccdata$res)),]
+tail(ccdata)
+
+olsr &lt;- rlm(crime~poverty+single, data=cdata)
+
+cddata &lt;- cbind(cdata, res1=ols$resid, res2=olsr$resid)
+cddata &lt;- cddata[order(abs(cddata$res1)),]
+tail(cddata)
+summary(olsr); summary(ols)
+</pre>
+
+<p>
+<strong>Notes</strong> 
+
+</p>
+
+<pre class="example">opar &lt;- par(mfrow=c(2,2), oma=c(0,0,1.1,0))
+plot(ols, las=1)
+</pre>
+比较好用，可以执行看到差异比较大的点。
+
+</p>
+
+<p>
+<a href="statsexercise.html">up</a>
+</p>
+    <!-- Page published by Emacs Wiki ends here -->
+    <div class="navfoot">
+      <hr />
+      <table width="100%" border="0" summary="Footer navigation">
+        <col width="33%" /><col width="34%" /><col width="33%" />
+        <tr>
+          <td align="left">
+            <span class="footdate">Updated: 2013-03-21</span>
+          </td>
+          <td align="center">
+            <span class="foothome">
+              <a href="../WiKiIndex.html">Index</a>
+            </span>
+          </td>
+          <td align="right">
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
